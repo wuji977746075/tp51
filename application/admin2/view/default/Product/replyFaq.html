@@ -1,0 +1,82 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+	<link src="__CDN__/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" type="text/css" />
+	
+	<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+	<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- form -->
+			<form class="form-horizontal well validateForm">
+				<fieldset>
+					<legend>咨询管理-回复</legend>
+					<div class="form-group">
+						<div class="col-md-10 col-lg-10">
+							<input type="hidden" name="id" value="{:I('id')}" >
+						</div>
+
+					</div>
+					<div class="form-group">
+						<label for="inputtitle" class="col-md-2 col-lg-2 control-label">咨询商品ID:</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">
+								{$faq.pid}
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputtitle" class="col-md-2 col-lg-2 control-label">咨询内容:</label>
+						<div class="col-md-10 col-lg-10">
+							<div style="width: 400px; height: 100px; border: 1px solid #ccc; background: #FFF; padding: 5px; overflow-y: scroll;">{$faq.ask_content}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputtext" class="col-md-2 col-lg-2 control-label">回复内容:</label>
+						<div class="col-md-10 col-lg-10 ">
+							<textarea class="required form-control input-normal" rows="3" id="inputtext" name="reply_content">{$faq.reply_content}</textarea>
+							<div class="help-block">(回复内容)</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url('Product/replyFaq')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default" href="{:url('Product/faq')}"><i class="fa fa-times-circle"></i> {:L('BTN_BACK')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+
+	</div>
+{/block}
+
+{block name="area_footer"}
+	
+	<script src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+	<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+	<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+	<script src="__CDN__/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+	<script>
+		$(function() {
+			$("#inputsort").TouchSpin({
+				initval: 0
+			});
+			$(".validateForm").validate();
+			$(".select2").select2({
+				language:"zh-CN"
+			});
+		});
+	</script>
+{/block}

@@ -1,0 +1,150 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+<style type="text/css">
+  input.error { border: 1px solid red; }
+  label.checked { padding-left: 25px; }
+  label.error {
+    padding-left: 25px;
+    padding-bottom: 2px;
+    font-weight: bold;
+    color: #EA5200;
+  }
+  legend{ padding-bottom:18px; }
+  form.well{ background: #f4f4f4 url('__IMG__/q_0.png?v=2017072902') right 80px no-repeat; }
+  .select2-container .select2-selection--single{
+    height: 40px !important;
+  }
+  .select2-selection{
+    padding: 5px !important;
+    color: #97A8BE !important;
+    border: 1px solid #DDD !important;
+  }
+</style>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.full.js"></script>
+<script type="text/javascript" src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+  {include file="default/Widget/left" /}
+  <div class="admin-main-content">
+    {include file="default/Widget/breadcrumb" /}
+    <!-- 带验证 form -->
+    <form id="registerForm" class="form-horizontal well validateForm">
+      <fieldset>
+        <legend>{empty name="$id"}新增{else /}修改{/empty}题目</legend>
+        <div class="form-group">
+          <label for="js-note" class="col-md-2 col-lg-1 control-label">标识</label>
+          <div class="col-md-10 col-lg-10">
+            <input type="text" class="form-control input-short" name="note" id="js-note" value="{$info['note']|default=''}">
+            <div class="help-block">(推荐,自定义标识,方便区分,无实义)</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="js-dt-type" class="col-md-2 col-lg-1 control-label">*题型</label>
+          <div class="col-md-10 col-lg-10">
+            <select name="dt_type" class="required form-control input-short" id="js-dt-type">
+              <option value="0">== 请选择 ==</option>
+              {volist name="dt_types" id="v"}
+              <option value="{$v.id}">{$v.name}</option>
+              {/volist}
+            </select>
+            <div class="help-block">(题型,将决定题面和答案类型)</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="js-question" class="col-md-2 col-lg-1 control-label">提问</label>
+          <div class="col-md-10 col-lg-10">
+            <input type="text" class="form-control input-short" name="question" id="js-question" placeholder="请输入问题" value="{$info['question']|default=''}">
+            <div class="help-block">(题目的问题部分,视题型而需要)</div>
+          </div>
+        </div>
+        <div class="form-group">
+        <label for="js-question" class="col-md-2 col-lg-1 control-label">是否区分大小写</label>
+        <div class="col-md-10 col-lg-10">
+          <select name="istransform" class="required form-control input-short">
+            <option value="0">不区分</option>
+            <option value="1">区分</option>
+          </select>
+        </div>
+      </div>
+        <!-- <div class="form-group">
+        <label for="js-audio-id" class="col-md-2 col-lg-1 control-label">音频</label>
+                                                                             <div class="col-md-10 col-lg-10">
+        <input type="number" class="form-control input-short" name="audio_id" id="js-audio-id"  value="{ $info['audio_id']|default=''}">
+        <div class="help-block">(录音,MP3,方便区分题目,视题型而需要)</div>
+                                                        </div>
+                                                          </div> -->
+
+        <div class="form-group">
+          <label for="js-knowledge" class="col-md-2 col-lg-1 control-label">知识点</label>
+          <div class="col-md-10 col-lg-10">
+            <input type="text" class="form-control input-short" name="knowledge" id="js-knowledge" value="{$info['knowledge']|default=''}">
+            <div class="help-block">(可选,考察知识点)</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="js-relax" class="col-md-2 col-lg-1 control-label">音频间歇</label>
+          <div class="col-md-10 col-lg-10">
+            <input type="number" class="form-control input-short" name="relax" id="js-relax" value="{$info['relax'] ?? 1}" min="0">
+            <div class="help-block">(秒,音频间歇)</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-2 col-lg-1 control-label">状态</label>
+          <div class="col-md-3 col-lg-3">
+            <label class="radio-inline">
+              <input type="radio" name="status" value=1 checked="checked"/>正常
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="status" value=0 />起草
+            </label>
+          </div>
+        </div><br /><br />
+        <div class="form-group">
+          <label for="js-origin-article" class="col-md-2 col-lg-1 control-label">解析</label>
+          <div class="col-md-6 col-lg-6">
+            <textarea name="origin_article" id="js-origin-article" class="form-control" cols="30" rows="10">{$info['origin_article']|default=''}</textarea>
+            <div class="help-block">(可选,原文题目解析)</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="btns" class="col-md-2 col-lg-1 control-label">&nbsp;</label>
+          <div class="col-lg-10 col-md-10">
+            <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent,'id'=>$id])}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+            <a class="btn btn-default" href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent])}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+    <!-- form -->
+  </div>
+  <!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+  $(function() {
+    var dt_type = parseInt({$dt_type}),img;
+    $('#js-dt-type').select2({ language: "zh-CN" })
+            .val(dt_type).on('select2:select', function (e) {
+      setNoteImg($('#js-dt-type').val());
+    });
+    var $form = $('form.well');
+    setNoteImg(dt_type);
+
+    function setNoteImg(t){
+      img  =  '__IMG__/q_'+t+'.png';
+      $form.css("background-image","url("+img+")");
+    }
+  }); //end ready
+</script>
+{/block}

@@ -1,0 +1,161 @@
+{extend name="default/template/base_index"/}
+
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content col-lg-8 col-md-8 col-sm-8 col-xs-8">
+            {include file="default/Widget/breadcrumb" /}
+
+            <!-- 带验证 form -->
+            <form class="form-horizontal well validateForm">
+
+                <fieldset>
+                    <legend>商品分组</legend>
+                    <div class="form-group hide">
+                        <label for="" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn-sm btn btn-primary"
+                               href="{:url('ProductGroup/add')}" autofocus="autofocus"><i class="fa fa-save"></i>
+                                {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default btn-sm " href="javascript:window.history.go(-1)"><i
+                                    class="fa fa-reply"></i>返回</a>
+                        </div>
+                    </div>
+                    <a class="btn btn-primary btn-sm" href="{:url('Product/addGroup')}">
+                        <i class="fa fa-plus"></i>
+                        添加商品分组
+                    </a>
+                    <table class="col-lg-8 col-md-8 col-sm-8 col-xs-8 table table-striped table-hover">
+                        <tr>
+                            <th width="380px">分组名称</th>
+                            <th width="180px">商品统计</th>
+                            <th>操作</th>
+                        </tr>
+                        {volist name="groups" id="vo"}
+                            <tr>
+                                <td>{$vo.name}</td>
+                                <td>
+                                    共{$vo.all_pro} /过期 {$vo.overdue} /未开始 {$vo.not_sta}
+                                </td>
+                                <td>
+                                    <a href="{:url('ProductGroup/index',array('id'=>$vo['id']))}" class="btn btn-default btn-sm"><i class="fa fa-edit"></i>管理商品</a>
+                                    <a href="{:url('Product/deleteGroup',array('id'=>$vo['id']))}" class="ajax-get btn btn-danger btn-sm confirm"><i class="fa fa-trash-o"></i>删除</a>
+                                </td>
+                            </tr>
+                        {/volist}
+                    </table>
+                    <div class="text-muted hide">
+                        需要勾选才能生效
+                    </div>
+                    <div class="form-group hide">
+                        <div class="col-md-10 col-lg-10 ">
+                            {volist name="groups" id="vo" key="k"}
+                                <label class="checkbox">
+                                    <input type="checkbox" name="groups[]" onclick="getGroupId(this,{$k})" value="{$vo.id}" />{$vo.name}
+                                    <input name="price_{$vo.id}" class="price input-short" style="font-size: 14px; padding: 5px; border: 1px solid #ccc; border-radius: 5px; color: #999;" />元(此时的促销价)
+
+                                </label>
+                                <div class="form-group group-time-{$k} well " style=" margin-top: 10px;">
+                                    <div class="input-group" style="">
+                                        <div class="input-group-addon">
+                                            时间 <i class="fa fa-calendar"></i>
+                                        </div>
+                                        <input type="text" name="start_time_{$vo.id}" id="start_time_{$k}"
+                                               class="startdatetime form-control input-short"
+                                        {if condition="!isset($selectedgroups[$vo['id']])"}
+                                            value="{:date('Y-m-d H:i:s',time())}"
+                                            {else/}
+                                            value="{:date('Y-m-d H:i:s',$selectedgroups[$vo['id']]['start_time'])}"
+                                        {/if}
+                                        />
+                                        <div class="input-group-addon"
+                                             style="margin-left:20px; float: left; width: 50px;">
+                                            <i class="fa fa-long-arrow-right" style="font-size: 20px;"></i>
+                                        </div>
+                                        <input type="text" name="end_time_{$vo.id}" id="end_time_{$k}"
+                                               class="enddatetime form-control input-short"
+                                        {if condition="!isset($selectedgroups[$vo['id']])"}
+                                            value="{:date('Y-m-d H:i:s',time()+24*3600*31)}"
+
+                                            {else/}
+                                            value="{:date('Y-m-d H:i:s',$selectedgroups[$vo['id']]['end_time'])}"
+                                        {/if}
+                                        />
+                                    </div>
+                                </div>
+                                <div class="form-group group-price">
+
+                                </div>
+                            {/volist}
+                            <div class="help-block">(将商品归类)</div>
+                        </div>
+                    </div>
+                    <br/><br/>
+                    <div class="form-group hide">
+                        <label for="" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn-sm btn btn-primary"
+                               href="{:url('ProductGroup/add')}" autofocus="autofocus"><i class="fa fa-save"></i>
+                                {:L('BTN_SAVE')}</a>
+
+                            <a class="btn btn-default btn-sm " href="javascript:window.history.go(-1)"><i
+                                    class="fa fa-reply"></i>返回</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <!-- form -->
+
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+    <script>
+        function getGroupId(g, k) {
+            if (g.checked) {
+                $(".group-time-" + k).show();
+                $(".group-price").show();
+            } else {
+                $(".group-time-" + k).hide();
+                $(".group-price").hide();
+            }
+        }
+        $(function () {
+            $(":checked").each(function () {
+
+                if ($(this).val() == 5999) {
+                    $(".group-time-4").show();
+                    $(".group-price").show();
+                }
+
+            });
+
+
+            $('.startdatetime').datetimepicker({
+                lang: 'ch',
+                format: 'Y-m-d H:i:s',
+                timepicker: false,
+            });
+            $('.enddatetime').datetimepicker({
+                lang: 'ch',
+                format: 'Y-m-d  H:i:s',
+                timepicker: false,
+            });
+
+            $(".xdsoft_today_button").click();
+        });
+
+
+    </script>
+{/block}

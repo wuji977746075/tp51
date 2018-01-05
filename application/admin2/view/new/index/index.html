@@ -1,0 +1,30 @@
+{extend name="new/template/base" /}
+
+{block name="area_header"}
+<style>
+  .layui-elem-field{ height:100%; }
+</style>
+{/block}
+
+{block name="area_body"}
+<!-- {$_top_mid} : {$_left_mid} -->
+<fieldset class="layui-elem-field">
+  <legend>欢迎页</legend>
+  <div class="layui-field-box">
+    <blockquote class="layui-elem-quote">新的天地即将展开 !</blockquote>
+    <div class="skin-box {php}echo config('is_debug') ? 'hide':'';{/php}">
+      <a href="#" class="skin layui-nav-img" data-skin="df" data-ref="393D49"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="cyan" data-ref="2F4056"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="blue" data-ref="169fe6"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="green" data-ref="009688"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="red" data-ref="fb6e52"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="orange" data-ref="FFB800"></a>
+      <a href="#" class="skin layui-nav-img" data-skin="gray" data-ref="eeeeee"></a>
+    </div>
+  </div>
+</fieldset>
+{/block}
+
+
+{block name="area_footer"}
+{/block}

@@ -1,0 +1,25 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_income/style.css">
+{/block}
+{block name="body"}
+{volist name='info' id='vo'}
+<div class="my-income-item">
+    <div class="my-income-item-a">{$vo.reason}</div>
+    <div class="my-income-item-b">{$vo.create_time|date="Y-m-d",###}</div>
+    {if condition = '$vo.plus gt 0'}
+    <div class="my-income-item-b">增加{$vo.plus/100}</div>
+    {elseif condition = '$vo.minus gt 0' /}
+    <div class="my-income-item-b">减少{$vo.minus/100}</div>
+    {/if}
+</div>
+{/volist}
+
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+</script>
+{/block}

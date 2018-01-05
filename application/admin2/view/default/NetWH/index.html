@@ -1,0 +1,124 @@
+{extend name="default/template/base_index" />
+
+{block name="area_header"}
+    <style type="text/css">
+        td{
+            text-align: center;
+        }
+        td pre{
+            HEIGHT: 160PX;
+            width:480px;
+        }
+        .object-code{
+            width:480px;
+            HEIGHT: 160PX;
+            display: block;
+            margin:0 auto;
+            word-wrap: break-word;
+            text-align: left;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
+    </style>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+
+            <div class="h4">网仓信息上报</div>
+            <form>
+
+                <a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+                <br>
+
+                <div class="form-group">
+                    <label>订单编号</label>
+                    <div class=" ">{$order.order_code}</div>
+                </div>
+
+                <div class="text-center">
+                    <button type="button" data-loading-text="正在上报中..."  class="J_upload btn btn-sm btn-primary">3.2发货订单通知</button>
+                </div>
+
+                <div class="js_info text-center">
+
+                </div>
+            </form>
+
+            <div class="" style="padding: 10px">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td  style="width:200px">上报时间</td>
+                        <td>返回结果</td>
+                        <td>上报参数</td>
+                    </tr>
+                    </thead>
+                    {volist name="list" id="vo"}
+                        <tr>
+                            <td  style="width:200px">{:date("Y-m-d H:i:s",$vo['upload_time'])}</td>
+                            <td ><span  title="{$vo.result}">{:getNetWHResult($vo['result'])}</span></td>
+                            <td ><span class="object-code" title="{$vo.upload_content}">{$vo.upload_content}</span></td>
+
+                        </tr>
+                    {/volist}
+                </table>
+                <div>{$show}</div>
+            </div>
+
+        </div>
+
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+    <script>
+    function upload(){
+        var order_code = "{$order.order_code}";
+
+        $.ajax({
+            url:"__SELF__",
+            data:{order_code:order_code},
+            type:"POST",
+            beforeSend:function(){
+                $(".J_upload").button("loading");
+            }
+        }).always(function(){
+            $(".J_upload").button("reset");
+        }).done(function(data){
+            console.log(data);
+            if(data.status){
+                $(".js_info").html(data.info);
+                window.location.reload();
+            }else{
+                $(".js_info").html(data.info);
+                $.scojs_message(data.info , $.scojs_message.TYPE_ERROR);
+            }
+        }).fail(function(){
+            $.scojs_message("上报失败!请刷新后重试!", $.scojs_message.TYPE_ERROR);
+        });
+
+    }
+
+    $(function(){
+
+        $(".J_upload").click(function(){
+
+            upload();
+
+        });
+
+    })
+
+
+
+    </script>
+
+{/block}

@@ -1,0 +1,19 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_income/style.css">
+{/block}
+{block name="body"}
+{if condition = "$status eq 1"}
+<div style="padding:20px 30px;background: white">
+    <div style="margin:10px;font-size: 17px">{$wallet.note}</div>
+    <div style="margin:10px;font-size: 14px">时间：{$wallet.create_time}</div>
+    <div style="margin:10px;font-size: 14px">金额：{$wallet.money/100}元</div>
+    <div style="margin:10px;font-size: 14px">订单号：{$wallet.order_code}</div>
+</div>
+{else /}
+<div style="margin:50% 0;font-size: 20px;text-align: center">充值失败，请重试!</div>
+{/if}
+{/block}
+{block name="footer"}
+{/block}

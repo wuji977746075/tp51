@@ -1,0 +1,117 @@
+{extend name="template/base" /}
+
+{block name="head"}
+<script>
+$(function(){  $('#key').focus(); })
+avalon.config({ interpolate:["[[","]]"] });
+var vm = avalon.define({
+ $id: "test",
+ dat: "",
+ mobile:'',
+ inp:[],
+ state:'',
+ param: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ msg:"相安无事",
+ reparam: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ ret:function(){
+    vm.param = vm.reparam;
+    vm.msg   = '勿忘初心，回归本源';
+ },
+ add:function(){
+    var len = vm.param.length;
+    var inp = vm.inp;
+    if(!inp[0]){ vm.msg = '无效操作';return; }else{
+        logs && log('fun-add:',inp.$model);
+        $('#key').focus();
+        for (var i = 0; i < len; i++) {
+            if(vm.param[i][0]==inp[0]){
+                if(inp[1].length){
+                    if(inp[1]!=vm.param[i][1]){
+                        vm.msg = '修改参数:'+inp[0]+'='+inp[1];
+                        vm.param[i].set(1,inp[1],vm.param[i][2]);
+                    }else{ vm.msg = '无用操作'; }
+                    $('tbody>tr').stop().removeClass().eq(i).addClass('am-primary');
+                }else{
+                    vm.msg = '删除参数:'+inp[0];
+                    vm.param.splice(i,1);
+                }
+                vm.inp=[];
+                return;
+            }
+        };
+        if(!inp[1]){ vm.msg = '无效操作';return; }
+        vm.msg = '添加参数:'+inp[0]+'='+inp[1];
+        vm.param.push([inp[0],inp[1],'']);
+        vm.inp=[];
+        //等待vm-ready
+        setTimeout(function(){$('tbody>tr').stop().removeClass().last().addClass('am-primary');},200);
+        return;
+    }
+ },
+ sub:function(e){
+    var p = "{$post_url?:''}";
+    var len = vm.param.length;
+    for (var i = 0; i < len; i++) {
+        vm.dat = vm.dat + (vm.dat==''?'?':'&')+vm.param[i][0]+'='+vm.param[i][1];
+    }
+    vm.dat = p + vm.dat;
+ },
+ cha:function(e){
+    logs && log('vm-cha',e);
+    var dat = vm.param[e];
+    vm.msg = '准备操作: '+dat[0];
+    vm.inp = [];
+    $('tbody>tr').stop().removeClass().eq(e).addClass('am-primary');
+    vm.inp.pushArray([dat[0],dat[1]]);
+    $('#val').focus();
+ },
+ key:function(e){
+    var k = e.keyCode;
+    if(k == 13){
+     logs && log('vm-key',k,e.keyIdentifier);
+     vm.add();
+    }
+ }
+});
+// avalon.scan();
+</script>
+{/block}
+
+{block name="body"}
+<div class="title">  <h1>BOYE测试 <span>{$type}</span></h1>  </div>
+<div class="content am-panel" ms-controller="test">
+    <label>操作参数 【无key添加；有key修改,无value删除】</label>
+    <div class="am-form-inline">
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="key"  ms-duplex="inp[0]" placeholder="参数名">
+      </div>
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="val" ms-on-keydown="key" ms-duplex="inp[1]" placeholder="参数值">
+      </div>
+      <button class="am-btn" ms-click="add">确定</button>
+      <div class="am-form-group am-padding">[[msg]]</div>
+    </div>
+    <table class="am-table am-table-hover am-table-bordered am-table-radius">
+        <thead><tr><th>参数名</th><th>参数值</th><th>参数说明[**为必选]</th></tr></thead>
+        <tbody>
+        <tr ms-repeat="param" ms-click="cha($index)">
+            <td ms-repeat-ele="el">[[ele|html]]</td>
+        </tr>
+        </tbody>
+    </table>
+    <p></p>
+    <button class="am-btn am-btn-primary" ms-click="sub">生成WEB链接</button>
+    <button class="am-btn am-btn-primary" ms-click="ret">重置</button>
+    <p></p>
+    <label>URL</label>
+    <p><a ms-attr-href="dat" target="_blank">[[dat]]</></p>
+</div>
+{/block}

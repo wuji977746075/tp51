@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <base href="{:config('SITE_URL')}/" />
+    <meta charset="utf-8">
+    <title>{:config('WEBSITE_TITLE')}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="keywords" content="{$seo.keywords|default=''}" />
+    <meta name="description" content="{$seo.description|default=''}" />
+    <meta name="author" content="{$cfg.owner|default=' Gooraye '}" />
+    <link type="text/css" rel="stylesheet" href="__CSS__/font-awesome.min.css" />
+    <link rel="stylesheet" href="__CSS__/weui.min.css">
+    <link rel="stylesheet" href="__CSS__/jquery-weui.css">
+    <link rel="stylesheet" href="__CSS__/base.css">
+    <!-- 脚本 -->
+    <script type="text/javascript" src="__CDN__/jquery/2.1.4/jquery-2.1.4.js"></script>
+    <!--<script type="text/javascript" src="__JS__/jquery.min.js"></script>-->
+    {block name="header"}
+    <!--顶部区域 -->
+    {/block}
+
+</head>
+
+<body>
+
+{block name="body"}
+<!--内容区域 -->
+{/block}
+{block name="footer"}
+<!--底部区域 -->
+{/block}
+</body>
+
+</html>

@@ -1,0 +1,81 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+    <script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<form class="form form-horizontal validateForm deliverForm">
+				<input type="hidden" value="{$order.uid}" name="uid" />
+				<input type="hidden" value="{$order.order_code}" name="ordercode" />
+				<input type="hidden" value="{$order.id}" name="orderOfid" />
+
+				<fieldset>
+					<legend>发货信息填写
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">&nbsp;</label>
+							<div class="col-lg-10 col-md-10">
+								<a target-form="deliverForm" href="{:url('Orders/deliver')}" class="ajax-post btn btn-default btn-sm"><i class="fa fa-save"></i>保存</a>
+								<a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+							</div>
+							<span class="help-block"></span>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">快递公司</label>
+							<div class="col-lg-10 col-md-10">
+								<select name="expresscode" id="expresscode" class="required form-control">
+									{foreach name="expresslist" item="vo" key="k"}
+
+										<option value="{$k}">{$vo}</option>
+
+                                    {/foreach}
+								</select>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">快递单号</label>
+							<div class="col-lg-10 col-md-10">
+								<input type="text" name="expressno" id="expressno" value="" placeholder="请输入快递单号" class="required form-control" />
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">备注</label>
+							<div class="col-lg-10 col-md-10">
+								<textarea class="form-control" name="note" rows="3" placeholder="可填写备注信息"></textarea>
+							</div>
+						</div>
+
+						<label class="control-label col-lg-2 col-md-2">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="deliverForm" href="{:url('Orders/deliver')}" class="ajax-post btn btn-default btn-sm"><i class="fa fa-save"></i>保存</a>
+							<a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+						</div>
+					</legend>
+				</fieldset>
+			</form>
+
+			<script type="text/javascript">
+
+			</script>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

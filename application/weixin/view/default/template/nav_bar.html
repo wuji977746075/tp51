@@ -1,0 +1,47 @@
+<div class="footer">
+    {eq name="nav" value="首页"}
+    <div class="footer-item selected">
+        <a href="{:url('index/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/shouye_selected.png" /></div>
+            <span>首页</span>
+        </a>
+    </div>
+    {else/}
+    <div class="footer-item selected">
+        <a href="{:url('index/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/shouye.png" /></div>
+            <span>首页</span>
+        </a>
+    </div>
+    {/eq}
+    {eq name="nav" value="商城"}
+    <div class="footer-item select">
+        <a href="{:url('shop/product_kind')}"><!--product_kind-->
+            <div class="footer-item-img"><img src="__IMG__/index/shangcheng_selected.png" /></div>
+            <span>商城</span>
+        </a>
+    </div>
+    {else/}
+    <div class="footer-item">
+        <a href="{:url('shop/product_kind')}"><!--product_kind-->
+            <div class="footer-item-img"><img src="__IMG__/index/shangcheng.png" /></div>
+            <span>商城</span>
+        </a>
+    </div>
+    {/eq}
+    {eq name="nav" value="我的"}
+    <div class="footer-item select">
+        <a href="{:url('user/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/geren_selected.png" /></div>
+            <span>我的</span>
+        </a>
+    </div>
+    {else/}
+    <div class="footer-item">
+        <a href="{:url('user/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/geren.png" /></div>
+            <span>我的</span>
+        </a>
+    </div>
+    {/eq}
+</div>

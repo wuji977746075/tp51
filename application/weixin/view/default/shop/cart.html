@@ -1,0 +1,201 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/cart/index.css">
+{/block}
+{block name="body"}
+
+<div class="cart">
+    {volist name="spcart" id="vo"}
+    <div class="weui-cells weui-cells_checkbox cart-item" data-id="{$vo.id}">
+        <label class="weui-cell weui-check__label cart-all" >
+            <div class="weui-cell__hd cart-hd yh-item">
+                <input type="checkbox" class="weui-check weui-check-yh" name="checkbox1">
+                <i class="weui-icon-checked"></i>
+            </div>
+            <div class="weui-cell__bd cart-bd yh-item">
+                <div class="cart-bd-img"><img src="{$vo.icon_url}"></div>
+                <div class="cart-bd-right">
+                    <div class="cart-bd-title">{$vo.name}</div>
+                    <div class="cart-bd-size">{$vo.sku_desc}</div>
+                </div>
+            </div>
+        </label>
+        <div class="cart-method">
+            <div class="cart-bd-price">￥<span>{$vo.price}</span></div>
+            <div class="cart-bd-delete weui-icon-delete"></div>
+            <div class="cart-bd-change">
+                <span class="cart-bd-minus">-</span>
+                <input class="cart-bd-num" type="number" value="{$vo.count}" />
+                <span class="cart-bd-plus">+</span>
+            </div>
+
+        </div>
+        <div class="cart-bd-freight">
+            <span class="cart-bd-freight-text">运费：</span>
+            <span class="cart-bd-freight-price">￥<span>包邮</span></span>
+        </div>
+    </div>
+    {/volist}
+</div>
+
+<div class="cart-footer">
+    <div class="cart-footer-sum">
+        总计：￥<span>0</span>
+    </div>
+    <div class="cart-footer-btn">
+        <button>去结算</button>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+    $.toast.prototype.defaults.duration = 1500;
+    //购物车数量修改
+    var cartEdit = function(cart_id, count){
+        if(count<=0){
+            //错误提示
+            return;
+        }
+        var data = {
+            id: cart_id,
+            count: count
+        };
+        ajax_post(getBaseUrl()+'/shop/cart_edit', jQuery.param(data),{
+            success: function(){
+                $.toast("修改成功", "success");
+            },
+            error: function(data){
+                $.toast(data.msg, "cancel");
+            }
+        });
+    };
+    //去结算
+    var submit_order = function(cart_ids){
+        //cart_ids 英文逗号隔开
+        if(cart_ids.replace(/(^\s*)|(\s*$)/g, "")==''){
+            $.toast('请选择购物车中商品', "cancel");
+            return;
+        }
+
+        var form = $('<form></form>');
+        var action =getBaseUrl() + '/shop/submit_order';
+        form.attr({action:action,method:'post',target:'_self'});
+        var ids_input = $('<input type="text" name="cart_ids" />');
+        ids_input.attr('value',cart_ids);
+        form.append(ids_input);
+        $('body').append(form);
+        form.submit().remove();
+    };
+    //删除商品
+    var cart_delete = function (cart_id) {
+        //cart_id 单个
+        var data = {
+            id: cart_id
+        };
+        ajax_post(getBaseUrl()+'/shop/cart_delete', jQuery.param(data),{
+            success: function(){
+                $.toast("删除成功", "success");
+            },
+            error: function(data){
+                $.toast(data.msg, "cancel");
+            }
+        });
+    };
+
+
+    var $cart_all = $('.cart-all');
+    //动态设置cart-bd-right和method的宽度
+    /*window.onload = function(){
+        var width = $('.cart-all').width()-$('.cart-hd').width()-$('.cart-bd-img').width()-5;
+        $('.cart-bd-right').css('width',width);
+        $('.cart-method').css('width',width);
+    };
+    $(window).resize(function(){
+        var width = $('.cart-all').width()-$('.cart-hd').width()-$('.cart-bd-img').width()-5;
+        $('.cart-bd-right').css('width',width);
+        $('.cart-method').css('width',width);
+    });*/
+
+    //数量在0-99之间
+    var ori_cart_num;
+    $('.cart-bd-num').focus(function(){
+        ori_cart_num = $(this).val()
+    }).blur(function(){
+        var $cart_bd_num = parseInt($(this).val())?parseInt($(this).val()):1;
+        $cart_bd_num = $cart_bd_num>99?99:$cart_bd_num;
+        $cart_bd_num = $cart_bd_num<1?1:$cart_bd_num;
+        $(this).val($cart_bd_num);
+        if(ori_cart_num != $cart_bd_num){
+            cartEdit($(this).parents('.cart-item').attr('data-id'),$cart_bd_num)
+        }
+    });
+    //数量加减
+    $('.cart-bd-plus').click(function(){
+        var $num = parseInt($(this).parent().children('.cart-bd-num').val());
+        var num = $num<=1?1:$num;
+        if(num>=99){
+            $(this).parent().children('.cart-bd-num').val(99);
+            cartEdit($(this).parents('.cart-item').attr('data-id'),99)
+        }else{
+            $(this).parent().children('.cart-bd-num').val(num + 1);
+            cartEdit($(this).parents('.cart-item').attr('data-id'),num + 1)
+        }
+    });
+    $('.cart-bd-minus').click(function(){
+        var $num = parseInt($(this).parent().children('.cart-bd-num').val());
+        var num = $num<=1?1:$num;
+        if(num<=1){
+            $(this).parent().children('.cart-bd-num').val(1);
+            cartEdit($(this).parents('.cart-item').attr('data-id'),1)
+        }else{
+            $(this).parent().children('.cart-bd-num').val(num - 1);
+            cartEdit($(this).parents('.cart-item').attr('data-id'),num - 1)
+        }
+    });
+    //删除
+    $('.cart-bd-delete').click(function(){
+        $(this).parents()[1].remove();
+        var cart_id = $(this).parents('.cart-item').attr('data-id');
+        cart_delete(cart_id);
+    });
+    //点击时,把所有打钩的id放到cart_ids，并设置左下方的总金额
+    var $weui_check_yh = $('.weui-check-yh');
+    var cart_ids = [];
+    var cart_sum = 0;
+    $('.yh-item,.cart-bd-plus,.cart-bd-minus').click(function() {
+        cart_sum = 0;
+        cart_ids = [];
+        for (var q = 0; q < $weui_check_yh.length; q++) {
+            if ($weui_check_yh[q].checked) {
+                var cart_price = $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-price span').text();
+                var cart_num = $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-num').val();
+                var cart_freight_price = parseInt(isNaN($weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-freight-price span').text()) ?
+                        0 : $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-freight-price span').text());
+                cart_sum += cart_price * cart_num + cart_freight_price;
+                //打钩的所有id
+                cart_ids.push($weui_check_yh.eq(q).parents('.cart-item').attr('data-id'));
+            }
+        }
+        $('.cart-footer-sum span').text(cart_sum);
+    });
+    //浏览器后退时，把所有打钩的id放到cart_ids，并设置左下方的总金额
+    for (var q = 0; q < $weui_check_yh.length; q++) {
+        if ($weui_check_yh[q].checked) {
+            var cart_price = $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-price span').text();
+            var cart_num = $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-num').val();
+            var cart_freight_price = parseInt(isNaN($weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-freight-price span').text()) ?
+                    0 : $weui_check_yh.eq(q).parents('.cart-item').find('.cart-bd-freight-price span').text());
+            cart_sum += cart_price * cart_num + cart_freight_price;
+            //打钩的所有id
+            cart_ids.push($weui_check_yh.eq(q).parents('.cart-item').attr('data-id'));
+        }
+    }
+    $('.cart-footer-sum span').text(cart_sum);
+    //结算
+    $('.cart-footer button').click(function(){
+        submit_order(cart_ids.join(','))
+    })
+</script>
+{/block}

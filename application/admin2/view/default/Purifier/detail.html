@@ -1,0 +1,264 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- 带验证 form -->
+			<form id="registerForm" class="form-horizontal well validateForm">
+				<fieldset>
+					<legend>
+						产品信息查看</legend>
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a class="btn btn-default btn-sm" href="javascript:history.back(-1);"><i class="fa fa-reply"></i>返回</a>
+						</div>
+					</div>
+					<div class="form-group">
+						<h2 class="col-md-2 text-right">基本信息：</h2>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">编号</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.id}</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">用户登陆帐号</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.username}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">购买人姓名</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.buyyer}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备ID</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.ddid}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备名称</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.name}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备型号</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.device_model}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备购买时间</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">	{$purifierinfo['buy_time']|date='Y-m-d H:i:s',###}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备安装时间</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">	{$purifierinfo['install_time']|date='Y-m-d H:i:s',###}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">记录创建时间</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">	{$purifierinfo['create_time']|date='Y-m-d H:i:s',###}</div>
+						</div>
+					</div>
+
+					<hr>
+					<IF condition="$purifierinfo.no_dev_list eq 1">
+						<div class="form-group">
+							<h4 class="col-md-2 text-right">无运行信息</h4>
+						</div>
+					{else /}
+					<div class="form-group">
+						<h2 class="col-md-2 text-right">运行信息：</h2>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备登录授权密码，只针对设备</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.pwd}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备最近IP地址</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.ip}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备在线状态，0离线，1在线</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.state}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">最近登录时间</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.login_tm}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">参数更新时间</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.up_tm}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">WiFi信号强度</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.wifi_sig}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">设备工作状态</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.work_state}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">原水TDS值，单位ppm</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.tds_in}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">净水TDS值，单位ppm</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.tds_out}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">实时超滤水累计流量，单位mL</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.uf_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">实时纯净水累计流量，单位mL</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.ro_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">实时水压，单位kPa</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.wp}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">UF冲洗模式</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.uf_mode}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">1级滤芯剩余流量，单位L</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm1_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">1级滤芯剩余时间，单位小时</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm1_rt}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">2级滤芯剩余流量，单位L</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm2_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">2级滤芯剩余时间，单位小时</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm2_rt}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">3级滤芯剩余流量，单位L</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm3_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">3级滤芯剩余时间，单位小时</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm3_rt}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">4级滤芯剩余流量，单位L</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm4_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">4级滤芯剩余时间，单位小时</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm4_rt}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">5级滤芯剩余流量，单位L</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm5_flow}</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">5级滤芯剩余时间，单位小时</label>
+						<div class="col-md-10 col-lg-10">
+							<div class="h4">{$purifierinfo.fm5_rt}</div>
+						</div>
+					</div>
+					</IF>
+
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a class="btn btn-default btn-sm" href="javascript:history.back(-1);"><i class="fa fa-reply"></i>返回</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+	<script type="text/javascript">
+		$(function() {
+			$('.form-group').find('.h4').each(function(){
+				if($(this).text()==''){
+					$(this).text('NULL');
+				}}
+			)
+		}); //end ready
+	</script>
+
+{/block}

@@ -1,0 +1,135 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<style type="text/css">
+		.group-box{
+			border: 1px solid #ccc;
+			background: #FFFDF3;
+			margin: 20px 50px;
+			padding: 10px;
+		}
+	</style>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<h3>用户信息查看</h3>
+			<div class="customer_info">
+				<div class="col-lg-10 col-md-10">
+					<blockquote><p class="text-primary">用户信息</p></blockquote>
+					<div class="row group-box">
+						<div class="row">
+							<div class="col-md-2 col-lg-2">
+								<div class="h4"><strong>用户登录账号</strong></div>
+							</div>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$useraccount.username}</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-2 col-lg-2">
+								<div class="h4"><strong>用户昵称</strong></div>
+							</div>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$userinfo.nickname}</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 col-lg-2">
+								<div class="h4"><strong>手机号</strong></div>
+							</div>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$useraccount.mobile|default="无"}</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 col-lg-2">
+								<div class="h4"><strong>性别</strong></div>
+							</div>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">	{:($userinfo.sex == 0 ? "女":"男")}</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-2 col-lg-2">
+								<div class="h4"><strong>注册时间</strong></div>
+							</div>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">	{$useraccount['reg_time']|date='Y-m-d H:i:s',###}</div>
+							</div>
+						</div>
+					</div>
+					<blockquote><p class="text-primary">默认地址</p></blockquote>
+					<div class="row group-box">
+						<empty name="default_address">
+							<div class="h4">无</div>
+							<else/ >
+							<div class="row">
+								<div class="col-md-2 col-lg-2">
+									<div class="h4"><strong>省市区</strong></div>
+								</div>
+								<div class="h4">	{$default_address.province} {$default_address.city} {$default_address.area}</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2 col-lg-2">
+									<div class="h4"><strong>详细地址</strong></div>
+								</div>
+								<div class="h4">	{$default_address.detailinfo|default='无'}</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2 col-lg-2">
+									<div class="h4"><strong>联系人</strong></div>
+								</div>
+								<div class="h4">	{$default_address.contactname|default='无'}</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2 col-lg-2">
+									<div class="h4"><strong>电话</strong></div>
+								</div>
+								<div class="h4">	{$default_address.mobile|default='无'}</div>
+							</div>
+							<div class="row">
+								<div class="col-md-2 col-lg-2">
+									<div class="h4"><strong>邮编</strong></div>
+								</div>
+								<div class="h4">	{$default_address.postal_code|default='无'}</div>
+							</div>
+						{/empty}
+					</div>
+
+					<blockquote><p class="text-primary">用户订单</p></blockquote>
+					<div class="row group-box">
+						<div class="h4"><a href="{:url('CustomerInfo/orders',array('id'=>I('get.id')))}">查看</a></div>
+					</div>
+					<blockquote><p class="text-primary">用户帖子</p></blockquote>
+					<div class="row group-box">
+						<div class="h4"><a href="{:url('BbsForumPost/index',array('uid'=>I('get.id')))}">查看</a></div>
+					</div>
+					<blockquote><p class="text-primary">用户消息</p></blockquote>
+					<div class="row group-box">
+						<div class="h4"><a href="{:url('Message/index',array('uid'=>I('get.id')))}">查看</a></div>
+					</div>
+					<blockquote class="hide"><p class="text-primary">用户积分记录</p></blockquote>
+					<div class="row group-box hide">
+						<div class="h4"><a href="{:url('CustomerInfo/soreRecord',array('id'=>I('get.id')))}">查看</a></div>
+					</div>
+				</div>
+				<div class="col-lg-10 col-md-10">
+					<a class="btn btn-default btn-sm" href="javascript:history.back(-1);"><i class="fa fa-reply"></i>返回</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

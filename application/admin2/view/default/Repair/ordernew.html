@@ -1,0 +1,104 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<div class="table-responsive well">
+	<!-- 过滤\查询按钮 -->
+
+	<!-- 操作按钮 -->
+
+	<table class="table table-striped table table-hover  table-condensed">
+		<thead>
+			<tr>
+				<th>
+					编号
+				</th>
+				<th>
+					联系电话
+				</th>
+				<th>
+					维修类型
+				</th>
+				<th>
+					车辆类型
+				</th>
+				<th>
+					情况说明
+				</th>
+				<th>
+					详细地址
+				</th>
+				<th>
+					现场图片
+				</th>
+				<th>
+					发起时间
+				</th>
+				<th>
+					{:L('OPERATOR')}
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{empty name="list"}
+				<tr>
+					<td colspan="10" class="text-center">{:L('NO_DATA')}</td>
+				</tr>
+				{else/}
+				{volist name="list" id="vo"}
+					<tr style="height: 160px">
+						<td>
+							{$vo.id}
+						</td>
+						<td>
+							{$vo.mobile}
+						</td>
+						<td>
+							{$vo.repair_type}
+						</td>
+						<td>
+							{$vo.vehicle_type}
+						</td>
+						<td>
+							{$vo.detail}
+						</td>
+						<td>
+							{$vo.address}
+						</td>
+						<td>
+							{empty name="vo.images"}
+								无
+								{else /}
+								{volist name="vo.images" id="img"}
+									<img style="width: 150px" src="{$img}">
+								{/volist}
+							{/empty}
+						</td>
+						<td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+						<td>
+							<a href="{:url(CONTROLLER_NAME .'/orderDelegate',array('id'=>$vo['id']))}" class="btn btn-primary btn-sm" ><i class="fa fa-check"></i>委派师傅</a>
+						</td>
+					</tr>
+				{/volist}
+			{/empty}
+		</tbody>
+	</table>
+	<div>{$show|default=""}</div>
+</div>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+		<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

@@ -1,0 +1,489 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+	<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+	<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="__CDN__/select2/3.5.2/select2.css" />
+    <script type="text/javascript" src="__CDN__/select2/3.5.2/select2.min.js"></script>
+    <script type="text/javascript" src="__CDN__/select2/3.5.2/select2_locale_zh-CN.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<div class="col-main">
+				<div class="main-hd">
+					<h2>编辑商品</h2>
+				</div>
+				<div class="main-bd clearfix" style="padding: 0 10px;margin-top: 0px;">
+					<form class="productForm form-horizontal" method="post">
+						<input type="hidden" name="id" value="{$vo.id}" />
+						<input type="hidden" name="main_img" id="main_img" value="{$vo.main_img}" />
+						<input type="hidden" name="img" id="img" value="{:implode(',',$imgs)}" />
+						<input type="hidden" name="store_id" value="{$vo.store_id}" />
+						<h3><i>●</i>基本信息</h3>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label for="" class="control-label col-lg-2 col-md-2">商品类别</label>
+							<div class="col-lg-10 col-md-10">
+								{volist name="cate_name" id="cate_value"}
+									{$cate_value}/
+								{/volist}
+							</div>
+						</div>
+                        <div class="js_prop form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品属性
+                                <br/><span class="help-block">(选填)</span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <div class="well">
+                                    <div class="loading">
+                                        <img src="__CDN__/common/loading.gif" />
+                                    </div>
+                                    <div class="prop-list clearfix">
+
+                                    </div>
+                                    <hr>
+                                    <div class="btn-controls">
+                                        <a href="{:url('CategoryProp/add',array('cate_id'=>$cate_id))}" target="_blank" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>添加属性</a>
+                                        <a href="javascript:void(0);"  class="btn btn-sm btn-primary js_prop_refresh"><i class="fa fa-refresh"></i>刷新</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">商品名称</label>
+							<div class="col-lg-10 col-md-10">
+								<input name="product_name" maxlength="60" value="{$vo.name}" class="js_product_name form-control input-normal input-sm" />
+								<span class="help-block">限30个字</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">副标题</label>
+							<div class="col-lg-10 col-md-10">
+								<input name="secondary_headlines" maxlength="60" value="{$vo.secondary_headlines}" class="js_product_name form-control input-normal input-sm"/>
+								<span class="help-block">限30个字</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">商品编号</label>
+							<div class="col-lg-10 col-md-10">
+								<input name="product_code" maxlength="60" value="{$vo.product_code}" class="form-control input-normal input-sm"/>
+								<span class="help-block"></span>
+							</div>
+						</div>
+
+
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">商品图片</label>
+							<div class="col-lg-10 col-md-10">
+								主图<span class="text-muted">(尺寸比例宽高比1.5:1,适合大小420*270,大小不要超过500kb)<i data-toggle="tooltip" class="fa fa-question" title="商品主图将会作为商品的默认图片出现在货架及商品详情页。"></i></span>
+								<!-- 图片选择DOM结构 -->
+								<div class="wxuploaderimg main_img clearfix {notempty name="vo.main_img"}checked{/notempty}"  data-maxitems="1">
+									<div class="img-preview clearfix" >
+										{notempty name="vo.main_img"}
+											<div class="pull-left clearfix img-item">
+												<img src="{:getImgUrl($vo['main_img'],120)}" data-imageid="{$vo.main_img}"/>
+												<div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
+											</div>
+										{/notempty}
+									</div>
+									<div class="add">
+										<i class="fa fa-plus"></i>
+									</div>
+								</div>
+								<!-- 图片选择DOM结构 -->
+							</div>
+						</div>
+
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label  class="control-label col-lg-2 col-md-2">&nbsp;</label>
+							<div class="col-lg-10 col-md-10">
+								其他图片<span class="text-muted">(选传，单张图片大小不超过500kb，最多10张)<i class="fa fa-question" data-toggle="tooltip" title="将出现在商品图片库，方便用户更好的了解您的商品。"></i></span>
+								<!-- 图片选择DOM结构 -->
+								<div class="wxuploaderimg clearfix product-imglist "  data-maxitems="10">
+									<div class="img-preview clearfix" {if condition="count($imgs) gt 0" } style="display:inline-block;"{/if}>
+										{if condition="count($imgs) gt 0"}
+											{volist name="imgs" id="one"}
+											<div class="pull-left clearfix img-item">
+												<img src="{:getImgUrl($one,120)}" alt="image" data-imageid="{$one}"/>
+												<div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
+											</div>
+											{/volist}
+										{/if}
+									</div>
+									<div class="add" {if condition="count($imgs) eq 10"}style="display:none;"{/if} >
+										<i class="fa fa-plus"></i>
+									</div>
+								</div>
+
+								<!-- 图片选择DOM结构 -->
+							</div>
+						</div>
+
+
+
+
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">商品总销量-->
+                                <!--<br/><span class="help-block"></span>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="total_sales" maxlength="60" value="{$vo.total_sales}" class="form-control input-short input-sm" />-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix ">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">计量单位-->
+                                <!--<br/><span class="help-block"></span>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<select name="dt_goods_unit" style="width: 100px;" class="dt_goods_unit input-normal" >-->
+                                    <!--{:w_datatree(getDatatree('GOODSUNIT'),true,$vo['dt_goods_unit'],1)}-->
+                                <!--</select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+						<!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+							<!--<label for="" class="control-label col-lg-2 col-md-2 ">商品重量（毛重）-->
+								<!--<br/><span class="help-block"></span>-->
+							<!--</label>-->
+							<!--<div class="col-lg-10 col-md-10">-->
+								<!--<input name="weight" maxlength="60"  value="{$vo.weight}"  class="oriprice form-control input-short input-sm" />克-->
+								<!--<span class="help-block">商品单个重量(毛重)，单位：g（克）</span>-->
+							<!--</div>-->
+						<!--</div>-->
+
+
+		<!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+			<!--<label for="" class="control-label col-lg-2 col-md-2 ">发货时间<br/>-->
+			<!--</label>-->
+			<!--<div class="col-lg-10 col-md-10">-->
+				<!--<select> name="consignment_time" >-->
+					<!--<option {eq name="vo['consignment_time']" value='0'}selected="selected"{/eq}  value="0">尽快发货</option>-->
+					<!--<option {eq name="vo['consignment_time']" value='1'}selected="selected"{/eq} value="1">1天</option>-->
+					<!--<option {eq name="vo['consignment_time']" value='3'}selected="selected"{/eq} value="3">3天</option>-->
+					<!--<option {eq name="vo['consignment_time']" value='5'}selected="selected"{/eq} value="5">5天</option>-->
+					<!--<option {eq name="vo['consignment_time']" value='7'}selected="selected"{/eq} value="7">7天</option>-->
+				<!--</select>-->
+				<!--<span class="help-block"></span>-->
+			<!--</div>-->
+		<!--</div>-->
+    <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+        <!--<label for="contact_name" class="control-label col-lg-2 col-md-2 ">联系人姓名<br/>-->
+        <!--</label>-->
+        <!--<div class="col-lg-10 col-md-10">-->
+            <!--<input name="contact_name" id="contact_name" value="{$vo.contact_name}" class="form-control input-short input-sm"/>-->
+            <!--<span class="help-block"></span>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+        <!--<label for="contact_way" class="control-label col-lg-2 col-md-2 ">联系方式<br/>-->
+        <!--</label>-->
+        <!--<div class="col-lg-10 col-md-10">-->
+            <!--<input name="contact_way" id="contact_way" value="{$vo.contact_way}"  class="form-control input-short input-sm"/>-->
+            <!--<span class="help-block"></span>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+        <!--<label for="expire_time" class="control-label col-lg-2 col-md-2 ">下架时间<br/>-->
+        <!--</label>-->
+        <!--<div class="col-lg-10 col-md-10">-->
+            <!--<input name="expire_time" id="expire_time" value="{$vo.expire_time|date='Y-m-d H:i:s',###}" class="form-control input-short input-sm"/>-->
+            <!--<span class="help-block"></span>-->
+        <!--</div>-->
+    <!--</div>-->
+	<!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+		<!--<label for="contact_way" class="control-label col-lg-2 col-md-2 ">产品产地<br/>-->
+		<!--</label>-->
+		<!--<div class="col-lg-10 col-md-10">-->
+			<!--<input name="place_origin" id="place_origin" value="{$vo.place_origin}"  class="form-control input-short input-sm"/>-->
+			<!--<span class="help-block"></span>-->
+		<!--</div>-->
+	<!--</div>-->
+		<!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+			<!--<label for="" class="control-label col-lg-2 col-md-2 ">商品总收藏-->
+				<!--<br/><span class="help-block"></span>-->
+			<!--</label>-->
+			<!--<div class="col-lg-10 col-md-10">-->
+				<!--<input name="favorite_cnt" maxlength="60" value="{$vo.favorite_cnt}"-->
+					   <!--class="form-control input-short input-sm" style="width:100px;"/>-->
+			<!--</div>-->
+		<!--</div>-->
+		<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">
+			<label for="" class="control-label col-lg-2 col-md-2 ">商品总浏览量
+				<br/><span class="help-block"></span>
+			</label>
+			<div class="col-lg-10 col-md-10">
+				<input name="view_cnt" maxlength="60" value="{$vo.view_cnt}"
+					   class="form-control input-short input-sm" style="width:100px;"/>
+			</div>
+		</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label for="synopsis" class="col-md-2 col-lg-2 control-label">商品简介</label>
+							<div class="col-md-10 col-lg-10">
+								<textarea name="synopsis" id="synopsis" class="form-control" rows="5">{$vo.synopsis}</textarea>
+								<div class="help-block">(您最多可以输入500个字)</div>
+							</div>
+						</div>
+
+						<h3 class="pull-left hide"><i>●</i>售后信息</h3>
+
+						<!--<div class="form-group col-lg-12 col-md-12 clearfix">-->
+							<!--<label for="" class="control-label col-lg-2 col-md-2">七天无理由退换货支持</label>-->
+							<!--<div class="col-lg-10 col-md-10">-->
+								<!--<label class="radio-inline">-->
+									<!--<input type="radio" name="under_guaranty" {eq name="vo['under_guaranty']" value="0"}checked="checked"{/eq} value="0">不支持-->
+								<!--</label>-->
+								<!--<label class="radio-inline">-->
+									<!--<input type="radio" name="under_guaranty" {eq name="vo['under_guaranty']" value="1"}checked="checked"{/eq}  value="1">支持-->
+								<!--</label>-->
+
+							<!--</div>-->
+						<!--</div>-->
+
+						<!--<div class="form-group col-lg-12 col-md-12 clearfix">-->
+							<!--<label for="" class="control-label col-lg-2 col-md-2">退换货</label>-->
+							<!--<div class="col-lg-10 col-md-10">-->
+								<!--<label class="radio-inline">-->
+									<!--<input type="radio" name="support_replace" {eq name="vo['support_replace']" value="0"}checked="checked"{/eq}   value="0">不支持-->
+								<!--</label>-->
+								<!--<label class="radio-inline">-->
+									<!--<input type="radio" name="support_replace" {eq name="vo['support_replace']" value="1"}checked="checked"{/eq}   value="1">支持-->
+								<!--</label>-->
+
+							<!--</div>-->
+
+						<!--</div>-->
+
+						<div class="form-group col-lg-12 col-md-12 clearfix tool-bar text-center border">
+							<div class="col-lg-6 col-md-6">
+								<a target-form="productForm" href="{:url('Product/edit')}" onclick="return check();"  class="ajax-post btn btn-primary btn-sm btn-block" id="js_submit"><i class="fa fa-check"></i>确定</a>
+							</div>
+							<div class="col-lg-6 col-md-6">
+								<a href="{:url('Product/index',array('store_id'=>$vo['store_id'],'onshelf'=>$onshelf,'p'=>$p))}" class="btn btn-default btn-sm btn-block"><i class="fa fa-reply"></i>返回</a>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			{include file="default/template/wxpicture" /}
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+	<script type="text/javascript" >
+		var prop_value_ids = {$props_value_ids};
+	</script>
+
+
+	<script type="text/javascript">
+		window.ServicesURL = {
+			groupGetAll:"{:url('WxshopGroup/groups')}",
+			groupAdd:"{:url('WxshopGroup/add')}",
+			cateAllProp:"{:url('Category/cateAllProp')}",
+			skulist:"{:url('Product/skulist')}",
+		};
+	</script>
+	<script type="text/javascript">
+        //国别选择时的操作
+        function initCountry(){
+            $(".dt_origin_country").change(function(){
+                var val = $(".dt_origin_country").find("option:selected").text();
+                $("input[name='source']").val(val);
+            });
+            $(".dt_origin_country").change();
+        }
+
+        //初始化select2 控件
+        function initSelect2(){
+            $('select').select2();
+        }
+
+        function getData(){
+
+			var main_img = $(".main_img .img-preview img").attr("data-imageid");
+			if(main_img){
+				$("#main_img").val(main_img);
+			}
+
+			$("#img").val("");
+			$(".product-imglist .img-preview img").each(function(index,item){
+				$("#img").val($("#img").val()+$(item).attr("data-imageid")+",");
+				//alert($("#img").val());
+			});
+
+
+            var img_post = $(".img_post .img-preview img").attr("data-imageid");
+            if(img_post){
+                $("#img_post").val(img_post);
+            }
+
+            var img_post_bg = $(".img_post_bg .img-preview img").attr("data-imageid");
+            if(img_post_bg){
+                $("#img_post_bg").val(img_post_bg);
+            }
+			//alert($("#img").val());
+		}
+
+
+		function check(){
+			getData();
+			var txt = $(".js_product_name").val();
+			var len = txt.replace(/[^\x00-\xff]/g, 'xx').length ;
+			if(len == 0){
+				$.scojs_message('商品名称必须填写', $.scojs_message.TYPE_ERROR);
+				return false;
+			}
+			if(len > 30){
+				$.scojs_message('商品名称不能超过30个字', $.scojs_message.TYPE_ERROR);
+				return false;
+			}
+			return true;
+		}
+
+        function appendProp(list){
+
+            $ele = $(".js_prop .prop-list");
+            $ele.empty();
+            for(var i=0;i<list.length;i++){
+                //创建一个dropdown
+                $propName = $('<span>'+list[i].name+'</span>');
+				$prop = $('<div class="prop-value"></div>');
+				$ele.append($("<div class='prop-item' ></div>").attr("data-id",list[i].id).append($propName).append($prop));
+
+				if(list[i].property_value){
+					var propvaluelist = list[i].property_value;
+					for(var j=0;j<propvaluelist.length;j++){
+						$_propValue = $('<label></label>').text(propvaluelist[j].valuename);
+						$_propValue_check = $('<input type="checkbox" />').attr('name','prop[]').val(propvaluelist[j].id);
+						if($.inArray(propvaluelist[j].id, prop_value_ids)!=-1){
+							$_propValue_check.attr('checked','checked');
+						}
+						$_propValue.prepend($_propValue_check);
+						$prop.append($_propValue);
+					}
+				}
+
+            }
+
+
+        }
+
+
+
+        //商品属性
+        function queryProp() {
+
+
+            $(".js_prop .loading").show();
+            var last_cate = "{$cate_id}";
+            $.post(window.ServicesURL.cateAllProp, {
+                cate_id: last_cate
+            }).done(function(data) {
+                if (data.code) {
+                    if(data.msg == null){
+                        $ele = $(".js_prop .prop-list");
+                        $ele.html("无属性");
+                        return ;
+                    }
+                    appendProp(data.msg);
+
+                } else {
+                    $.scojs_message('刷新失败!', $.scojs_message.TYPE_ERROR);
+                }
+            }).always(function(){
+                $(".js_prop .loading").hide();
+            });
+        }
+
+        function productProp(){
+
+            $(".js_prop .prop-list").click(function(ev){
+                $ele = $(ev.target);
+                if(!$ele.hasClass('link_a')){
+                    return ;
+                }
+                $propitem = $ele.parents(".prop-item");
+                $ele.addClass("selected");
+                $propitem.find("button.dropdown-toggle").html($ele.text()+"<span class='caret'></span>");
+            });
+
+            setTimeout(queryProp,700);
+        }
+
+		$(function() {
+			$(".js_prop_refresh").click(function(){
+				queryProp();
+			});
+            productProp();
+
+			//图片上传
+			wxuploadimg.init({cont:".wxuploaderimg"});
+			//
+			$(".js_frm_gp_buylimit input[type=radio]").click(function(){
+
+				if($(this).val() == 1){
+					$(".js_frm_gp_buylimit input[type=text]").removeClass("hidden");
+				}else{
+					$(".js_frm_gp_buylimit input[type=text]").addClass("hidden");
+				}
+			});
+			$(".js_frm_gp_buylimit input[type=radio][value=0]").click(function(){
+				$(".js_frm_gp_buylimit input[type=text]").attr('value',0);
+				$(".js_frm_gp_buylimit input[type=text]").val(0);
+			});
+			$(".js_frm_gp_buylimit input[type=text]").change(function(){
+				var tmp = $(this).val();
+				$(this).attr("value",tmp);
+			});
+			$(".js_delete:first").click(function(){
+				$(".main_img .img-preview img").attr("data-imageid","");
+				$("#main_img").attr("value","");
+				$("#main_img").val("");
+			});
+
+			initSelect2();
+			/*商品分组*/
+			$('.js_product_group').click(function(){
+				if($(this).val() != 0){
+					$('.js_group_time').removeClass('hide');
+				}else{
+					$('.js_group_time').addClass('hide');
+				}
+			});
+
+			$('.startdatetime').datetimepicker({
+				lang: 'ch',
+				format:'Y-m-d H:i:s',
+				timepicker:false,
+			});
+			$('.enddatetime').datetimepicker({
+				lang: 'ch',
+				format:'Y-m-d  H:i:s',
+				timepicker:false,
+			});
+			$('#expire_time').datetimepicker({
+				lang: 'ch',
+				format:'Y-m-d  H:i:s',
+				timepicker:false,
+			});
+
+		})
+
+
+
+	</script>
+
+{/block}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <base href="{:config('site_url')}" />
+
+    <meta charset="utf-8">
+    <title>{$seo.title}</title>
+    <meta name="keywords" content="{$seo.keywords|default=" "}" />
+    <meta name="description" content="{$seo.description|default=" "}" />
+    <meta name="author" content="{$cfg.owner|default=" Boye "}" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0,  maximum-scale=1.0, user-scalable=0" >
+    <link rel="shortcut icon" href="__IMG__/favicon.ico">
+
+    <!-- 系统基本样式 -->
+    <!--<link rel="stylesheet" href="__CDN__/antd/1.4.1/antd.min.css">-->
+    <link rel="stylesheet" href="__CSS__/icon.css">
+    <link rel="stylesheet" href="__CDN__/weui/weui.min.css">
+    <link rel="stylesheet" href="__CDN__/weui/jquery-weui.min.css">
+    <link rel="stylesheet" href="__CDN__/swiper/idangerous.swiper2.7.6.css">
+
+    <!-- 脚本 -->
+    <script type="text/javascript" src="__CDN__/jquery/2.1.4/jquery-2.1.4.js"></script>
+    <!--<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>-->
+    <script type="text/javascript" src="__CDN__/swiper/idangerous.swiper2.7.6.min.js"></script>
+    <!--<script type="text/javascript" src="__CDN__/lodash/4.14.0/lodash.min.js"></script>-->
+    <script type="text/javascript" src="__CDN__/jquery-qrcode/v1.0/jquery.qrcode.min.js"></script>
+    <script type="text/javascript" src="__CDN__/weui/jquery-weui.min.js"></script>
+    <script type="text/javascript" src="__JS__/boye-city-picker.js"></script>
+    {block name="header"}
+        <!--顶部区域 -->
+    {/block}
+
+</head>
+
+<body>
+
+{block name="body"}
+    <!--内容区域 -->
+{/block}
+{block name="footer"}
+    <!--底部区域 -->
+{/block}
+</body>
+
+</html>

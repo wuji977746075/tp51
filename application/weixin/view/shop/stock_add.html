@@ -1,0 +1,33 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/wallet_in/style.css">
+{/block}
+{block name="body"}
+<div class="wallet-in-box">
+    <div class="wallet-in-num">
+        <span>输入补货数额:</span>
+        <input id="num" type="number" title="">
+    </div>
+    <button id="stock_add_btn" class="weui-btn weui-btn_primary">确认</button>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+    $('#stock_add_btn').click(function(){
+        var num = $('#num').val();
+        var form = $('<form></form>');
+        var action =getBaseUrl() + '/weixin/user/recharge';
+        form.attr({action:action,method:'post',target:'_self'});
+
+        var points = $('<input type="num" name="points" />');
+        points.attr('value',num);
+
+        form.append(points);
+        $('body').append(form);
+        form.submit().remove();
+    });
+</script>
+{/block}

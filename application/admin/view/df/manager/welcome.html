@@ -1,0 +1,280 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  dl.grid dt, ul.grid li {
+      float: left;
+  }
+  #admHome{ position: relative;padding-right: 242px;min-height: 100%;}
+  #admHome .homeRght{ position: absolute;right: -10px;top: 0;width: 250px;height: 100%;background:rgba(0,0,0,0.01);border: 1px solid #E2E2E2;color: #464646;}
+  #admHome .homeRght .headimg{ padding: 30px 0 0;}
+  #admHome .homeRght .headimg img{ display: block;margin: 0 auto;width: 72px;border-radius: 50%;box-shadow: 2px 2px 2px rgba(0,0,0,0.4);}
+  #admHome .homeRght .headimg img:hover{ border: 2px solid #009688;width: 68px;}
+  #admHome .homeRght .welcome{ text-align: center;}
+  #admHome .homeRght .welcome span{font-size: 14px;margin-right: 5px;height: 36px;line-height: 36px;}
+  #admHome .homeRght .welcome a{ font-size: 14px;margin: 0 3px;}
+  #admHome .homeRght .time{ font-size: 15px;text-align: center;color: #FF5722;}
+  #admHome .homeRght .time i{ color: #464646;margin-right: 10px;font-size: 14px;}
+  #admHome .homeRght .time span{ /*text-shadow: 2px 2px 2px #FF5722;*/}
+  #admHome .homeRght .bline{ position: relative;height: 32px;line-height: 32px;padding: 10px 15px 1px;border-bottom: 1px solid #E2E2E2;}
+  #admHome .homeRght .bline span.c{ font-size: 13px;}
+  #admHome .homeRght .notice,#admHome .homeRght .quick{ height: 38px;margin: 15px 4px 0;}
+  #admHome .homeRght .notice .layui-btn-group,#admHome .homeRght .quick .layui-btn-group{ width: 100%;margin: 0;}
+  #admHome .homeRght .notice a.layui-btn,#admHome .homeRght .quick a.layui-btn{  margin-top: -1px; padding: 0 ;text-align: center;width:33.33%;overflow: hidden;display: block;float: left;overflow: hidden;}
+  #admHome .homeRght .quick a.layui-btn{ font-size: 12px;}
+  #admHome .homeRght .layui-btn-primary,#admHome .homeRght .layui-btn-group .layui-btn-primary:first-child,#admHome .homeRght .layui-btn-group .layui-btn-primary:last-child{ border-color: #E2E2E2;}
+
+
+  #admHome .homeLeft{ }
+  #admHome .homeLeft .cms_count{}
+  #admHome .homeLeft .cms_count ul li{ width: 25%;}
+  #admHome .homeLeft .cms_count ul li.li-1 .info{ background-color:#FA2A00;}
+  #admHome .homeLeft .cms_count ul li.li-1 .info:hover{ background-color:#7c1a06;}
+  #admHome .homeLeft .cms_count ul li.li-2 .info{ background-color:#ffb400;}
+  #admHome .homeLeft .cms_count ul li.li-2 .info:hover{ background-color:#85630f;}
+  #admHome .homeLeft .cms_count ul li.li-3 .info{ background-color:#1ABC9C;}
+  #admHome .homeLeft .cms_count ul li.li-3 .info:hover{ background-color:#006551;}
+  #admHome .homeLeft .cms_count ul li.li-4 .info{ background-color:#22A7F0 ;}
+  #admHome .homeLeft .cms_count ul li.li-4 .info:hover{ background-color:#353d47;}
+  #admHome .homeLeft .cms_count ul li div.info{ transition: all .4s ease;-webkit-transition: all .4s ease; position: relative;padding-left: 100px;border: 0 solid #ccc; padding-right: 10px;overflow: hidden;margin-right: 10px;}
+  #admHome .homeLeft .cms_count ul li div.info:hover{ opacity: 1;}
+  #admHome .homeLeft .cms_count ul li i.icon{ position: absolute; width: 50px;left: 25px;top: 50%;margin-top: -30px;transition: all .4s ease;-webkit-transition: all .4s ease;}
+  #admHome .homeLeft .cms_count ul li div.info:hover i.icon{ transform: rotate(360deg);}
+
+  #admHome .homeLeft .cms_count ul span.number{ color: #ffffff;text-shadow: 3px 3px 3px rgba(0,0,0,0.3);font-size: 30px;display: block;height: 40px;line-height: 40px;padding-top: 15px;overflow: hidden;color: #fff;}
+  #admHome .homeLeft .cms_count ul span.name{ text-shadow: 2px 2px 2px rgba(0,0,0,0.3);color:#F2F2F2;display: block;font-size: 14px;height: 32px;line-height: 32px;margin-bottom: 15px;overflow: hidden;}
+  #admHome .homeLeft .cms_info{ margin-top: 10px;}
+  #admHome .homeLeft .cms_info .you,#admHome .homeLeft .cms_info .dev{ width: 50%;float: left;}
+  #admHome .homeLeft .cms_info .info{ margin-right: 10px;border: 1px solid #E2E2E2;}
+  #admHome .homeLeft .cms_info ul li{ line-height: 38px;margin: 0 10px;border-bottom: 1px dotted #dddddd;color: #464646;}
+  #admHome .homeLeft .cms_info ul li:last-child{ border-bottom: 0;}
+  #admHome .homeLeft .cms_info ul li span{ margin-left: 5px;color: #009688;}
+  #admHome .homeLeft .cms_info ul li span a{ color: #009688;text-decoration: underline;}
+  #admHome .homeLeft .cms_info ul li i.fa{ margin-right: 8px;}
+  #admHome .homeLeft .cms_info .title{ text-transform: uppercase; background: rgba(0,0,0,0.03); color: #009688 ; height: 40px;line-height: 40px;padding: 0 10px;font-size: 14px;border-bottom: 1px solid #dddddd;}
+  #admHome .homeLeft .cms_about{ margin:10px 10px 0 0;}
+  #admHome .homeLeft .cms_about th{ background: rgba(0,0,0,0.03);text-align: left;font-size: 12px;color: #464646;}
+  #admHome .homeLeft .cms_about td{ text-align: left;font-size: 12px;font-family: Arial,Verdana,sans-serif;color: #009688;}
+  #admHome .homeLeft a.link{ text-decoration: underline;color: #009688;}
+</style>
+{/block}
+{block name="area_body"}
+<div class="skin-box hide">
+  <a href="#" class="skin layui-nav-img" data-skin="df" data-ref="393D49"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="cyan" data-ref="2F4056"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="blue" data-ref="169fe6"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="green" data-ref="009688"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="red" data-ref="fb6e52"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="orange" data-ref="FFB800"></a>
+  <a href="#" class="skin layui-nav-img" data-skin="gray" data-ref="eeeeee"></a>
+</div>
+
+<!-- <div class="layui-elem-quote">
+  <p>这样有木有觉得更方便些</p>
+</div> -->
+
+<div id="admHome">
+  <div class="homeRght">
+      <div class="headimg">
+          <a href="{:url('user/set',['id'=>$uinfo.id])}" data-icon="fa-user" data-title="修改信息" class="new_tab"><img src="{:getAvatar($uinfo.id,60)}" alt=""></a>
+      </div>
+      <div class="welcome en-font">
+          您好！<span>{$uinfo.nick}</span>
+          <a href="ajax.php?op=logout" class="ajax-get"><i style="color: red;" class="fa fa-sign-out" aria-hidden="true"></i></a>
+      </div>
+      <div class="time bline en-font">
+          <b></b>
+          <i class="fa fa-clock-o" aria-hidden="true"></i><span class="showtime"></span>
+      </div>
+      <div class="info bline en-font">
+          真实姓名：<span class="c">{$uinfo.name}(昵称:{$uinfo.nick})</span>
+      </div>
+      <div class="info bline en-font">
+          上次登录：<span class="c">{:date('Y-m-d H:i:s',$uinfo.extra.last_login_time)}</span>
+      </div>
+      <div class="info bline en-font">
+          上次登录：<span class="c">{:long2ip($uinfo.extra.last_login_ip)}</span>
+      </div>
+
+      <div class="notice">
+          <div class="con">
+              <div class="layui-btn-group skin">
+                  <a href="/run/feedback/lists.html" class="layui-btn new_tab" data-title="留言列表" data-icon="fa-pencil-square-o">留言<span class="layui-badge layui-bg-gray">0</span></a>
+                  <a class="layui-btn" onclick="layer.msg('敬请期待')">订单<span class="layui-badge layui-bg-gray">0</span></a>
+                  <a class="layui-btn" onclick="layer.msg('敬请期待')">消息<span class="layui-badge layui-bg-gray">0</span></a>
+              </div>
+          </div>
+      </div>
+
+      <div class="quick">
+          <div class="con">
+              <div class="layui-btn-group">
+                  <a href="/run/tool/getlog.html" class="layui-btn layui-btn-primary">下载日志</a>
+                  <a href="/run/tool/removelog.html" class="layui-btn layui-btn-primary javascript" rel="simple_clear">清除日志</a>
+                  <a href="/run/tool/switchtrace.html" class="layui-btn layui-btn-primary javascript" rel="switch_trace">关闭Trace</a>
+              </div>
+              <div class="layui-btn-group">
+                  <a href="/run/tool/clearcache.html" class="layui-btn layui-btn-primary javascript" rel="simple_clear">清除缓存</a>
+                  <a href="/run/tool/removetemp.html" class="layui-btn layui-btn-primary javascript" rel="simple_clear">清临时文件</a>
+                  <a href="https://www.kancloud.cn/laowu199/e_manual" target="_blank" class="layui-btn layui-btn-primary">培训手册</a>
+              </div>
+          </div>
+      </div>
+
+  </div>
+  <div class="homeLeft">
+    <div class="cms_count layui-clear">
+      <ul class="grid">
+          <li class="li-1">
+              <div class="info">
+                  <a href="#" class="new_tab" data-title="文章列表" data-icon="fa-file-text">
+                  <i class="icon"><img src="__SKIN__/img/article.png" alt=""></i>
+                  <span class="number en-font">21</span>
+                  <span class="name">文章</span>
+                  </a>
+              </div>
+
+          </li>
+          <li class="li-2">
+              <div class="info">
+                  <a href="#" class="new_tab" data-title="产品列表" data-icon="fa-camera">
+                  <i class="icon"><img src="__SKIN__/img/product.png" alt=""></i>
+                  <span class="number en-font">15</span>
+                  <span class="name">产品</span>
+                  </a>
+              </div>
+          </li>
+          <li class="li-3">
+              <div class="info">
+                  <a href="#" class="new_tab" data-title="图集列表" data-icon="fa-image">
+                  <i class="icon"><img src="__SKIN__/img/album.png" alt=""></i>
+                  <span class="number en-font">1</span>
+                  <span class="name">图集</span>
+                  </a>
+              </div>
+          </li>
+          <li class="li-4">
+              <div class="info">
+                  <a href="{:url('user/index')}" class="new_tab" data-title="会员列表" data-icon="fa-users">
+                  <i class="icon"><img src="__SKIN__/img/user.png" alt=""></i>
+                  <span class="number en-font">{$userNum}</span>
+                  <span class="name">会员</span>
+                  </a>
+              </div>
+          </li>
+      </ul>
+    </div>
+
+    <div class="cms_info clearfix">
+      <div class="you">
+        <div class="info">
+          <div class="title en-font">使用者：<a href="#" class="new_tab" data-title="设置列表" data-icon=" fa-gears"><i class="fa fa-pencil-square-o"></i></a></div>
+          <div class="con">
+            <ul class="list">
+              <li><i class="fa fa-thumbs-up"></i>名称：<span>EduaskCMS测试站</span></li>
+              <li><i class="fa fa-wifi"></i>网址：<span class="en-font"><a href="http://demo.eduaskcms.xin/" target="_blank">http://demo.eduaskcms.xin/</a></span></li>
+              <li><i class="fa fa-phone"></i>电话：<span class="en-font">公司电话</span></li>
+              <li><i class="fa fa-envelope"></i>邮箱：<span class="en-font">公司邮箱</span></li>
+              <li><i class="fa fa-map-marker"></i> 地址：<span>公司地址</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="dev">
+        <div class="info">
+          <div class="title en-font">开发者：</div>
+          <div class="con">
+            <ul class="list">
+              <li><i class="fa fa-thumbs-up"></i>名称：<span>开发企业名称</span></li>
+              <li><i class="fa fa-wifi"></i>网址：<span class="en-font"><a href="开发企业网址" target="_blank">开发企业网址</a></span></li>
+              <li><i class="fa fa-phone"></i>电话：<span class="en-font">开发企业电话</span></li>
+              <li><i class="fa fa-envelope"></i>邮箱：<span class="en-font">开发企业邮箱</span></li>
+              <li><i class="fa fa-map-marker"></i> 地址：<span>开发企业地址</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cms_about clearfix">
+      <div class="server">
+        <div class="info">
+            <div class="con">
+                <table class="layui-table">
+                    <tbody><tr>
+                        <th width="25%">存储配额限制</th>
+                        <th width="25%">配额已使用</th>
+                        <th width="25%">配额续费日期</th>
+                        <th>域名到期日期</th>
+                    </tr>
+                    <tr>
+                        <td>1GB</td>
+                        <td class="skin">
+                            <a href="/run/tool/getsitesize.html" class="javascript link" rel="get_site_size">『计算』 <span id="showSiteSize" class="layui-badge layui-bg-orange">0KB</span></a>
+                         </td>
+                        <td>不关心</td>
+                        <td>不关心</td>
+                    </tr>
+                    <tr>
+                        <th>操作系统</th>
+                        <th>服务器环境</th>
+                        <th>服务器IP</th>
+                        <th>上传最大限制</th>
+                    </tr>
+                    <tr>
+                        <td><?=php_uname('s')?></td>
+                        <td><?=$_SERVER['SERVER_SOFTWARE']?></td>
+                        <td><?=GetHostByName($_SERVER['SERVER_NAME'])?></td>
+                        <td>2M</td>
+                    </tr>
+                    <tr>
+                        <th>PHP版本</th>
+                        <th>MYSQL版本</th>
+                        <th>脚本超时时间</th>
+                        <th>CURL支持</th>
+                    </tr>
+                    <tr>
+                        <td><?=PHP_VERSION?></td>
+                        <td><?php
+                        // $db= new mysqli("localhost","root","1");
+                        // $rs= $db->query("select VERSION() as ver");
+                        // $row=$rs->fetch_assoc();
+                        // echo $row['ver'];
+                        echo '5.5.40';
+                        ?></td>
+                        <td>300S</td>
+                        <td><?php echo function_exists('curl_init') ? 'YES':'NO';?></td>
+                    </tr>
+                    <tr>
+                        <th>系统官网</th>
+                        <th>建站手册</th>
+                        <th>检查更新</th>
+                        <th>系统版本</th>
+                    </tr>
+                    <tr>
+                        <td class="skin"><a href="http://www.51cc.win" class="link" target="_blank">『访问』</a></td>
+                        <td class="skin"><a href="#" class="link" target="_blank">『查阅』</a></td>
+                        <td class="skin"><a href="https://gitee.com/eduaskcms/eduaskcms" class="link" target="_blank">『求点赞』</a></td>
+                        <td>RainbowCMS V1.0.0</td>
+                    </tr>
+                </tbody></table>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{/block}
+
+{block name="area_foot"}
+<script>
+// page init
+layui.use(['rb'], function(){
+  var layer = layui.layer,
+  rb = layui.rb,
+  $ = layui.$;
+
+  rb.log('welcome',' !!! ');
+});
+</script>
+{/block}

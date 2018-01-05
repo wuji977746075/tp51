@@ -1,0 +1,177 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_order/index.css">
+{/block}
+{block name="body"}
+<div class="weui-pull-to-refresh__layer">
+    <div class='weui-pull-to-refresh__arrow'></div>
+    <div class='weui-pull-to-refresh__preloader'></div>
+    <div class="down">下拉刷新</div>
+    <div class="up">释放刷新</div>
+    <div class="refresh">正在刷新</div>
+</div>
+<div class="weui-tab order-tab">
+    <div class="weui-navbar">
+        <a class="weui-navbar__item {eq name='status' value="0"}weui-bar__item--on{/eq}"
+        href="{:url('order/index',array('status'=>0))}">
+            全部
+        </a>
+        <a class="weui-navbar__item {eq name='status' value="1"}weui-bar__item--on{/eq}"
+        href="{:url('order/index',array('status'=>1))}">
+            待付款
+        </a>
+        <a class="weui-navbar__item {eq name='status' value="2"}weui-bar__item--on{/eq}"
+        href="{:url('order/index',array('status'=>2))}">
+            待发货
+        </a>
+        <a class="weui-navbar__item {eq name='status' value="3"}weui-bar__item--on{/eq}"
+        href="{:url('order/index',array('status'=>3))}">
+            待收货
+        </a>
+        <a class="weui-navbar__item {eq name='status' value="7"}weui-bar__item--on{/eq}"
+        href="{:url('order/index',array('status'=>7))}">
+            已完成
+        </a>
+    </div>
+    <div class="weui-tab__bd order-list">
+        {volist name="list" id="vo"}
+        <div class="weui-tab__bd-item weui-tab__bd-item--active">
+            <div class="my-order">
+                <div class="my-order-delivery">
+                    <span class="my-order-delivery-left">共<span>{$vo.items_count}</span>件商品</span>
+                    <span class="my-order-delivery-right">包邮</span>
+                </div>
+                <a href="{:url('order/detail',array('order_code'=>$vo['order_code']))}">
+                    {volist name="vo.items" id="item"}
+                    <div class="my-order-mid">
+                        <div class="my-order-mid-img">
+                            <img src="{$item.img}">
+                        </div>
+                        <div class="my-order-mid-title">{$item.name}</div>
+                        <div class="my-order-mid-mn">
+                            <span class="my-order-mid-money">￥{$item.price|number_format=2}</span>
+                            <span class="my-order-mid-number">x{$item.count}</span>
+                        </div>
+                    </div>
+                    {/volist}
+                </a>
+                <div class="my-order-bottom">
+                    <span class="my-order-bottom-left">实付：<span class="my-order-bottom-sum">￥{$vo.price|number_format=2}</span></span>
+                    {switch name="vo.query_status"}
+                    {case value="1"}<a href="{:url('order/repay',array('order_code'=>$vo['order_code']))}"><button>去支付</button></a>{/case}
+                    {case value="2"}{/case}
+                    {case value="3"}<button class="receive-goods" data-order-code="{$vo.order_code}">确认收货</button>{/case}
+                    {case value="7"}{/case}
+                    {case value="8"}<span class="state">已关闭</span>{/case}
+                    {/switch}
+                </div>
+            </div>
+        </div>
+        {/volist}
+    </div>
+</div>
+<div class="weui-loadmore" style="display: none">
+    <i class="weui-loading"></i>
+    <span class="weui-loadmore__tips">正在加载</span>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+    var page = 2;
+    var loading = false;
+    var ajax_data = function() {
+        if(loading) return;
+        loading = true;
+        $('.weui-loadmore').show();
+        var data = {
+            p: page
+        };
+        ajax_post('__SELF__', jQuery.param(data),{
+            success: function(data){
+                if(data.msg.length>0){
+                    page++;
+                    data.msg.forEach(function (val) {
+                        var my_order_mid = val.items.map(function(item){
+                            return(
+                                    '<div class="my-order-mid">'+
+                                        '<div class="my-order-mid-img">'+
+                                            '<img src="'+item.img+'">'+
+                                        '</div>'+
+                                        '<div class="my-order-mid-title">'+item.name+'</div>'+
+                                        '<div class="my-order-mid-mn">'+
+                                            '<span class="my-order-mid-money">￥'+item.price.toFixed(2)+'</span>'+
+                                            '<span class="my-order-mid-number">x'+item.count+'</span>'+
+                                        '</div>'+
+                                    '</div>'
+                            )
+                        });
+
+                        var query_status;
+                        if(val.query_status=='1'){
+                            query_status = '<a href="' + getBaseUrl() + '/order/repay/order_code' + val.order_code +'"><button>去支付</button></a>'
+                        }else if(val.query_status=='3'){
+                            query_status = '<button class="receive-goods" data-order-code="' + val.order_code + '">确认收货</button>'
+                        }else if(val.query_status=='8'){
+                            query_status = '<span class="state">已关闭</span>'
+                        }
+                        else{
+                            query_status='';
+                        }
+                        $(".order-list").append(
+                                '<div class="weui-tab__bd-item weui-tab__bd-item--active">'+
+                                    '<div class="my-order">'+
+                                        '<div class="my-order-delivery">'+
+                                        '<span class="my-order-delivery-left">共<span>'+val.items_count+'</span>件商品</span>'+
+                                        '<span class="my-order-delivery-right">包邮</span>'+
+                                        '</div>'+
+                                        '<a href="' + getBaseUrl() + '/order/detail/order_code' + val.order_code +'">'+
+                                            my_order_mid.join('')+
+                                        '</a>'+
+                                        '<div class="my-order-bottom">'+
+                                            '<span class="my-order-bottom-left">实付：<span class="my-order-bottom-sum">￥'+val.price.toFixed(2)+'</span></span>'+
+                                            query_status+
+                                        '</div>'+
+                                    '</div>'+
+                                '</div>'
+                        )
+                    });
+                }
+                setTimeout(function(){
+                    loading = false;
+                    $('.weui-loadmore').hide();
+                    $(document.body).pullToRefreshDone();
+                },1000);
+            },
+            error: function(){}
+        });
+    };
+    //下拉刷新
+    $(document.body).pullToRefresh().on("pull-to-refresh", function() {
+        page = 1;
+        $(".order-list").children().remove();
+        ajax_data();
+    });
+    //上拉刷新
+    $(document.body).infinite().on("infinite", ajax_data);
+
+    $.toast.prototype.defaults.duration = 1500;
+
+    //确认收货
+    $('.receive-goods').click(function(){
+        var order_code = $(this).attr('data-order-code');
+        var data = {
+            order_code: order_code
+        };
+        ajax_post(getBaseUrl()+'/order/receive_goods', jQuery.param(data),{
+            success: function(){
+                $.toast("操作成功", "success");
+            },
+            error: function(data){
+                $.toast(data.msg, "cancel");
+            }
+        });
+    });
+</script>
+{/block}

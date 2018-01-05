@@ -1,0 +1,85 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+	<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+	<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+
+				<!-- 带验证 form -->
+			<form class="form-horizontal well validateForm">
+				<input type="hidden" name="id" value="{$paper.id}" />
+				<fieldset>
+					<legend>
+						试卷添加
+					</legend>
+
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">试卷标题</label>
+						<div class="col-md-3 col-lg-3">
+							<input type="text" class="required form-control input-sm" name="title" value="{$paper.title}" placeholder="请输入试卷标题,请不要超过30个字">
+							<div class="help-block">(请输入试卷标题,不要超过30个字)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">试卷类型</label>
+						<div class="col-md-3 col-lg-3">
+							<select name="dt_class" class="form-control" >
+								{volist name="dt_types" id="vo"}
+								<option {eq name="vo['id']" value="$paper['dt_class']"}selected{/eq} value="{$vo.id}">{$vo.name}</option>
+								{/volist}
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">试卷概述</label>
+						<div class="col-md-3 col-lg-3">
+							<textarea name="summary" rows="5"  class="required form-control input-normal" >{$paper.summary}</textarea>
+							<div class="help-block">(请输入试卷概述)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">答题时间</label>
+						<div class="col-md-3 col-lg-3">
+							<input type="text" class="required form-control input-sm" name="time_limit" value="{$paper.time_limit}" placeholder="请输入答题时间（分钟）">
+							<div class="help-block">(请输入答题时间 分钟)</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary btn-sm"
+							   id="js_submit" href="{:url('Admin/Testpaper/edit')}" autofocus="autofocus"><i
+									class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default btn-sm" href="{:url('Admin/Testpaper/index')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+				<!-- form -->
+
+		</div>
+
+		<!-- END admin-main-content -->
+	</div>
+		<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+	<script type="text/javascript">
+
+	</script>
+
+{/block}

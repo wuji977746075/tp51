@@ -1,0 +1,182 @@
+{include file="df/tpl/base_bootstrap" /}
+
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<script>
+  window.rainbow = {
+    api_url:"{:config('api_url')}"
+  };
+</script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.all.min.js"> </script>
+
+<link type="text/css" rel="stylesheet" href="__CDN__/comp/wxuploader.css?v=__APP_VERSION__" />
+<link type="text/css" rel="stylesheet" href="__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.css" />
+<script type="text/javascript" src="__PUBLIC__static/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<body>
+<form class="form-horizontal well" action="{:url('picture/save')}">
+  <fieldset>
+    <legend> 上传 与 编辑器   </legend>
+    <div class="form-group">
+      <label for="inputtitle" class="col-md-2 col-lg-2 control-label">文章标题</label>
+      <div class="col-md-10 col-lg-10">
+        <input type="text" class="required form-control input-short" name="post_title" id="inputtitle" placeholder="{:L('PLACEHOLDER_TITLE')}">
+        <div class="help-block">(请输入文章标题)</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputtitle" class="col-md-2 col-lg-2 control-label">文章状态</label>
+      <div class="col-md-10 col-lg-10">
+        <label class="radio-inline">
+          <input type="radio" name="post_status" value="publish" checked="checked" />立即发布
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="post_status" value="draft" />草稿
+        </label>
+      </div>
+    </div>
+    <div class="form-group  am-hide">
+      <label for="inputtitle" class="col-md-2 col-lg-2 control-label">可否评论</label>
+      <div class="col-md-10 col-lg-10">
+        <label class="radio-inline">
+          <input type="radio" name="comment_status"  checked="checked" value="closed" />禁止评论
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="comment_status" value="open" />任何人都可评论
+        </label>
+        <label class="radio-inline">
+          <input type="radio" name="comment_status" value="registered_only" />仅会员可评论
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group col-lg-12 col-md-12 clearfix">
+      <input type="hidden" name="main_img" value="" class="main_img"/>
+      <label for="" class="control-label col-lg-2 col-md-2">商品图片</label>
+      <div class="col-lg-10 col-md-10">
+        主图<span class="text-muted">(建议尺寸为640像素*640像素，大小不超过500kb)<i data-toggle="tooltip" class="fa fa-question" title="商品主图将会作为商品的默认图片出现在货架及商品详情页。"></i></span>
+        <!-- 图片选择DOM结构 -->
+        <div class="wxuploaderimg clearfix main_img" data-maxitems="1">
+          <div class="img-preview clearfix">
+          </div>
+          <div class="add">
+            <i class="fa fa-plus"></i>
+          </div>
+        </div>
+        <!-- 图片选择DOM结构 -->
+      </div>
+    </div>
+    <div class="form-group col-lg-12 col-md-12 clearfix">
+      <input type="hidden" name="img" value="" id="img"/>
+      <label for="" class="control-label col-lg-2 col-md-2">&nbsp;</label>
+      <div class="col-lg-10 col-md-10">
+        其他图片<span class="text-muted">(选传，单张图片大小不超过500kb，最多5张)<i class="fa fa-question" data-toggle="tooltip" title="将出现在商品图片库，方便用户更好的了解您的商品。"></i></span>
+        <!-- 图片选择DOM结构 -->
+        <div class="wxuploaderimg clearfix product-imglist" data-maxitems="5">
+          {php}$imgs=[];{/php}
+          <div class="img-preview clearfix" {if condition="count($imgs) gt 0" } style="display:inline-block;"{/if}>
+            {if condition="count($imgs) gt 0"}
+              {volist name="imgs" id="one"}
+              <div class="pull-left clearfix img-item">
+                <img src="{:getImgUrl($one,120)}" alt="image" data-imageid="{$one}"/>
+                <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
+              </div>
+              {/volist}
+            {/if}
+          </div>
+          <div class="add" {if condition="count($imgs) eq 10"}style="display:none;"{/if} >
+            <i class="fa fa-plus"></i>
+          </div>
+        </div>
+        <!-- 图片选择DOM结构 -->
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 col-lg-2 control-label">文章在线时间</label>
+      <div class="col-md-10 col-lg-10" style="width: 480px;">
+        <div class="input-group">
+            <input type="text" name="start" id="jsf-start" class="form-control input-normal" value="{:date('Y/m/d H:i',time())}" />
+            <div class="input-group-addon">
+                <i class="fa fa-long-arrow-right"></i>
+            </div>
+            <input type="text" name="end" id="jsf-end"  class="form-control input-normal" value="{:date('Y/m/d H:i',time()+31*24*3600)}" />
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-2 col-lg-2 control-label">文章摘要</label>
+      <div class="col-md-10 col-lg-10">
+        <textarea name="post_excerpt" rows="5"  class="required form-control input-normal"></textarea>
+        <div class="help-block">(请输入文章摘要)</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-md-2 col-lg-2 control-label">文章分类</label>
+      <div class="col-md-10 col-lg-10">
+        <select name="post_category" class="form-control input-normal" >
+          { :w_datatree(getDatatree('POST_CATEGORY'),true)}
+        </select>
+        <div class="help-block">(请选择文章分类)</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="inputtitle" class="col-md-2 col-lg-2 control-label">文章内容</label>
+      <div class="col-md-6 col-lg-6">
+         <script id="jsf-ueditor" name="post_content" type="text/plain" style="height:230px;" ></script>
+      </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-md-2 col-lg-2 control-label">原文链接</label>
+        <div class="col-md-5 col-lg-5">
+            <input type="text" class="form-control" name="jump_url" placeholder="原文链接、跳转链接">
+            <div class="help-block">(选填,请输入文章原文链接或跳转链接)</div>
+        </div>
+    </div>
+    <div class="form-group">
+      <label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+      <div class="col-lg-10 col-md-10">
+        <button type="submit" onclick="return getData();" class="ajax-post btn btn-primary">
+          <i class="fa fa-save"></i> {:L('BTN_SAVE')}</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+<!-- form -->
+
+{include file="df/tpl/wxpicture" /}
+<script>
+  var ue = UE.getEditor('jsf-ueditor',{
+    toolbars:[
+      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
+     , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','insertvideo','emotion','link', 'unlink', 'anchor', '|','map','print', 'preview',  'drafts','forecolor','backcolor'
+      ]
+  ]});
+</script>
+<script type="text/javascript">
+function getData() {
+   // 主图
+    var main_img = $(".main_img .img-preview img").attr("data-imageid");
+    if (main_img) {
+        $(".main_img").val(main_img);
+    }
+
+    // 其他图片
+    $("#img").val("");
+    $(".product-imglist .img-preview img").each(function (index, item) {
+        $("#img").val($("#img").val() + $(item).attr("data-imageid") + ",");
+    });
+}
+
+$(function(){
+  wxuploadimg.init({cont:".wxuploaderimg"});
+
+  $('#jsf-start,#jsf-end').datetimepicker({
+      lang: 'ch'
+  });
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<!-- 带验证 form -->
+			<form class="form-horizontal well validateForm">
+				<input type="hidden" name="id" value="{$id}" />
+				<input type="hidden" name="cate_id" value="{$cate_id}" />
+				<fieldset>
+					<legend>
+						类目属性编辑
+					</legend>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label"></label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary btn-sm" href="{:url('CategoryProp/edit',array('id'=>$id,'cate_id'=>$cate_id))}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default btn-sm" href="{:url('CategoryProp/index',array('cate_id'=>$cate_id))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">属性名称</label>
+						<div class="col-md-10 col-lg-10">
+							<volist name="info" id="vo">
+								<input type="text" value="{$info.propname}" class="required form-control input-normal"  name="propname"  placeholder="请输入属性名称,请不要超过30个字">
+								<div class="help-block">(请输入属性名称,不要超过30个字)</div>
+							</volist>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary btn-sm" href="{:url('CategoryProp/edit',array('id'=>$id,'cate_id'=>$cate_id))}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default btn-sm" href="{:url('CategoryProp/index',array('cate_id'=>$cate_id))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+		<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

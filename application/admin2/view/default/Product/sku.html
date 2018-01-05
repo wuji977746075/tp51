@@ -1,0 +1,574 @@
+{extend name="default/template/base_index"/}
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css"/>
+<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<style type="text/css">
+  .unify table tr { height: 25px;line-height: 25px; }
+  .unify table tr th, .unify table tr td { text-align: center; }
+  input{ max-width: 120px; }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+  {include file="default/Widget/left" /}
+  <div class="admin-main-content" style="background: #FFFfff;">
+    {include file="default/Widget/breadcrumb" /}
+    <form class="form" action="{:url('Product/sku',array('id'=>$id))}">
+      <fieldset><legend>规格添加</legend></fieldset>
+
+      <label class="control-label">商品规格<span class="help-block">(
+        不要超过4种规格,只有选中的前4种有效,<br/>
+        因本商城商品具有时限性,至少需要期限规格<br/>
+        价格为元,最多保留2位小数)</span></label>
+      <div class="well">
+        <div class="form-group">
+          <a target="_self" href="{:url('Category/index')}" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>规格管理</a>
+          <a href="__SELF__" class="btn btn-sm btn-default"><i class="fa fa-refresh"></i>刷新</a>
+        </div>
+        <div class="form-group js_sku_change">
+          <label class="am-radio-inline">
+            <input type="radio" value="0" {eq name="has_sku" value="0"}checked="checked"{/eq} name="has_sku" />统一规格
+          </label>
+          <label class="am-radio-inline">
+            <input type="radio" value="1" {eq name="has_sku" value="1"} checked="checked" {/eq} name="has_sku" />多规格
+          </label>
+          <!-- <div class="help-block">尽量都设置为统一规格</div> -->
+        </div>
+      </div>
+      <!-- 统一规格显示 -->
+      <div class="unify" {eq name='has_sku' value='1'}style="display:none"{/eq}>
+        <table>
+          <tr>
+            <th width="180px">原价</th>
+            <th width="180px">销售价</th>
+            <th width="180px">推荐价</th>
+            <th width="180px" class="hide">库存</th>
+            <th width="180px">商品条码（选填)</th>
+          </tr>
+          <tr>
+            <td>
+              <input type="number" name="ori_price" value="{present name='unify_ori_price'}{$unify_ori_price/100}{/present}"/><br/></td>
+            <td>
+              <input type="number" name="price" value="{present name='unify_price'}{$unify_price/100}{/present}"/><br/></td>
+            <td>
+              <input type="number" name="group_price" value="{present name='unify_group_price'}{$unify_group_price/100}{/present}"/><br/></td>
+            <td class="hide">
+              <input type="number" name="quantity" value="{present name='unify_quantity'}{$unify_quantity}{/present}"/></td>
+            <td>
+              <input type="text" name="product_code" value="{present name='unify_product_code'}{$unify_product_code}{/present}"/></td>
+          </tr>
+        </table>
+        <!--<div style="position:relative;top:50px;">
+        <a class="btn btn-primary btn-sm js_sku_submit" href="javascript:void(0)"><i class="fa fa-save"></i>保存</a>-->
+        <!--<a href="javascript:window.history.back(-1)" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+        </div>-->
+      </div>
+      <!-- 多规格显示 -->
+      <div class="sku-panel-wrp" {eq name="has_sku" value="0"}style="display:none;"{/eq}>
+      <div class="sku-info">
+      {volist name="skulist" id="sku"}
+        <div class='sku_wrp' data-skuname="{$sku.name}" data-id="{$sku.id}">
+          <p>{$sku.name}
+              <a href="javascript:void(0);" class="btn btn-link js_sku_edit">编辑</a>
+          </p>
+          <div class='skuvalue_wrp'>
+          {volist name="sku['value_list']" id="skuvalue"}
+            <label class="checkbox-inline">
+              <input type="checkbox" {present name="skuinfo"}{:strpos($skuinfo,$skuvalue['id'].',') === false ?'':'checked'}{/present} class="js_sku_value {present name="skuinfo"}{:strpos($skuinfo,$skuvalue['id'].',') === false ?'':'checked'}{/present} " data-valuename="{$skuvalue['name']}" value="{$skuvalue['id']}">{$skuvalue.name}
+            </label>
+          {/volist}
+          </div>
+
+          <div class='skuvalue_edit_wrp well clearfix hidden'>
+            <div class='col-lg-12 col-md-12 clearfix skuvalue-edit'><label>规格值</label><input type='text' class="input-sm"/>
+                <a href="javascript:void(0)" data-skuid="{$sku.id}" class="btn btn-primary js_sku_add btn-sm">添加</a>
+            </div>
+            <div class='skuvalue-preview'>
+            {volist name="sku['value_list']" id="skuvalue2"}
+              <label class="bg-muted">
+                {$skuvalue2.name}
+                {:strpos(isset($skuvalue2['vid'])?$skuvalue2['vid']:"","$") === 0?"<i class='fa fa-times js_delete'></i>":""}
+              </label>
+            {/volist}
+            </div>
+            <div class='col-lg-12 col-md-12 clearfix skuvalue-edit'>
+              <a href="javascript:void(0)" class="btn btn-primary js_sku_sure btn-sm">确定</a>
+              <a href="javascript:void(0)" class="btn btn-default js_sku_cancel btn-sm hide">取消</a>
+            </div>
+          </div>
+        </div>
+      {/volist}
+      </div>
+
+      <div class="form-group sku-panel-wrp " STYLE="display: none;">
+        <label class="control-label">价格&库存</label>
+        <div class="sku-table">
+            <span class="help-block">请选择规格</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">&nbsp;</label>
+        <div class="">
+          <a class="btn btn-primary btn-sm js_sku_submit" href="javascript:void(0)"><i class="fa fa-save"></i>保存</a>
+          <a href="javascript:window.history.go(-1)" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+        </div>
+      </div>
+      </div>
+    </form>
+    </div>
+    {include file="default/template/wxpicture"/}
+  </div>
+<!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+  window.skumanage = {
+    'deleted': [],
+    'added': [],
+  };
+
+  //创建 添加规格html-table
+  function createSKUTable() {
+      var cont = $(".sku-table");
+      cont.empty();
+      var table = $("<table class='table table-border'></table>");
+      var header = $("<tr></tr>");
+      var tbody = $("<tbody></tbody>");
+      table.append(tbody);
+      tbody.append(header);
+      cont.append(table);
+
+      var sku_arr = [], row = 1;
+      $(".sku_wrp").each(function (index, item) {
+          var sku_items = $(".js_sku_value.checked", item);
+          if (sku_arr.length >= 4) { //所选规格值个数大于4
+              //最多4种TODO:加入控制／比如禁用选择
+              console.log(sku_items);
+              return;
+          }
+          if (sku_items.length > 0) { //选择规格值
+              sku_arr.push({'sku': item, 'skuitems': sku_items, 'count': sku_items.length});
+              row = row * sku_items.length;
+          }
+      })
+
+      //SKU种类 最多4种
+      var col = sku_arr.length;
+      for (var j = 0; j < col; j++) {
+          header.append("<th>" + $(sku_arr[j]['sku']).data("skuname") + "</th>");
+      }
+      header.append("<th  class=''>原价<span class='text-muted'>(大于销售价)</span></th><th>销售价</th><th  class=''>推荐价<span class='text-muted'>(不大于销售价)</span></th><th class='hide'>库存</th><th>商品条码<span class='text-muted'>(选填)</span></th><th class='hide'>税率</th>");
+
+      //创建好所有的行
+      for (var i = 0; i < row; i++) {
+          var tbody_tr = $("<tr></tr>");
+          tbody.append(tbody_tr);
+      }
+      //是否为颜色
+      var flag = 0;
+      //创建行内部的列
+      for (var i = 0; i < col; i++) {
+          flag = 0;
+          var skuitems = sku_arr[i]['skuitems'];
+          if ($(sku_arr[i]['sku']).data("skuname") == "颜色") {
+              flag = 1;
+          }
+          var repeater = 1;
+          var rowspan = 1;
+          for (var r = 0; r < col; r++) {
+              if (r > i) {
+                  rowspan = rowspan * sku_arr[r]['skuitems'].length;
+              } else if (r < i) {
+                  repeater = repeater * sku_arr[r]['skuitems'].length;
+              }
+          }
+          //遍历行
+          //遍历选中的SKU值
+          for (var k2 = 0; k2 < skuitems.length; k2++) {
+              var sku = $(sku_arr[i]['sku']).data("id") + ":" + $(skuitems[k2]).val() + ";";
+
+              var sku_name = $(sku_arr[i]['sku']).data("skuname") + ":" + $(skuitems[k2]).data("valuename") + ";";
+		          // console.log(sku_name);
+              console.log("======================");
+
+              for (var k = 0; k < repeater; k++) {
+                  var index = k * skuitems.length * rowspan + k2 * rowspan + 1;
+
+                  console.log("repeater " + repeater, "rowspan " + rowspan);
+                  console.log(index, sku);
+                  var tr = $("tr", tbody).get(index);
+                  var td = '';
+                  if (flag == 1) {
+                    td = $("<td ></td>").html($(skuitems[k2]).data("valuename") + "<div class='wxuploaderimg clearfix'  data-maxitems='1'><div class='img-preview clearfix' >	</div><div class='add'><i class='fa fa-plus'></i></div></div>");
+                  } else {
+                    td = $("<td ></td>").text($(skuitems[k2]).data("valuename"));
+                  }
+                  $(tr).append(td);
+                  td.attr("rowspan", rowspan);
+
+                  for (var k3 = 0; k3 < rowspan && k < repeater; k3++) {
+				            // console.log(index+k3,"k3");
+                    if (index + k3 < row + 1) {
+                      tr = $("tr", tbody).get(index + k3);
+                      if ($(tr).data("id")) {
+                        $(tr).data("id", $(tr).data("id") + sku);
+                        $(tr).data("desc", $(tr).data("desc") + sku_name);
+                      } else {
+                        $(tr).data("id", sku);
+                        $(tr).data("desc", sku_name);
+                      }
+                    } else {
+                      break;
+                    }
+                  }
+              }
+          }
+      }
+      //添加输入框
+      var td =
+          "<td><input type='number' class='ori_price' /></td>" +
+          "<td><input type='number' class='price' /></td> " +
+          "<td><input type='number' class='group_price' /></td>" +
+          "<td class='hide'><input type='number' class='quantity' value='99999'/></td>" +
+          "<td><input type='text'   class='product_code' /></td>" +
+          "<td class='hide'><input type='number' class='taxation' /></td>";
+      for (var j = 1; j <= row && col > 0; j++) {
+          $($("tr", tbody).get(j)).append(td);
+      }
+      //创建结束
+      //表单域失去焦点后设置价格
+      $(".sku-table input").bind("blur", inputBlur);
+  }
+  //获取 并检查 填写的所有 数据
+  function getSkuData() {
+      var skulist = [];
+      var icon_url = "";
+      var err = false;
+      $(".sku-table tr").each(function (index, item) {
+          if ($(item).data("id")) {
+              var ori_price = parseFloat($(item).find(".ori_price").val());
+              var tmp_icon_url = $(item).find(".wxuploaderimg img").data("imageid");
+              var quantity = parseInt($(item).find(".quantity").val());
+              var price = parseFloat($(item).find(".price").val());
+              var group_price = parseFloat($(item).find(".group_price").val());
+              var product_code = $(item).find(".product_code").val();
+              var taxation = $(item).find(".taxation").val();
+
+              if (tmp_icon_url)  icon_url = tmp_icon_url;
+              if (!product_code) product_code = "";
+              if (isNaN(ori_price)) {
+                  err = true; alert('原价必须为数字');
+                  $(item).find(".ori_price").focus().select();
+                  return false;
+                  //ori_price = 0;
+              }
+              if (isNaN(group_price)) {
+                  err = true; alert('原价必须为数字');
+                  $(item).find(".group_price").focus().select();
+                  return false;
+                  //ori_price = 0;
+              }
+              if (isNaN(price)) {
+                  err = true; alert('销售价必须为数字');
+                  $(item).find(".price").focus().select();
+                  return false;
+                  //price = 0;
+              }
+              if (isNaN(quantity)) {
+                  err = true; alert('库存必须为数字');
+                  $(item).find(".quantity").focus().select();
+                  return false;
+                  //quantity = 0;
+              }
+              if (isNaN(taxation)) {
+                  err = true; alert('税率必须为数字');
+                  $(item).find(".taxation").focus().select();
+              }
+              var sku = {
+                  'sku_id': $(item).data("id"),
+                  'price': price,
+                  'icon_url': icon_url,
+                  'quantity': quantity,
+                  'product_code': product_code,
+                  'ori_price': ori_price,
+                  'group_price': group_price,
+                  'taxation': taxation,
+                  'sku_desc': $(item).data("desc")
+              }
+
+              skulist.push(sku);
+          }
+      })
+
+      if (err)return false;
+      console.log(skulist);
+      return JSON.stringify(skulist);
+  }
+  //获取 并检查 选择的规格值定义
+  function getSkuInfo() {
+    var sku_info = [];
+    $(".sku_wrp").each(function (index, item) {
+      var sku_items = $(".js_sku_value.checked", item);
+      if (sku_info.length >= 4) {
+        //最多4种TODO:加入控制／比如禁用选择
+        return;
+      }
+      if (sku_items.length > 0) {
+        var sku = {'id': $(item).attr("data-id"), vid: []};
+        for (var i = 0; i < sku_items.length; i++) {
+         sku.vid.push($(sku_items[i]).val());
+        }
+        sku_info.push(sku);
+      }
+    })
+    console.log(sku_info);
+    return JSON.stringify(sku_info);
+  }
+  //设置商品规格信息
+  function setSkuData(skuvalue) {
+    console.log('setSkuData',skuvalue);
+    $(".sku-table tr").each(function (index, item) {
+        var dataid = $(item).data("id");
+        if (dataid) {
+            var sku = null;
+            for (var i = 0; i < skuvalue.length; i++) {
+              console.log(dataid , skuvalue[i].sku_id);
+              if (dataid == skuvalue[i].sku_id) {
+                sku = skuvalue[i];
+                break;
+              }
+            }
+            if (sku === null) return;
+            console.log(sku);
+            if (sku.icon_url) {
+              var $ele = $('<div class="pull-left clearfix img-item"><div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div></div>');
+              // $(".img-preview", item).append($ele).css("display", "inline-block");//.show();
+
+              // var $imgStr = "{:config('PICTURE_REMOTE_URL')}" + sku.icon_url + "&size=120";
+              // alert(sku.icon_url);
+              // $ele.prepend($("<img src='" + $imgStr + "' data-imageid='" + sku.icon_url + "' />"));
+              // $(".wxuploaderimg", item).addClass("checked");
+
+            }
+            $(item).find(".ori_price").val(parseInt(sku.ori_price)/100);
+            $(item).find(".quantity").val(sku.quantity);
+            $(item).find(".price").val(parseInt(sku.price)/100);
+            $(item).find(".group_price").val(parseInt(sku.group_price)/100);
+            $(item).find(".product_code").val(sku.product_code);
+            // $(item).find(".taxation").val(sku.taxation);
+        }
+    });
+    // wxuploadimg.init({cont: ".wxuploaderimg", reinit: true});
+  }
+  //表单域失去焦点后设置价格
+  function inputBlur(ev) {
+      // console.log(ev);
+      var input = $(ev.target);
+      // console.log(input);
+      // setTimeout(function(ev){
+      var $flag = true, $price = 0,$cnt1 = 0,$price2 = 0,$cnt2 = 0,$price3 = 0,$cnt3 = 0, $quantity = 0;
+      if (input.hasClass("price")) {
+          $price = input.val();
+          //销售价
+          $(".sku-table input.price").each(function (index, item) {
+              if (ev.target != item && $(item).val()) $flag = false;
+          });
+          if ($flag) $(".sku-table input.price").val($price);
+      } else if (input.hasClass("ori_price")) {
+          //原价
+          $price = input.val();
+          $(".sku-table input.ori_price").each(function (index, item) {
+              if (ev.target != item && $(item).val()) $flag = false;
+          });
+          if ($flag) $(".sku-table input.ori_price").val($price);
+      }else if (input.hasClass("group_price")) {
+          //推荐价
+          $price = input.val();
+          $(".sku-table input.group_price").each(function (index, item) {
+              if (ev.target != item && $(item).val()) $flag = false;
+          });
+          if ($flag) $(".sku-table input.group_price").val($price);
+      } else if (input.hasClass("quantity")) {
+          //库存
+          $quantity = input.val();
+          $(".sku-table input.quantity").each(function (index, item) {
+              if (ev.target != item && $(item).val()) $flag = false;
+          });
+          if ($flag) $(".sku-table input.quantity").val($quantity);
+      }
+  }
+  //规格值添加 - 点击处理函数
+  function manageSkuClick(ev) {
+      $ele = $(ev.target);
+      // console.log('manage',ev);
+      /*if ($ele.hasClass("js_sku_cancel")) { //
+          $ele.parents(".skuvalue_edit_wrp").addClass("hidden");
+          $ele.parents(".skuvalue_wrp").removeClass("hidden");
+      }*/
+
+      if ($ele.hasClass("js_sku_edit")) { //编辑 - 规格定义旁
+          $ele.parent().siblings(".skuvalue_wrp").addClass("hidden");
+          $ele.parent().siblings(".skuvalue_edit_wrp").removeClass("hidden");
+      }
+      if ($ele.hasClass("js_sku_sure")) { //确定  - 编辑后规格值确定
+          var cont = $ele.parents(".skuvalue_edit_wrp").prev();
+          var label = cont.find("label");
+          for (var del in window.skumanage.deleted) {
+              // console.log(label.length);
+              for (var i = 0; i < label.length; i++) {
+                  if ($(label[i]).text().trim() == window.skumanage.deleted[del].trim()) {
+                      $(label[i]).remove();
+                      break;
+                  }
+              }
+          }
+          for (var add in window.skumanage.added) {
+              var check = '<label class="checkbox-inline"><input type="checkbox" class="js_sku_value" value="$' + window.skumanage.added[add] + '" >' + window.skumanage.added[add] + '</label>';
+              cont.append(check);
+          }
+          window.skumanage.deleted = [];
+          window.skumanage.added = [];
+          $par = $ele.parents(".skuvalue_edit_wrp").addClass("hidden");
+          $par.prev().removeClass("hidden");
+
+          createSKUTable();
+          wxuploadimg.init({cont: ".wxuploaderimg"});
+          // setSkuData(JSON.parse(window.skuvalue));
+          return;
+      }
+      /*if ($ele.hasClass("js_delete")) {
+          $ele.parent().remove();
+
+          var skuvalue = $ele.parent().text();
+          // console.log(skuvalue);
+          ev.preventDefault();
+          ev.stopPropagation();
+
+          for (var i = 0; i < skumanage.added.length; i++) {
+              if (skumanage.added[i] == skuvalue) {
+                  skumanage.added = skumanage.added.slice(i, i + 1);
+                  return;
+              }
+          }
+          skumanage.deleted.push(skuvalue);
+          return;
+      }*/
+
+      if ($ele.hasClass("js_sku_add")) { //添加 - 编辑规格定义后
+          var $cont = $(".skuvalue_edit_wrp");
+          var skuvalue = $ele.prev().val().trim();
+          if (skuvalue) {
+              var len = skuvalue.replace(/[^\x00-\xff]/g, 'xx').length;
+              if (len > 30) {
+                  $.scojs_message("不能超过15字!", $.scojs_message.TYPE_ERROR);
+                  return;
+              }
+              for (var i = 0; i < skumanage.added.length; i++) {
+                  if (skumanage.added[i] == skuvalue) {
+                      $.scojs_message("已经存在相同规格值!", $.scojs_message.TYPE_ERROR);
+                      return;
+                  }
+              }
+              // var cate_id = "{$cate_id}";
+              var sku_id = $ele.data("skuid");
+              var query = {dnredirect: true, sku_id: sku_id, name: skuvalue};
+
+              window.myUtils.ajaxpost($ele, "{:url('CategorySkuvalue/add')}", query);
+          } else {
+              $.scojs_message("不能添加空值!", $.scojs_message.TYPE_ERROR);
+              return;
+          }
+
+      }
+
+  }
+  var skuinfo;
+  $(function () {
+    skuinfo = "{present name='skuinfo'}{$skuinfo}{/present}";
+    window.skuvalue = [{present name='skuinfo'}{$skuvaluelist}{/present}][0];
+    if (skuinfo.length > 0) {
+      createSKUTable();
+      // wxuploadimg.init({cont: ".wxuploaderimg"});
+      setSkuData(window.skuvalue);
+    }
+    //商品规格设置 -保存
+    $(".js_sku_submit").click(function () {
+      var url = "{:url('Product/sku')}";
+      var id = "{$id}";
+      var ori_price = $("input[name='ori_price']").val();
+      var price = $("input[name='price']").val();
+      var group_price = $("input[name='group_price']").val();
+      var quantity = $("input[name='quantity']").val();
+      var product_code = $("input[name='product_code']").val();
+      var sku_list = getSkuData();
+      if (!sku_list) return false;
+      var query = {
+        id: id,
+        price: price,
+        has_sku: $(".form input[name ='has_sku']:checked").val(),
+        quantity: quantity,
+        sku_list: sku_list,
+        sku_info: getSkuInfo(),
+        ori_price: ori_price,
+        group_price: group_price,
+        product_code: product_code,
+      };
+      // console.log(query);
+      if (query.sku_list.length == 0 || query.sku_info.Length == 0) {
+          return false;
+      }
+      myUtils.ajaxpost($(".js_sku_submit"), url, query);
+    });
+
+    //规格值定义 点击事件
+    $(".skuvalue_wrp").click(function (ev) {
+      //console.log(ev.target);
+      $ele = $(ev.target);
+      if ($ele.hasClass("js_sku_value")) {
+        $ele.toggleClass("checked");
+        createSKUTable();
+        // wxuploadimg.init({cont: ".wxuploaderimg"});
+        // console.log(window.skuvalue);
+        if((window.skuvalue instanceof Array)){
+          setSkuData(window.skuvalue);
+        }else{
+          setSkuData(JSON.parse(window.skuvalue));
+        }
+      }
+    });
+
+    //规格定义 点击事件 冒泡?
+    $(".sku_wrp").click(function (ev) {
+        manageSkuClick(ev);
+    });
+
+    //多规格/单规格 点击事件
+    $(".js_sku_change input[type='radio']").click(function (ev) {
+      if ($(ev.target).val() == 0) {
+        alert('因本商城商品具有期限特殊性,至少需要期限规格');return false;
+        // $(".unify").show();
+        // $(".sku-panel-wrp").hide();
+        // $(".js_sku_change input[type='radio']:eq(0)").attr('checked', 'checked');
+        // $(".js_sku_change input[type='radio']:eq(1)").removeAttr('checked');
+      } else {
+        $(".unify").hide();
+        $(".sku-panel-wrp").show();
+        $(".js_sku_change input[type='radio']:eq(1)").attr('checked', 'checked');
+        $(".js_sku_change input[type='radio']:eq(0)").removeAttr('checked');
+      }
+    });
+    //多规格/单规格 点击事件 初始化点击
+    $(".js_sku_change input[type='radio']:checked").click();
+
+  })
+</script>
+
+{/block}

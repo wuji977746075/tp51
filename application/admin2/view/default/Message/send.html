@@ -1,0 +1,156 @@
+{extend name="default/template/base_index" /}
+{block name="area_header"}
+
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css"/>
+<script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.full.js"></script>
+
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="table-responsive well">
+            <div class="h4">
+            </div>
+            <div class="form-control-static">
+                <form action="{:url('Message/send')}" method="post" class="message_form form-horizontal">
+                    <fieldset>
+                        <legend>发送消息</legend>
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-md-2 col-lg-2 control-label">通知方式</label>-->
+                            <!--<div class="col-md-10 col-lg-10">-->
+                                <!--<label class="checkbox-inline">-->
+                                    <!--<input type="checkbox"  name="notice_type[]" value="1"> APP推送<br>-->
+                                    <!--<input type="checkbox"  name="notice_type[]" value="2"> 短信通知<br>-->
+                                    <!--<input type="checkbox"  name="notice_type[]" value="3"> 邮邮件通知-->
+                                <!--</label>-->
+                                <!--&lt;!&ndash;<label class="checkbox-inline">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<input type="checkbox"  name="notice_type[]" value="2"> 短信推送&ndash;&gt;-->
+                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="form-group">
+                            <label class="col-md-2 col-lg-2 control-label">消息类型</label>
+                            <div class="col-md-10 col-lg-10">
+                                <select class="form-control input-short" name="dtree_type">
+                                    {volist name="msg_types" id="vo"}
+                                    <option value="{$vo.id}">{$vo.name}</option>
+                                    {/volist}
+                                </select>
+                                <div class="help-block">(请输入消息标题)</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-lg-2 control-label">消息接收人</label>
+                            <div class="col-md-10 col-lg-10">
+                                <label>
+                                    <input type="radio"  name="to_all_uid" checked class="j_to_uid" value="-2"> 所有人</label>
+                                <label><input type="radio"  name="to_all_uid" class="j_to_uid" value="0">  单个人</label>
+                                <div class="j_select_panel" style="display: none;width:200px;">
+                                <select id="user_select3" style=" width:200px;" name="to_uid" class="form-control input-short">
+                                </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-lg-2 control-label">消息标题</label>
+                            <div class="col-md-10 col-lg-10">
+                                <input type="text" class="required form-control input-short" name="title"
+                                       placeholder="{:L('PLACEHOLDER_TITLE')}">
+                                <div class="help-block">(请输入消息标题)</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-lg-2 control-label">消息摘要</label>
+                            <div class="col-md-10 col-lg-10">
+                                <textarea name="summary" rows="5" class="required form-control input-normal"></textarea>
+                                <div class="help-block">(请输入消息摘要)</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2 col-lg-2 control-label">消息内容</label>
+                            <div class="col-md-10 col-lg-10">
+                                <textarea name="content" rows="5" class="required form-control input-normal"></textarea>
+                                <div class="help-block">(请输入消息摘要)</div>
+                            </div>
+                        </div>
+
+                        <div class="form-control-static">
+                            <label class="col-md-2 col-lg-2 control-label"></label>
+                            <div class="col-md-10 col-lg-10">
+                                <a target-form="message_form"  href="{:url('Message/send')}" class="ajax-post btn btn-danger btn-sm">发送消息
+                                </a>
+                                <a class="btn btn-default btn-sm" href="{:url('Admin/Message/index')}">{:L('BTN_CANCEL')}</a>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+    $(function () {
+        $("#user_select3").hide();
+        $(".j_to_uid").click(function () {
+            console.log("click");
+            var val = $(".j_to_uid:checked").val();
+            if(val != -2){
+                $(".j_select_panel").show();
+            }else{
+                $(".j_select_panel").hide();
+            }
+
+        });
+
+        $("#user_select3").select2({
+            placeholder: "输入用户uid或昵称查询"
+            ,
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    };
+                    return queryParameters;
+                },
+                processResults: function (result, page) {
+                    console.log(result);
+                    if (!result.data) {
+                        result.data = [];
+                        result.data['nodata'] = "无相关数据";
+                    }
+                    return {
+                        results: result.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                return repo.nickname || repo.text;
+            },
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                if (repo.nodata) return repo.nodata;
+                var img = "<img src='" + repo.head + "' style='width:30px;height:30px;border-radius: 50%;' />"
+                var markup = '<div>[uid:' + repo.uid + '] ' + img + repo.nickname + '</div>';
+                return $(markup);
+            },
+        });
+    })
+</script>
+{/block}

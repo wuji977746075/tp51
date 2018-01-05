@@ -1,0 +1,134 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/product_detail/index.css">
+{/block}
+{block name="body"}
+<div class="product-detail-body">
+    <div class="weui-tab">
+        <!--<div class="weui-navbar">
+            <a class="weui-navbar__item weui-bar__item&#45;&#45;on" href="#tab1">
+                商品
+            </a>
+            <a class="weui-navbar__item" href="#tab2">
+                详情
+            </a>
+        </div>-->
+        <div class="weui-tab__bd">
+            <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+                <div class="product-detail-box">
+                    {if condition="($info['type'] eq 3) OR ($info['type'] eq 4) OR ($info['type'] eq 5)"}
+                    <div class="swiper-img-box"><img src="{:getImgUrl($img.0.img_id)}" alt=""></div>
+                    <!--<div class="swiper-img-box1"><img src="{:getImgUrl($img.0.img_id)}" alt=""></div>-->
+                    {else/}
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            {volist name='img' id='vo'}
+                            <div class="swiper-slide"><div class="swiper-img-box"><img src="{:getImgUrl($vo.img_id)}" alt=""></div></div>
+                            {/volist}
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="product-detail title">{$info.name}</div>
+                    <div class="product-detail content">{$info.synopsis}</div>
+                    <div class="product-detail money">
+                        <div><span>{$info.sku.price/100}积分</span></div>
+                        <div class="product-detail money-msg">
+                            <div class="product-detail express">快递：包邮</div>
+                            <!--<div class="product-detail area">销量：6298件</div>-->
+                        </div>
+                    </div>
+                    <!--<div class="product-detail not-express">
+                        <div>不配送区域：新疆，西藏，台湾</div>
+                        <span class="anticon anticon-right"></span>
+                    </div>-->
+                    <div class="product-detail advantage">
+                        <div><i class="weui-icon-success"></i><span>正品保证</span></div>
+                        <div><i class="weui-icon-success"></i><span>七天退换</span></div>
+                    </div>
+                    {if condition="($info['type'] eq 3) OR ($info['type'] eq 4) OR ($info['type'] eq 5)"}
+
+                    {else/}
+                    <div style="text-align: center;margin:10px;">图文详情</div>
+                    {volist name='img' id='vo'}
+                    <div class="product-detail-pic-text">
+                        <img src="{:getImgUrl($vo.img_id)}" alt="">
+                    </div>
+                    {/volist}
+                    {/if}
+                </div>
+                <!--<div class="product-detail-dropdown">上拉继续查看图文详情</div>-->
+                <div class="product-detail btn">
+                    <a href="{:url('order/checkout',array('pid'=>$pid,'type'=>$info['type'],'buy_status'=>'1'))}"><button class="product-detail-btn1">立即购买</button></a>
+                    <a href="{:url('order/checkout',array('pid'=>$pid,'type'=>$info['type'],'buy_status'=>'2'))}"><button class="product-detail-btn2">立即存货</button></a>
+                </div>
+            </div>
+            <!--<div id="tab2" class="weui-tab__bd-item">
+                <h2 style="text-align: center">图文详情</h2>
+                {volist name='img' id='vo'}
+                <div class="product-detail-pic-text">
+                    <img src="{:getImgUrl($vo.img_id,360)}" alt="">
+                </div>
+                {/volist}
+            </div>-->
+        </div>
+    </div>
+</div>
+<div class="product-detail selected-area-cover"></div>
+<div class="product-detail not-express-area">
+    <div>不配送区域：</div>
+    <span>新疆</span>
+    <span>西藏</span>
+    <span>台湾</span>
+    <button>确定</button>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+    /*$(document).scroll(function() {
+        if($(document).scrollTop() == $(document).height()-$(window).height()){
+            setTimeout(function () {
+                var $weui_navbar = $('.weui-navbar a');
+                $weui_navbar.eq(0).removeClass('weui-bar__item--on');
+                $weui_navbar.eq(1).addClass('weui-bar__item--on');
+                $('#tab1').removeClass('weui-tab__bd-item--active');
+                $('#tab2').addClass('weui-tab__bd-item--active');
+            },500)
+        }
+
+    });*/
+
+    $(document).ready(function(){
+        //调用轮播图
+        var mySwiper = $('.swiper-container').swiper({
+            autoplay : 2000,
+            loop: true
+            //其他设置
+        });
+        //显示/隐藏不配送地
+        $('.product-detail.not-express').click(function () {
+            $('.product-detail.not-express-area').slideDown();
+            $('.product-detail.selected-area-cover').show()
+        });
+        $('.product-detail.selected-area-cover,.product-detail.not-express-area button').click(function () {
+            $('.product-detail.not-express-area').slideUp();
+            $('.product-detail.selected-area-cover').hide()
+        });
+
+
+        $.toast.prototype.defaults.duration = 1500;
+
+        //根据type显示提货/补货按钮
+        var type = {$info['type']};
+        if(type == 1||type == 2){
+            $('.product-detail-btn2').css('display','none');
+            $('.product-detail-btn1').css('width','100%')
+        }else if(type == 3||type == 4||type == 5){
+            $('.product-detail-btn1').css('display','none');
+            $('.product-detail-btn2').css('width','100%');
+        }
+    });
+
+</script>
+{/block}

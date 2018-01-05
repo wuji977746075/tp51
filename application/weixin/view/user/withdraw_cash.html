@@ -1,0 +1,62 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/withdraw_cash/style.css">
+{/block}
+{block name="body"}
+<div class="weui-cells weui-cells_form withdraw-cash-form">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">总提现积分：</label></div>
+        <div class="weui-cell__bd">
+            {$people['wallet']['cash_points']/100}
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">提现数额：</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="number" id="num" placeholder="请输入数字">
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><label class="weui-label">真实姓名：</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" type="text" id="name" placeholder="绑定微信银行卡真实姓名">
+        </div>
+    </div>
+    <div class="weui-cell" style="font-size: 13px;">注：单笔单日限额20000人民币</div>
+    <div class="form-btn">
+        <button id="submit" class="weui-btn weui-btn_primary">提交</button>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+    $('#submit').click(function () {
+        var $num = $('#num');
+        var $name = $('#name');
+        if(!$num.val()||!$name.val()){
+            $.toast("请完成表单", "cancel");
+        }else{
+            var body  ={
+                amount:$num.val(),
+                real_name:$name.val()
+
+            };
+            var $this = $(this);
+            $this.addClass('weui-btn_disabled').attr('disabled','disabled');
+            ajax_post(getBaseUrl()+'/weixin/user/withdraw_apply',jQuery.param(body),{
+                success:function(data){
+                    $.toptip(data.msg, 'success');
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                },
+                error:function(data){
+                    $.toptip(data.msg, 'error');
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                }
+            })
+        }
+
+    });
+</script>
+{/block}

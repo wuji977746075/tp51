@@ -1,0 +1,40 @@
+<!-- 系统基本样式 -->
+<!--<link type="text/css" rel="stylesheet" href="__CDN__/bootstrap/3.3.0/css/bootstrap.min.css" />-->
+<!-- 自定义主题 -->
+  <link type="text/css" rel="stylesheet" href="__CDN__admin/theme/{$cfg.theme ?? 'simplex'}.min.css" />
+  <script type="text/javascript" src="__CDN__bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- 自定义模块通用样式 -->
+<!-- <link rel="stylesheet" type="text/css" href="__CSS__/common.css?v=__APP_VERSION__" />
+<script type="text/javascript" src="__JS__/common.js?v=20170729"></script>
+<script type="text/javascript" src="{:url('javascript/itboye')}?v=__APP_VERSION__"></script> -->
+
+  <link type="text/css" rel="stylesheet" href="__CDN__admin/theme/fix_{$cfg.theme ?? 'simplex'}.css" />
+  <style type="text/css">
+    .admin-main {
+      margin-top: 0px;
+    }
+    .table{
+      border: 1px solid #dfe6ec;
+      font-size: 14px;
+      color: #1f2d3d;
+    }
+    .table td{
+      transition: background-color .25s ease;height: 40px;
+      min-width: 0;
+      vertical-align: middle;
+      border: 1px solid #dfe6ec;
+      line-height: 1.42857143;
+      vertical-align: top;
+    }
+    .table thead tr {
+      /*color: #707070;*/
+      /*font-weight: normal;*/
+      /*background: #f2f2f2;*/
+      background-image: -webkit-gradient(linear, left 0, left 100%, from(#f8f8f8), to(#ececec));
+      background-image: -webkit-linear-gradient(top, #f8f8f8, 0%, #ececec, 100%);
+      background-image: -moz-linear-gradient(top, #f8f8f8 0, #ececec 100%);
+      background-image: linear-gradient(to bottom, #f8f8f8 0, #ececec 100%);
+      background-repeat: repeat-x;
+      filter: progid: DXImageTransform.Microsoft.gradient(startColorstr='#fff8f8f8', endColorstr='#ffececec', GradientType=0);
+    }
+  </style>

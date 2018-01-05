@@ -1,0 +1,122 @@
+{extend name="template/base_default"}
+{block name="header"}
+{css href="__CSS__/register/style.css"}
+{/block}
+{block name="body"}
+<div class="main-wrap">
+    <div class="main-content">
+        <img src="__IMG__/register/banner.png" class="am-img-responsive" alt=""/>
+    </div>
+    <div class="main-content">
+        <div class="am-container">
+            <div class="form-wrap am-u-sm-10 am-u-sm-centered">
+                <div class="form-group am-form-group">
+                    <label class="am-hide" for="mobile"></label>
+                    <input type="text" name="mobile" id="mobile" class="alpha-input short" placeholder="请输入您的手机号码" maxlength="11" />
+                    <a href="javascript:void(0);" class="am-btn am-btn-default mobile-code ">验证</a>
+                </div>
+                <div class="form-group am-form-group">
+                    <label class="am-hide" for="code"></label>
+                    <input type="text" name="code" id="code" class="alpha-input" placeholder="验证码" maxlength="6" />
+                </div>
+                <div class="form-group am-form-group">
+                    <label class="am-hide" for="code"></label>
+                    <input type="text" name="psw" id="psw" class="alpha-input" placeholder="密码" minlength="6" />
+                </div>
+                <div class="form-group2 am-form-group">
+                    <button type="button" id="submit" class=" am-btn am-btn-default submit">我想成为维修师傅</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+    <div class="am-modal-dialog">
+        <div class="am-modal-hd">提示</div>
+        <div class="am-modal-bd">
+            <span id="tip"></span>
+        </div>
+        <div class="am-modal-footer">
+            <span class="am-modal-btn">确定</span>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript">
+
+
+    function msg(text, $fuc){
+        $('#tip').text(text);
+        $('#my-alert').modal({closeViaDimmer: 0});
+        var $btn = $('.am-modal .am-modal-btn');
+        $btn.unbind('click');
+        if(typeof $fuc == 'function'){
+            $btn.bind('click', $fuc);
+        }
+
+    }
+
+    $('.mobile-code').click(function(){
+        var mobile = $('#mobile').val();
+        if(mobile.length==0){
+            msg('请输入手机号');
+            return;
+        }
+        var data = {
+            mobile: mobile
+        };
+        var $btn = $(this);
+        $btn.button('loading').text('60秒');
+        var time = setInterval(function(){
+            var _t = parseInt($btn.text());
+            if(_t -1 == 0){
+                $btn.button('reset');
+                $btn.text('验证');
+                clearInterval(time);
+                return;
+            }
+            $btn.text((_t-1) + '秒');
+        },1000);
+        $.post("{:url('web/register/repairer_verify_code')}", jQuery.param(data)).done(function(data){
+            msg(data.info);
+        });
+    });
+
+    $('#submit').click(function(){
+        var mobile = $('#mobile').val();
+        if(mobile.length==0){
+            msg('请输入手机号');
+            return;
+        }
+        var code = $('#code').val();
+        if(code.length==0){
+            msg('请输入验证码');
+            return false;
+        }
+        var psw = $('#psw').val();
+        if(psw.length==0){
+            msg('请输入密码');
+            return;
+        }
+        var data = {
+            mobile: mobile,
+            code: code,
+            psw: psw
+        };
+        $submitBtn = $(this);
+        $submitBtn.button('loading');
+        $.post("{:url('web/register/repairer_verify_V2')}", jQuery.param(data)).done(function(data){
+            if(data.status){
+                msg(data.info, function(){
+                    window.location.href = "htbjg://boye?type=BACK";
+                });
+            }else{
+                msg(data.info);
+            }
+            $submitBtn.button('reset');
+        });
+    });
+
+</script>
+{/block}

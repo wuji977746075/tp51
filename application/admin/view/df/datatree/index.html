@@ -1,0 +1,101 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+{/block}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>数据字典</legend>
+  <div class="layui-field-box">
+    {:html_head_tip('点击带 .列单元格编辑')}
+    <div class="layui-btn-group">
+      <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn"><i class="fa fa-plus"></i> 添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="fa fa-trash"></i> 批量删除</a>
+    </div>
+    {gt name="parent" value="0"}
+    <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm" id="js-return"><i class="fa fa-reply"></i> 返回</a>
+    {/gt}
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+<!-- script -->
+<script>
+var parent = parseInt({$parent|default=0});
+// page init
+layui.use(['rb','table2','element','form'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+  rb.log('page','init');
+  //执行渲染
+  table.render({ elem: '#demo'
+    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: { parent : parent }
+    ,method: 'get'
+    ,request: { pageName: 'page',limitName: 'size' }
+    ,limits: [10,30]
+    ,limit: 10
+    ,loading: true
+    ,page: true
+    ,cols:  [[
+      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl'}//,sort:true,fixed: 'left'
+      ,{field: 'title', title: '字典名 .', width: 150,edit: 'text'}
+      ,{field: 'name', title: '系统名 .', width: 150,edit: 'text'}
+      ,{field: 'icon', title: '图标 .', width: 120,edit: 'text',templet: '#iconTpl'}
+      ,{field: 'desc', title: '描述 .', width: 150,edit: 'text'}
+      ,{field: 'is_sys', title: '系统字典', width: 120,templet:'#isSysTpl'}
+      ,{field: 'sort',title: '排序 .',width:80,edit: 'text'}
+      ,{align:'left',title: '操作',width:200,toolbar: '#barDemo'} //,fixed: 'right'
+    ]]
+    ,done: function(res, page, count){
+      // 转换数据
+      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
+      // console.log(res);
+      // res.data[0].username = 'done-edit';
+      // console.log(page,count);
+      // res.count = 100;
+    }
+  });
+
+  // 单元格编辑
+  table.on('edit(fDemo)', function(obj){
+    // console.log(obj); // value , field ,data
+    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
+      rb.ajaxTip(data);
+    });
+  });
+  // 单选
+  form.on('switch', function(data){
+    // console.log(data); //elem elem.checked value othis
+    var el = data.elem;
+    var id = parseInt(el.getAttribute('data-id'));
+    rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'is_sys',val: el.checked ? 1:0,id: id},true);
+  });
+});
+</script>
+<script type="text/html" id="iconTpl">
+  <i class="{{ d.icon }}"></i>
+</script>
+<script type="text/html" id="idTpl">
+  <a href="{:url(CONTROLLER_NAME.'/index',[],'')}?parent={{ d.id }}" class="layui-table-link" title="查看下级">{{ d.id }}</a>
+</script>
+<script type="text/html" id="isSysTpl">
+  <form class="layui-form">
+  <input type="checkbox" data-id="{{ d.id }}" value="{{ d.is_sys }}"
+  {{# if(d.is_sys){ }} checked  {{#  } }}
+  lay-skin="switch">
+  </form>
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+</div>
+</script>
+{/block}
+
+{block name="area_foot"}
+{/block}

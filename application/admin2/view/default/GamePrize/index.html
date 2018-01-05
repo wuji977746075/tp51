@@ -1,0 +1,67 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+                <h4>#{$game.name}# 奖池管理 （前端按排序顺时针显示,最多8个,缺失的用<a href="__PUBLIC__/Webview/imgs/game/thanks.png" target="_blank">未中奖</a>[谢谢参与]在后面补足）</h4>
+                <!-- 操作按钮 -->
+                <div class="btn-controls">
+                    <a class="btn btn-sm btn-primary" href="{:url(CONTROLLER_NAME.'/add',array('gid'=>$game['id']))}"><i class="fa fa-plus"></i>{:L('BTN_ADD')}</a>
+                </div>
+                <table class="table table-striped table table-hover  table-condensed">
+                    <thead>
+                    <tr>
+<!--<th style="width:40px;"><input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');" /></th> -->
+                        <th>奖品ID</th>
+                        <th>奖品名</th>
+                        <th>缩略图</th>
+                        <th>奖品类型</th>
+                        <th>数量【0表示无限】</th>
+                        <th>中奖概率</th>
+                        <th>排序</th>
+                        <th>{:L('OPERATOR')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {empty name="list"}
+                        <tr>
+                            <td colspan="8" class="text-center">{:L('NO_DATA')}</td>
+                        </tr>
+                        {else/}
+                        {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo.id}</td>
+                                <td>{$vo['prize_name']}</td>
+                                <td><a href="{:url(CONTROLLER_NAME .'/edit',array('pid'=>$vo['id']))}"><img src="{$vo['path']}" alt="" width="100"/></a></td>
+                                <td>{$vo['prize_num']}【{$cats[$vo['prize_type']]}】</td>
+                                <td>{$vo['prize_cnt']}</td>
+                                <td>{$vo['probability']*100}%</td>
+                                <td>{$vo['sort']}</td>
+                                <td>
+                                    <a class="btn btn-sm btn-default" href="{:url(CONTROLLER_NAME .'/edit',array('pid'=>$vo['id']))}"><i class="fa fa-edit"></i>{:L('BTN_EDIT')}</a>
+                                    <a href="{:url(CONTROLLER_NAME .'/delete',array('pid'=>$vo['id']))}" class="btn btn-danger btn-sm ajax-get confirm" ><i class="fa fa-trash-o"></i> {:L('BTN_DELETE')}</a>
+                                </td>
+                            </tr>
+
+                        {/volist}
+                    {/empty}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

@@ -1,0 +1,132 @@
+
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak={:config('BAIDU_MAP_AK')}"></script>
+<style type="text/css">
+    body, html {width: 100%;height: 100%;margin:0 auto; padding: 0;font-family:"微软雅黑";}
+    #allmap {width: 96%;height: 50vh;overflow: hidden;margin:0 auto;font-family:"微软雅黑";text-align:center;display:visibile;}
+</style>
+<div id="allmap"></div>
+
+<script type="text/javascript">
+
+
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");
+    map.enableScrollWheelZoom(true);
+    var local = new BMap.LocalSearch(map, {
+        renderOptions: {map: map}
+    });
+
+    var geolocation = new BMap.Geolocation();
+    geolocation.getCurrentPosition(function(r){
+        if(this.getStatus() == BMAP_STATUS_SUCCESS){
+
+
+
+            var mk = new BMap.Marker(r.point);// 创建标注
+            map.addOverlay(mk);// 将标注添加到地图中
+            mk.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+            map.panTo(r.point);
+            var point = new BMap.Point(r.point.lng,r.point.lat);
+            map.centerAndZoom(point,12);
+            var geoc = new BMap.Geocoder();
+            //mk.enableDragging();//允许标注拖拽
+            //首次进入将经纬度存进sessionstorage
+            geoc.getLocation(r.point, function(rs){
+                var addComp = rs.addressComponents;
+                sessionStorage.clear();
+                sessionStorage.address = addComp.street + "" + addComp.streetNumber;
+                sessionStorage.lng = r.point.lng;
+                sessionStorage.lat = r.point.lat;
+                start = point;
+                //在地图上方显示当前地址
+                //$('#address').text(addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber);
+                var opts = {
+                    position : r.point,    // 指定文本标注所在的地理位置
+                    offset   : new BMap.Size(30, 30)    //设置文本偏移量
+                };
+                var label = new BMap.Label(addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber, opts);  // 创建文本标注对象
+                label.setStyle({
+                    color : "black",
+                    border:'1px solid black',
+                    fontSize : "12px",
+                    height : "24px",
+                    lineHeight : "24px",
+                    fontFamily:"微软雅黑"
+                });
+                map.addOverlay(label);
+            });
+
+
+            map.addEventListener("touchend", function(e){
+                map.clearOverlays();//清空标注
+                var mk = new BMap.Marker(e.point);// 创建标注
+                map.addOverlay(mk);// 将标注添加到地图中
+                mk.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+                var pt = e.point;
+                geoc.getLocation(pt, function(rs){
+                    var addComp = rs.addressComponents;
+                    sessionStorage.clear();
+                    sessionStorage.address =  addComp.street + "" + addComp.streetNumber;
+                    sessionStorage.lng = e.point.lng;
+                    sessionStorage.lat = e.point.lat;
+                    $('#switchCP').focus();
+                    $('#detail').val(sessionStorage.address);
+
+                    //在地图上方显示当前地址
+                    //$('#address').text(addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber);
+                    var opts = {
+                        position : pt,    // 指定文本标注所在的地理位置
+                        offset   : new BMap.Size(-50, -50)    //设置文本偏移量
+                    };
+                    var label = new BMap.Label(addComp.province + "" + addComp.city + "" + addComp.district + "" + addComp.street + "" + addComp.streetNumber, opts);  // 创建文本标注对象
+                    label.setStyle({
+                        color : "black",
+                        border:'1px solid black',
+                        fontSize : "12px",
+                        height : "24px",
+                        lineHeight : "24px",
+                        fontFamily:"微软雅黑"
+                    });
+                    map.addOverlay(label);
+                });
+            });
+        }
+        else {
+            $.toptip('自动获取地址失败', 'error');
+        }
+    },{enableHighAccuracy: true});
+
+    function ZoomControl(){
+        // 默认停靠位置和偏移量
+        this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+        this.defaultOffset = new BMap.Size(15, 15);
+    }
+
+    // 通过JavaScript的prototype属性继承于BMap.Control
+    ZoomControl.prototype = new BMap.Control();
+
+    // 自定义控件必须实现自己的initialize方法,并且将控件的DOM元素返回
+    // 在本方法中创建个div元素作为控件的容器,并将其添加到地图容器中
+    ZoomControl.prototype.initialize = function(map){
+        // 创建一个DOM元素
+        var div = document.createElement("div");
+
+
+        div.style="width:32px;height:32px;background-image:url('../../../static/weixin/img/dw.png');background-size:contain;"
+        // 绑定事件,点击回到当前位置
+        div.onclick = function(e){
+            map.centerAndZoom(start,12);
+        }
+        // 添加DOM元素到地图中
+        map.getContainer().appendChild(div);
+        // 将DOM元素返回
+        return div;
+    }
+    // 创建控件
+    var myZoomCtrl = new ZoomControl();
+    // 添加到地图当中
+    map.addControl(myZoomCtrl);
+    $("#reset").click(function () {
+        map.centerAndZoom(start,12);
+    });
+</script>

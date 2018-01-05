@@ -1,0 +1,96 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<div class="table-responsive well">
+				<!-- 过滤\查询按钮 -->
+				<div class="filter-controls">
+					<form action="{:url('Purifier/index')}" class="memberForm form-inline" method="get">
+						<div class="form-group">
+							<label class="control-label">用户手机号&nbsp;</label>
+							<div class="input-group">
+								<input class="form-control" type="text" name="mobile" placeholder="请输入用户手机号" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label">&nbsp;设备ID&nbsp;</label>
+							<div class="input-group">
+								<input class="form-control" type="text" name="ddid" placeholder="请输入产品机号" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label">&nbsp;</label>
+							<div class="input-group">
+								<button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i>查询</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!-- 操作按钮 -->
+				<div class="btn-controls">
+					<a class="btn btn-sm btn-primary" href="{:url('Purifier/infoAdd')}"><i class="fa fa-plus"></i>{:L('BTN_ADD')}</a>
+				</div>
+
+				<table class="table table-striped table table-hover  table-condensed">
+					<thead>
+					<tr>
+						<th>
+							编号
+						</th>
+						<th>
+							用户登陆帐号
+						</th>
+						<th>
+							设备ID
+						</th>
+						<th>
+							购买时间
+						</th>
+						<th>
+							操作
+						</th>
+					</tr>
+					</thead>
+					<tbody>
+					{empty name="list"}
+						<tr>
+							<td colspan="8" class="text-center">{:L('NO_DATA')}</td>
+						</tr>
+						{else/}
+						{volist name="list" id="vo"}
+							<tr>
+								<td>
+									{$vo.id}</td>
+								<td>
+									{$vo.username}</td>
+								<td>
+									<a href="{:url('Purifier/detail',array('id'=>$vo['id']))}">{$vo.ddid}</a></td>
+								<td>
+									{$vo.buy_time|date='Y-m-d H:i:s',###}</td>
+								<td>
+									<a href="{:url('Purifier/fault',array('ddid'=>$vo['ddid']))}" class="btn btn-default btn-sm">{:L('BTN_VIEW_FAULT_HIS')}</a></td>
+							</tr>
+
+						{/volist}
+					{/empty}
+					</tbody>
+				</table>
+				<div>{$show}</div>
+			</div>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

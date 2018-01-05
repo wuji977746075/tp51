@@ -1,0 +1,41 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/address/address.css">
+{/block}
+{block name="body"}
+<div class="address-index-box">
+    <a href="{:url('address/address_add')}">
+        <div class="add-btn">
+            <div id="plus-circle-o" class="anticon anticon-plus-circle-o"></div>
+            <span class="add-btn-text1">新增收货地址</span>
+            <div id="right"></div>
+        </div>
+    </a>
+    <div style="padding-bottom: 70px">
+        {volist name="address" id="vo"}
+        <a href="{:url('address/address_edit',array('id' => $vo['id']))}">
+            <div class="address-list">
+                <div class="address-list-msg">
+                    <div class="address-list-msg-name">
+                        {eq name="vo.is_default" value="1"}
+                        <span class="tag">默认</span>
+                        {/eq}
+                        <span class="name">{$vo.contactname}</span>
+                        <span class="phone">{$vo.mobile}</span>
+                    </div>
+                    <div class="address-list-msg-address">
+                        {$vo.province} {$vo.city} {$vo.area} {$vo.detailinfo}
+                    </div>
+                </div>
+                <div class="address-list-right  anticon anticon-right"></div>
+            </div>
+        </a>
+        {/volist}
+    </div>
+</div>
+{include file="template/nav_bar"}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+{/block}

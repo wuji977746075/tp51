@@ -1,0 +1,43 @@
+<!--{extend name="template/base_default"}-->
+<!--{block name="header"}-->
+<!--<link rel="stylesheet" href="__CSS__/common.css">-->
+<!--<link rel="stylesheet" href="__CSS__/product_kind/index.css">-->
+<!--{/block}-->
+<!--{block name="body"}-->
+<!--<div class="weui-search-bar" id="searchBar">-->
+    <!--<form class="weui-search-bar__form" action="{:url('shop/product_list')}">-->
+        <!--<div class="weui-search-bar__box">-->
+            <!--<i class="weui-icon-search"></i>-->
+            <!--<input type="search" class="weui-search-bar__input" name="keyword" id="searchInput" placeholder="搜索" required="">-->
+            <!--<a href="javascript:" class="weui-icon-clear" id="searchClear"></a>-->
+        <!--</div>-->
+        <!--<label class="weui-search-bar__label" id="searchText">-->
+            <!--<i class="weui-icon-search"></i>-->
+            <!--<span>搜索</span>-->
+        <!--</label>-->
+    <!--</form>-->
+    <!--<a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>-->
+<!--</div>-->
+<!--<div class="product-kind">-->
+    <!--{volist name="cate" id="vo"}-->
+        <!--<div class="product-kind-item">-->
+            <!--<a href="{:url('shop/product_list',array('id'=>$vo['id']))}">-->
+                <!--<div class="product-kind-item-wrap">-->
+                    <!--<div class="product-kind-item-img">-->
+                        <!--<img src="{$vo.img}">-->
+                    <!--</div>-->
+                    <!--<div class="product-kind-item-text">{$vo.name}</div>-->
+                <!--</div>-->
+            <!--</a>-->
+        <!--</div>-->
+    <!--{/volist}-->
+<!--</div>-->
+<!--{include file="template/nav_bar"}-->
+
+<!--{/block}-->
+<!--{block name="footer"}-->
+<!--<script type="text/javascript">-->
+
+<!--</script>-->
+<!--{/block}-->
+46465485486

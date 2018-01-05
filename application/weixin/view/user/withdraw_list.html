@@ -1,0 +1,31 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_income/style.css">
+{/block}
+{block name="body"}
+{volist name='apply' id='vo'}
+<div class="my-income-item">
+    <div class="my-income-item-a">{$vo.create_time}</div>
+    {if condition = '$vo.valid_status eq 0'}
+    <div class="my-income-item-b">申请中</div>
+    {elseif condition = '$vo.valid_status eq 1' /}
+    <div class="my-income-item-b">通过</div>
+    {elseif condition = '$vo.valid_status eq 2' /}
+    <div class="my-income-item-b">驳回</div>
+    <div class="my-income-item-b">驳回理由：{$vo.reply_msg}</div>
+    {/if}
+    <div class="my-income-item-b">金额：{$vo.amount/100}</div>
+    <div class="my-income-item-b">姓名：{$vo.real_name}</div>
+</div>
+{/volist}
+{if empty($apply)}
+    <div style="text-align: center;margin-top:50%">暂无提现记录</div>
+{/if}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+</script>
+{/block}

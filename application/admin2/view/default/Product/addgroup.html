@@ -1,0 +1,53 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+
+            <!-- 带验证 form -->
+            <form class="form-horizontal well validateForm">
+                <fieldset>
+                    <legend>
+                        类目属性添加
+                    </legend>
+                    <div class="form-group">
+                        <label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm" href="{:url('Product/addGroup')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default btn-sm" href="{:url('Product/group')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 col-lg-2 control-label">商品分类名称</label>
+                        <div class="col-md-10 col-lg-10">
+                            <input type="text" class="required form-control input-sm"  name="name" id="inputname" placeholder="请输入商品分类名称,请不要超过30个字">
+                            <div class="help-block">(请输入商品分类名称,不要超过30个字)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm" href="{:url('Product/addGroup')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default btn-sm" href="{:url('Product/group')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <!-- form -->
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

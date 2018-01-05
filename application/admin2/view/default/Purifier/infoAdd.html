@@ -1,0 +1,238 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+
+	<style type="text/css">
+		.select-address{
+			width: 200px;
+		}
+	</style>
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- 带验证 form -->
+			<form id="registerForm" class="form-horizontal well validateForm">
+				<fieldset>
+					<legend>
+						新增产品</legend>
+					<div class="form-group">
+						<label for="inputmobile" class="col-md-2 col-lg-2 control-label">用户手机号</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="mobile" id="inputmobile" placeholder="请输入用户手机号">
+							<div class="help-block">(用户的手机号码)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputbuyyer" class="col-md-2 col-lg-2 control-label">购买人姓名</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="buyyer" id="inputbuyyer" placeholder="请输入购买人姓名">
+							<div class="help-block">(购买人姓名，中文名)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputddid" class="col-md-2 col-lg-2 control-label">产品机号</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="ddid" id="inputddid" placeholder="请输入产品机号">
+							<div class="help-block">(产品的设备唯一标识)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputname" class="col-md-2 col-lg-2 control-label">产品名称</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="name" id="inputname" placeholder="请输入产品名称">
+							<div class="help-block">(产品的名称)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputname" class="col-md-2 col-lg-2 control-label">产品型号</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="device_model" id="inputdevice_model" placeholder="请输入产品名称">
+							<div class="help-block">(产品的型号)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="buy_time" class="col-md-2 col-lg-2 control-label">产品采购时间</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="buy_time" id="buy_time" value="{:date('Y/m/d H:i')}">
+							<div class="help-block">(产品的的采购时间)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="install_time" class="col-md-2 col-lg-2 control-label">产品安装时间</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="install_time" id="install_time" value="{:date('Y/m/d H:i')}">
+							<div class="help-block">(产品的安装时间)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-lg-2 col-md-2">省份</label>
+						<div class="col-lg-10 col-md-10">
+							<select id="province" class="form-control select-address" name="provinceid">
+								<option value="">请选择省份</option>
+								<volist name="provinces" id="vo">
+									<option value="{$vo.provinceid}">{$vo.province}</option>
+								{/volist}
+							</select>
+							<div class="help-block">(用户地址:省份)</div>
+						</div>
+
+					</div>
+					<div class="form-group">
+						<label class="control-label col-lg-2 col-md-2">城市</label>
+						<div class="col-lg-10 col-md-10">
+							<select id="city" class="form-control select-address" name="cityid">
+								<option value="">请先选择省份</option>
+							</select>
+							<div class="help-block">(用户地址:城市)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label col-lg-2 col-md-2">区</label>
+						<div class="col-lg-10 col-md-10">
+							<select id="area" class="form-control select-address" name="areaid">
+								<option value="">请先选择区</option>
+							</select>
+							<div class="help-block">(用户地址:区)</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(''.CONTROLLER_NAME.'/infoAdd')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default" href="{:url(''.CONTROLLER_NAME.'/index')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+	<script type="text/javascript">
+		$(function() {
+			$('#install_time').datetimepicker({
+				lang: 'ch'
+			});
+			$('#buy_time').datetimepicker({
+				lang: 'ch'
+			});
+
+			//是否中文名字
+			$.validator.addMethod("isCnName", function(value, element) {
+				var tel = /[a-z0-9.*?,(!)&amp;%$^……！·￥——（）　#@]/g;
+				return this.optional(element) || !(tel.test(value));
+			}, "请填写正确的姓名");
+			// 联系电话(手机/电话皆可)验证
+			$.validator.addMethod("isPhone", function(value, element) {
+				var length = value.length;
+				var mobile = /^(((13[0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+				var tel = /^\d{3,4}-?\d{7,9}$/;
+				return this.optional(element) || (tel.test(value) || mobile.test(value));
+			}, "请正确填写您的联系电话");
+			$("#registerForm").validate({
+				errorPlacement: function(error, element) {
+					$(".checked", element.parent()).remove();
+					error.appendTo(element.parent());
+				},
+				success: function(label) {
+					label.removeClass("error").addClass("checked").text("Ok!");
+				},
+				rules: {
+					buyyer: {
+						required: true,
+						isCnName: true,
+					},
+					mobile: {
+						required: true,
+						isPhone: true,
+					},
+					province:{
+						required: true,
+					},
+					city:{
+						required: true,
+					}
+				},
+				messages: {
+				}
+			}); //end validate
+		}); //end ready
+	</script>
+	<script>
+		function appendToArea(data){
+			$("#area").removeClass("txt-gray");
+			var area = $("#area");
+			area.empty();
+			if(!data){
+				area.parent().addClass("hide");
+				return ;
+			}
+			if(data.length > 0){
+				area.parent().removeClass("hide");
+			}
+			for(var i=0;i<data.length;i++){
+				var ele = $("<option></option>");
+				ele.text(data[i].area).attr("value",data[i].areaid).appendTo(area);
+			}
+		}
+		function appendToCity(data){
+			var city = $("#city");
+			city.empty();//.append("<option value=''>请先选择省份</option>")
+			for(var i in data){
+				var ele = $("<option></option>");
+				ele.text(data[i].city).attr("value",data[i].cityid).appendTo(city);
+			}
+		}
+		$(function(){
+			$("#province").change(function(){
+				var provinceID = $("#province").val();
+				console.log(provinceID);
+				if(provinceID){
+					$.post("{:url('Tool/City/getCitys')}",{provinceid:provinceID}).done(function(data){
+						console.log(data);
+						if(data.status){
+							appendToCity(data.info);
+						}else{
+
+						}
+					});
+				}
+			});
+			$("#city").change(function(){
+				$("#city").removeClass("txt-gray");
+				var cityID = $("#city").val();
+//					console.log(cityID);
+				if(cityID){
+					$("#pcaloading").show();
+					$.post("{:url('Tool/City/getArea')}",{cityid:cityID},function(data){
+//							console.log(data);
+						if(data.status){
+							appendToArea(data.info);
+						}else{
+
+						}
+						$("#pcaloading").hide();
+					});
+				}
+			});
+		})
+	</script>
+
+{/block}

@@ -1,0 +1,50 @@
+array(24) {
+  ["accNo"] => string(16) "6226********0048"
+  ["accessType"] => string(1) "0"
+  ["bizType"] => string(6) "000201"
+  ["currencyCode"] => string(3) "156"
+  ["encoding"] => string(5) "utf-8"
+  ["merId"] => string(15) "777290058110048"
+  ["orderId"] => string(14) "20170220165320"
+  ["preAuthId"] => string(6) "146730"
+  ["queryId"] => string(21) "201702201653202470098"
+  ["respCode"] => string(2) "00"
+  ["respMsg"] => string(7) "Success"
+  ["settleAmt"] => string(4) "1000"
+  ["settleCurrencyCode"] => string(3) "156"
+  ["settleDate"] => string(4) "0220"
+  ["signMethod"] => string(2) "01"
+  ["signPubKeyCert"] => string(1548) "-----BEGIN CERTIFICATE-----
+MIIEOjCCAyKgAwIBAgIFEAJkAUkwDQYJKoZIhvcNAQEFBQAwWDELMAkGA1UEBhMC
+Q04xMDAuBgNVBAoTJ0NoaW5hIEZpbmFuY2lhbCBDZXJ0aWZpY2F0aW9uIEF1dGhv
+cml0eTEXMBUGA1UEAxMOQ0ZDQSBURVNUIE9DQTEwHhcNMTUxMjA0MDMyNTIxWhcN
+MTcxMjA0MDMyNTIxWjB5MQswCQYDVQQGEwJjbjEXMBUGA1UEChMOQ0ZDQSBURVNU
+IE9DQTExEjAQBgNVBAsTCUNGQ0EgVEVTVDEUMBIGA1UECxMLRW50ZXJwcmlzZXMx
+JzAlBgNVBAMUHjA0MUBaMTJAMDAwNDAwMDA6U0lHTkAwMDAwMDA2MjCCASIwDQYJ
+KoZIhvcNAQEBBQADggEPADCCAQoCggEBAMUDYYCLYvv3c911zhRDrSWCedAYDJQe
+fJUjZKI2avFtB2/bbSmKQd0NVvh+zXtehCYLxKOltO6DDTRHwH9xfhRY3CBMmcOv
+d2xQQvMJcV9XwoqtCKqhzguoDxJfYeGuit7DpuRsDGI0+yKgc1RY28v1VtuXG845
+fTP7PRtJrareQYlQXghMgHFAZ/vRdqlLpVoNma5C56cJk5bfr2ngDlXbUqPXLi1j
+iXAFb/y4b8eGEIl1LmKp3aPMDPK7eshc7fLONEp1oQ5Jd1nE/GZj+lC345aNWmLs
+l/09uAvo4Lu+pQsmGyfLbUGR51KbmHajF4Mrr6uSqiU21Ctr1uQGkccCAwEAAaOB
+6TCB5jAfBgNVHSMEGDAWgBTPcJ1h6518Lrj3ywJA9wmd/jN0gDBIBgNVHSAEQTA/
+MD0GCGCBHIbvKgEBMDEwLwYIKwYBBQUHAgEWI2h0dHA6Ly93d3cuY2ZjYS5jb20u
+Y24vdXMvdXMtMTQuaHRtMDgGA1UdHwQxMC8wLaAroCmGJ2h0dHA6Ly91Y3JsLmNm
+Y2EuY29tLmNuL1JTQS9jcmw0NDkxLmNybDALBgNVHQ8EBAMCA+gwHQYDVR0OBBYE
+FAFmIOdt15XLqqz13uPbGQwtj4PAMBMGA1UdJQQMMAoGCCsGAQUFBwMCMA0GCSqG
+SIb3DQEBBQUAA4IBAQB8YuMQWDH/Ze+e+2pr/914cBt94FQpYqZOmrBIQ8kq7vVm
+TTy94q9UL0pMMHDuFJV6Wxng4Me/cfVvWmjgLg/t7bdz0n6UNj4StJP17pkg68WG
+zMlcjuI7/baxtDrD+O8dKpHoHezqhx7dfh1QWq8jnqd3DFzfkhEpuIt6QEaUqoWn
+t5FxSUiykTfjnaNEEGcn3/n2LpwrQ+upes12/B778MQETOsVv4WX8oE1Qsv1XLRW
+i0DQetTU2RXTrynv+l4kMy0h9b/Hdlbuh2s0QZqlUMXx2biy0GvpF2pR8f+OaLuT
+AtaKdU4T2+jO44+vWNNN2VoAaw0xY6IZ3/A1GL0x
+-----END CERTIFICATE-----"
+  ["traceNo"] => string(6) "247009"
+  ["traceTime"] => string(10) "0220165320"
+  ["txnAmt"] => string(4) "1000"
+  ["txnSubType"] => string(2) "01"
+  ["txnTime"] => string(14) "20170220165320"
+  ["txnType"] => string(2) "02"
+  ["version"] => string(5) "5.1.0"
+  ["signature"] => string(344) "dzVUfjyJrHuSSe5l+v9wrZKFisx6Eq/MJWLNEL+2eGNvkl5MLwvnge4gCDMd2iJTh/DiFqbYLb9WVy8W7I1bZTu9NtNLbEhXjt46tb4GDcu3W5z9tRXUwfWTGh77XAZWIl4ZQHMWEiUNqJd64yITpS3eFtLIyXS0OdjZ31o6Y5umpsz4gUp23+4PwkN/e3/xhaP1Ea8fF1R2xE7B5DhzlorskUUDyrWRz5bNUtsrghkJHQR5nqOXnTQkt5McMDW01XqmEJuqzJm0wZQCA8WfuekQEriZJrFz+A0E0f+X3x+BemcLw2RavfAilPMjTXZJuJ2Ycl3ouCcjHqn2zg4uQA=="
+}

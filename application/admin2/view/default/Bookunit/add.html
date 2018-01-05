@@ -1,0 +1,158 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+	<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+	<style>
+	.img-item div.thumbnail{ background:url(__IMG__/mp3.jpg) center center no-repeat;
+    background-size: 100px 100px; }
+  </style>
+{/block}
+
+{block name="area_body"}
+	{:widget('Menus/topbar')}
+	<div class="admin-main container-fluid">
+		{:widget('Menus/left')}
+		<div class="admin-main-content">
+			{:widget('Menus/breadcrumb')}
+			<!-- 带验证 form -->
+			<form class="form-horizontal well validateForm">
+				<input type="hidden" name="pid" value="{$pid}" />
+				<input type="hidden" name="parent" value="{$parent}" />
+				<input type="hidden" name="level" value="{$level}" />
+				<fieldset>
+					<legend>
+						{$level + 1}级单元 添加</legend>
+					<div class="form-group">
+						<label for="inputname" class="col-md-2 col-lg-2 control-label">*单元名称</label>
+						<div class="col-md-3 col-lg-3">
+							<input type="text" class="required form-control input-sm" name="name" id="inputname" placeholder="请输入单元名称,请不要超过30个字">
+							<div class="help-block">(请输入单元名称,不要超过30个字)</div>
+						</div>
+					</div>
+
+					{eq name="level" value="2"}
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">免费体验</label>
+						<div class="col-md-3 col-lg-3">
+						<label class="radio-inline">
+							<input type="radio" name="is_free" value=1 checked="checked" />免费
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="is_free" value=0 />不免费
+						</label>
+						<!-- <div class="help-block">(三级单元有效)</div> -->
+						</div>
+					</div>
+					<div class="form-group">
+						<label  class="col-md-2 col-lg-2 control-label">答题时间</label>
+						<div class="col-md-3 col-lg-3">
+							<input type="number" class="required form-control input-sm" name="time_limit"  placeholder="请输入最大答题时间（秒）">
+							<div class="help-block">(请输入最大答题时间,秒)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">提交答案</label>
+						<div class="col-md-3 col-lg-3">
+						<label class="radio-inline">
+							<input type="radio" name="has_answer" value=1 checked="checked" />提交
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="has_answer" value=0 />不提交
+						</label>
+						<!-- <div class="help-block">(三级单元有效)</div> -->
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">题目返回</label>
+						<div class="col-md-3 col-lg-3">
+						<label class="radio-inline">
+							<input type="radio" name="is_rand" value=1 />随机
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="is_rand" value=0 checked="checked" />顺序
+						</label>
+						<!-- <div class="help-block">(三级单元有效)</div> -->
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">播报题号</label>
+						<div class="col-md-3 col-lg-3">
+						<label class="radio-inline">
+							<input type="radio" name="is_tip" value=1 checked="checked" />播报
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="is_tip" value=0 />不播报
+						</label>
+						<!-- <div class="help-block">(三级单元有效)</div> -->
+						</div>
+					</div>
+					<div class="form-group">
+            <input type="hidden" name="audio_id" id="js-audio-id" value="">
+            <label for="" class="col-md-2 col-lg-2 control-label">mp3文件</label>
+            <div class="col-md-3 col-lg-3">
+              <span class="text-muted">(注意:当前仅支持mp3，大小不超过5M)<i data-toggle="tooltip" class="fa fa-question" title=""></i></span>
+              <!-- 图片选择DOM结构 -->
+              <div class="wxuploaderaudio clearfix main_img"  data-maxitems="1">
+                <div class="audio-preview show clearfix" >
+                  <div class='img-item {notpresent name="file"}hide{/notpresent} img-item-show'>
+                    {present name="file"}
+                    <div class="thumbnail"><p class='img-desc'>{$file.ori_name}</p></div>
+                    <p class='img-desc' onclick='playControll(this)' data-path='{$file.path}'><i class='fa fa-play'></i> {$file.duration_desc}</p>
+                    <div class="clearfix" style="width: 100%;height: 20px;position: absolute;bottom:30px;left:0;">
+                      <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete_audio"></a></div>
+                    </div>
+                    {else /}
+                    无音频文件
+                    {/present}
+                  </div>
+                  <div class='img-item {present name="file"}hide{/present} img-item-add'>
+                    <div class="add">
+                      <i class="fa fa-plus"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+					{/eq}
+
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">排序</label>
+						<div class="col-md-3 col-lg-3">
+							<input type="number" name="sort" class="form-control  input-number" value='' />
+							<div class="help-block">(单元的顺序,同级下越大越前)</div>
+						</div>
+					</div>
+
+          <div class="form-group">
+            <label  class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+            <div class="col-lg-10 col-md-10">
+              <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm"
+                 id="js_submit" href="{:url('Admin/Bookunit/add')}" autofocus="autofocus"><i
+                      class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+              <a class="btn btn-default btn-sm" href="{:url('Admin/Bookunit/index',array('parent'=>$parent,'pid'=>$pid))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+            </div>
+          </div>
+		</fieldset>
+		</form>
+
+    {include file="default/template/audio_upload" /}
+		<!-- form -->
+
+	</div>
+	<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+	$(function(){
+	  wxuploadaudio.init({cont:".wxuploaderaudio"});
+	})
+</script>
+{/block}

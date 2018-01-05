@@ -1,0 +1,152 @@
+<div class="am-u-lg-12 am-u-md-12 am-padding-0">
+    <ul class="am-nav am-nav-tabs">
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn {if strstr($type,'BY_Config_')}am-btn-primary{/if}{if strstr($type,'BY_App_')}am-btn-primary{/if} am-dropdown-toggle" data-am-dropdown-toggle>APP/CONFIG<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('config/app','','')}">app配置 - BY_Config_app</a></li>
+                    <li><a href="{:url('config/version','','')}">最新版本 - BY_Config_version</a></li>
+                    <li><a href="{:url('config/position','','')}">获取position - BY_Config_position</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn {if strstr($type,'BY_User_')}am-btn-primary{/if}  {if strstr($type,'BY_Weixin_')}am-btn-primary{/if} am-dropdown-toggle"
+                        data-am-dropdown-toggle>
+                    用户接口<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('user/login','','')}">用户登录 - BY_User_login</a></li>
+                    <li><a href="{:url('user/register','','')}">用户注册 - BY_User_register</a></li>
+                    <li><a href="{:url('user/update','','')}">账户更新 - BY_User_update</a></li>
+                    <li><a href="{:url('user/findPswByMobile','','')}">手机找密 - BY_User_findPswByMobile</a></li>
+                    <li><a href="{:url('user/updatePsw','','')}">修改密码 - BY_User_updatePsw</a></li>
+                    <li><a href="{:url('user/bind','','')}">手机绑定 - BY_User_bind</a></li>
+                    <li><a href="{:url('user/changePhone','','')}">手机换绑 - BY_User_changePhone</a></li>
+                    <li><a href="{:url('user/loginByCode','','')}">验证码登陆 - BY_User_loginByCode</a></li>
+                    <li><a href="{:url('user/info','','')}">用户信息 - BY_User_info</a></li>
+                    <li><a href="{:url('user/infoByMobile','','')}">根据手机号取用户信息 - BY_User_infoByMobile</a></li>
+                    <li><a href="{:url('user/verifyApply','','')}">实名认证申请 - BY_User_verifyApply</a></li>
+                    <li><a href="{:url('user/verifyList','','')}">实名认证列表 - AM_User_verifyList</a></li>
+                    <li><a href="{:url('user/verify','','')}">实名认证审核 - AM_User_verify</a></li>
+                    <li><a href="{:url('user/verifyListBroker','','')}">经纪人认证列表 - AM_User_verifyListBroker</a></li>
+                    <li><a href="{:url('user/verifyBroker','','')}">经纪人认证审核 - AM_User_verifyBroker</a></li>
+                    <li><a href="{:url('user/suggest','','')}">意见反馈 - BY_User_suggest</a></li>
+
+                    <!-- <li><a href ="{:url('weixin/login','','')}">微信登陆 - BY_Weixin_login</a></li>
+                    <li><a href ="{:url('weixin/bind','','')}">微信绑定 - BY_Weixin_bind</a></li>
+                    <li><a href ="{:url('user/focus','','')}">用户关注 - BY_User_focus</a></li>
+                    <li><a href ="{:url('user/bindWithdraw','','')}">绑定提现账号 - BY_User_bindWithdraw</a></li>
+                    <li><a href ="{:url('user/testMoney','','')}">大富翁 - BY_User_testMoney</a></li> -->
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'BY_Message_')}am-btn-primary{/if} am-dropdown-toggle">
+                    消息/验证码<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('message/sendSms','','')}">发送手机验证码 - BY_Message_sendSms</a></li>
+                    <li><a href="{:url('message/sendUserSms','','')}">发送短信 - BY_Message_sendUserSms</a></li>
+                    <li><a href="{:url('message/checkCode','','')}">验证码验证 - BY_Message_checkCode</a></li>
+                    <li><a href="{:url('message/query','','')}">消息分页 - BY_Message_query</a></li>
+                    <li><a href="{:url('message/count','','')}">消息未读 - BY_Message_count</a></li>
+
+                    <!-- <li><a href ="{:url('message/call','','')}"      >发送私信 - BY_Message_call</a></li> -->
+                    <li><a href="{:url('message/system','','')}">发送系统消息 - BY_Message_system</a></li>
+                    <li><a href="{:url('message/delete','','')}">信息删除 - BY_Message_delete</a></li>
+                    <li><a href="{:url('message/read','','')}">信息已读 - BY_Message_read</a></li>
+                    <li><a href="{:url('message/ywRelation','','')}">云旺联系人 - BY_Message_ywRelation</a></li>
+                    <li><a href="{:url('message/ywPush','','')}">云旺私聊 - BY_Message_ywPush</a></li>
+                    <li><a href="{:url('message/ywHis','','')}">云旺私聊历史 - BY_Message_ywHis</a></li>
+                    <!-- <li><a href ="{:url('message/queryCall','','')}" >私信查询 - BY_Message_queryCall</a></li>
+                    <li><a href ="{:url('message/detailCall','','')}">私信详情 - BY_Message_detailCall</a></li>
+                    <li><a href ="{:url('message/deleteCall','','')}">私信删除 - BY_Message_deleteCall</a></li> -->
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'BY_File_')}am-btn-primary{/if} am-dropdown-toggle">
+                    附件接口<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('file/upload','','')} ">图片上传</a></li>
+                    <li><a href="{:url('file/showPic','','')}">图片查看</a></li>
+                    <li><a href="{:url('file/banner','','')} ">图片轮播 - BY_File_banner</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'BY_Pay_')}am-btn-primary{/if} am-dropdown-toggle">
+                    支付/余额<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <!--<li><a href="{:url('Pay/getPayInfo')}">预/再支付 - BY_Pay_getPayInfo</a></li>-->
+                    <li><a href="{:url('Pay/payInfo')}">发起支付 - BY_Pay_payInfo</a></li>
+                    <li><a href="{:url('Pay/rfpay')}">发起rf支付 - BY_Pay_rfpay</a></li>
+                    <li><a href="{:url('Pay/rfpaySendSms')}">rf支付发送验证码 - BY_Pay_rfpaySendSms</a></li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'BY_Wallet')}am-btn-primary{/if} am-dropdown-toggle">
+                    余额/钱包<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('Wallet/balance','','')} ">钱包余额 - BY_Wallet_balance</a></li>
+                    <li><a href="{:url('Wallet/updatePsw','','')} ">修改支付密码 - BY_Wallet_updatePsw</a></li>
+                    <li><a href="{:url('Wallet/checkPsw','','')} ">验证支付密码 - BY_Wallet_checkPsw</a></li>
+                    <li><a href="{:url('Wallet/bindBankCard','','')} ">绑定银行卡 - BY_Wallet_bindBankCard</a></li>
+                    <li><a href="{:url('Wallet/getBank','','')} ">获取银行卡号银行 - BY_Wallet_getBank</a></li>
+                    <li><a href="{:url('Wallet/bankCardList','','')} ">已绑定的银行卡列表 - BY_Wallet_bankCardList</a></li>
+                    <li><a href="{:url('Wallet/deleteBankCard','','')} ">银行卡解绑 - BY_Wallet_deleteBankCard</a></li>
+                    <li><a href="{:url('Wallet/withdraw','','')} ">提现申请 - BY_Wallet_withdraw</a></li>
+                    <li><a href="{:url('Wallet/transfer','','')} ">钱包转账 - BY_Wallet_transfer</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'_Org_')}am-btn-primary{/if} am-dropdown-toggle">
+                    组织机构<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('Org/regApply','','')} ">申请注册 - BY_Org_regApply</a></li>
+                    <li><a href="{:url('Org/regList','','')} ">申请列表 - AM_Org_regList</a></li>
+                    <li><a href="{:url('Org/regVerify','','')} ">申请审核/删除 - AM_Org_regVerify</a></li>
+                    <li><a href="{:url('Org/add','','')} ">添加(暂) - BY_Org_add</a></li>
+                    <li><a href="{:url('Org/addChild','','')} ">添加下级机构 - BY_Org_addChild</a></li>
+                    <li><a href="{:url('Org/setMember','','')} ">设置机构成员 - BY_Org_setMember</a></li>
+                    <li><a href="{:url('Org/del','','')} ">删除机构 - BY_Org_del</a></li>
+                    <li><a href="{:url('Org/view','','')} ">查看下级机构 - BY_Org_view</a></li>
+                    <li><a href="{:url('Org/setAdmin','','')} ">设置机构管理员 - BY_Org_setAdmin</a></li>
+                    <li><a href="{:url('Org/member','','')} ">查看机构成员 - BY_Org_member</a></li>
+                </ul>
+            </div>
+        </li>
+
+        <li>
+            <div class="am-dropdown" data-am-dropdown>
+                <button class="am-btn  {if strstr($type,'_Datatree_')}am-btn-primary{/if} am-dropdown-toggle">
+                    数据字典<span class="am-icon-caret-down"></span>
+                </button>
+                <ul class="am-dropdown-content">
+                    <li><a href="{:url('Datatree/child','','')} ">子一级查询 - BY_Datatree_child</a></li>
+                 </ul>
+            </div>
+        </li>
+
+    </ul>
+</div>

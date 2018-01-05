@@ -1,0 +1,163 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+
+	<style type="text/css">
+        .clicked{
+            cursor: pointer;
+        }
+        .expand{
+
+            float: left;
+            min-height: 32px;
+            padding-top: 9px;
+            margin-right: 8px;
+            WIDTH: 15PX;
+            TEXT-ALIGN: CENTER;
+        }
+	</style>
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- 带验证 form -->
+			<form id="registerForm" class="form-horizontal well validateForm">
+                <div class="form-group">
+                    <label> &nbsp;</label>
+                    <div style="margin-left: 30px;">
+                        <a href="__SELF__" CLASS="ajax-post btn btn-sm btn-primary" target-form="validateForm">保存</a>
+                        <a href="{:url('OrgMember/index')}" class=" btn btn-sm btn-default">返回</a>
+                    </div>
+                </div>
+                <div id="tree">
+                    <ul class="list-unstyled">
+                        <volist name="area" id="vo">
+                            <li class="clicked j_province">
+                                <empty name="vo['_child']">
+                                <div class="expand">- </div>
+                                {else/}
+                                <div class="expand">+</div>
+                                {/empty}
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input class="j_province_value" type="checkbox" <eq name="vo['checked']" value="1"> checked{/eq} value="{$vo.provinceid}" name="province[]" />
+                                        {$vo.province}
+                                    </label>
+                                </div>
+                                <eq name="key" value="0">
+                                    <ul class="list-unstyled clearfix j_city">
+                                    {else/}
+                                    <ul class="hide list-unstyled clearfix j_city">
+                                {/eq}
+                                    <volist name="vo['_child']" id="child">
+                                        <li style="width: 100%;margin-left: 25px;" class="pull-left">
+
+                                            <div class="checkbox">
+                                                <label>
+                                            <input type="checkbox" <eq name="child['checked']" value="1"> checked{/eq} value="{$child.cityid}" name="city[]" />{$child.city}
+
+                                                </label>
+                                            </div>
+                                        </li>
+                                    {/volist}
+                                </ul>
+                            </li>
+                        {/volist}
+                    </ul>
+                </div>
+			</form>
+			<!-- form -->
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+	<script type="text/javascript">
+		$(function() {
+            $(".clicked").each(function (index, item) {
+                console.log("each click",item);
+                $(item).click(function (ev) {
+                    console.log(ev.target);
+                    var ele = $(ev.target).parent();
+                    ele.find("ul").toggleClass("hide");
+                    if (ele.find("ul").hasClass("hide")) {
+                        $(ele.find(".expand")).text("+");
+                    } else {
+                        $(ele.find(".expand")).text("-");
+                    }
+                });
+            });
+
+            $(".j_province input").change(function(ev){
+                var $cur = $(ev.target).parents(".j_province");
+
+                console.log($(ev.target).hasClass("j_province_value"));
+
+                if(!$(ev.target).hasClass("j_province_value")){
+                    return;
+                }
+                var $target = $(ev.target);
+
+                console.log($target,$target.prop("checked"));
+                $cur.find(".j_city input").each(function(index,item){
+
+                    if(true == $target.prop("checked") ) {
+                        $(item).prop("checked",true);
+                    }else{
+                        $(item).prop("checked",false);
+                    }
+                })
+            })
+//            function getData(){
+//                var data = {$json_area};
+//                console.log(data);
+//                var treeData = [];
+//                for(var i=0;i<data.length;i++){
+//                    var node = {text:"",
+//                                    state:{
+//                                            checked:false,
+//                                            selected: false,
+//                                            },
+//                                    nodes:[],
+//                                    tags: [data[i].provinceid]
+//                                };
+//                    node.text = data[i].province;
+//                    console.log(data[i]._child);
+//                    if(data[i]._child){
+//                        for(var j=0;j<data[i]._child.length;j++){
+//                            var child = data[i]._child[j];
+//                            node.nodes.push({
+//                                text:child.city,
+//                                state:{
+//                                    checked:false,
+//                                    selected: false,
+//                                },
+//                                tags: [child.cityid]
+//                            })
+//                        }
+//                    }
+//                    treeData.push(node);
+//                }
+//                return treeData;
+//            }
+
+
+
+		}); //end ready
+	</script>
+
+{/block}

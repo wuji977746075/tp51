@@ -1,0 +1,34 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<style>
+.login-form{
+    background: white;
+}
+</style>
+{/block}
+{block name="body"}
+<form action="{:url('login/login')}" method="post">
+    <div class="weui-cell login-form">
+        <div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" name="mobile" type="tel" placeholder="请输入手机号">
+        </div>
+    </div>
+    <div class="weui-cell login-form">
+        <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" name="password" type="password"  placeholder="请输入密码">
+        </div>
+    </div>
+    <div class="weui-btn-area">
+        <button class="weui-btn weui-btn_primary" type="submit">确定</button>
+    </div>
+</form>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+</script>
+{/block}

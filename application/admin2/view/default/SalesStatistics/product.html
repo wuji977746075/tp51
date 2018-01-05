@@ -1,0 +1,246 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+<style type="text/css">
+    .vertical-align-middle>td{
+        vertical-align: middle!important;
+    }
+    .panel{ margin:0 15px; }
+    .p0{ padding: 0 !important; }
+    .form-group{ margin-bottom: 5px !important; }
+    .select2-selection{ border:none !important;height:34px !important; }
+    .select2-selection .select2-selection__rendered{ height:35px !important; }
+    .select2-dropdown{ border-color: #ddd !important; }
+</style>
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+
+        <div class="h4"><b>财务统计</b>  - <a title="财务统计" data-toggle="tooltip" data-placement="right">说明</a></div>
+
+        <div class="filter-controls clearfix">
+            <form class="form-inline searchForm" method="post" action="{:url('SalesStatistics/product')}">
+                <input type="hidden" name="down" class="" value="0">
+
+                <div class="form-group row col-lg-12 col-md-12">
+                    <div class="input-group" style="width:100%">
+                        <div class="input-group-addon input-sm"><i class="fa fa-user"></i>销售人员</div>
+                        <div class="form-control" style="display:inline-block;width:285px;padding:0;margin-right: 5px;">
+                            <select id="user_select2" name="introducer_uid">
+                                {if condition="$introducer_uid gt 0"}<option value="{$introducer_uid}" selected="selected"> [id:{$introducer_uid}] {$nickname|default=''}</option>{/if}
+                            </select>
+                        </div>
+                        <select name="prov" id="prov"  class="form-control inline input-number" data-type="province" style="width:100px">
+                            <option value="">==省份==</option>
+                            {volist name="provs" id="v"}
+                            <option value="{$v.provinceID}">{$v.province}</option>
+                            {/volist}
+                        </select>
+                        <select name="city" id="city" class="form-control inline input-number" data-type="city" style="width:100px">
+                            <option value="">==城市==</option>
+                        </select>
+                        <select name="area" class="form-control input-number inline" id="area" style="width:100px">
+                            <option value="">==市区==</option>
+                        </select>
+                        <input type="text" class="form-control input-short" name="extra" style="margin-left: 5px;width:200px" placeholder="推荐码" value="{$extra ?? ''}">
+                    </div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <div class="input-group">
+                        <div class="input-group-addon input-sm">订单时间<i class="fa fa-calendar"></i></div>
+                        <input type="text" name="start" id="start" class="form-control input-short input-sm" value="{$start ?? ''}" />
+                        <div class="input-group-addon input-sm">
+                            <i class="fa fa-long-arrow-right"></i>
+                        </div>
+                        <input type="text" name="end" id="end" class="form-control input-short input-sm" value="{$end ?? ''}" />
+                    </div>
+
+
+                    <select name="product" id="product"  class="form-control inline input-number" style="width:250px">
+                        <option value="">==选择商品==</option>
+                        {volist name="product_list" id="v"}
+                        <option value="{$v.id}"  {if condition="$product == $v.id"}selected="selected"{/if}>{$v.name}</option>
+                        {/volist}
+                    </select>
+
+                    <button type="submit" class="btn btn-default btn-sm" id="js-search"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                    <button  type="submit" id="js-down">下载excel</button>
+                </div>
+                <div class="col-lg-10 col-md-10 ">
+
+            </form>
+        </div>
+        <!-- <div class="btn-controls clearfix">
+        </div> -->
+
+        <div class="panel panel-default">
+            <div class="panel-heading"><span class="text-primary">该时间段交易总额:</span>{$sum.money|number_format=2}元</div>
+            <table class="table table-striped table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>销售人员 [id] [推荐码]</th>
+                    <th>创建时间</th>
+                    <th>购买用户/手机号码</th>
+                    <th>订单编号/订单类型/支付方式</th>
+                    <th>订单金额/商品数量</th>
+                </tr>
+                </thead>
+                <tbody>
+                {empty name="list"}
+                <tr>
+                    <td colspan="10" class="text-center">{:L('NO_DATA')}</td>
+                </tr>
+                {else/}
+                {volist name="list" id="vo" key='k'}
+                <tr class="vertical-align-middle">
+                    <td>{$k}</td>
+                    {empty name="vo.user_info"}
+                    <td class="text-warning">
+                        用户已删除</td>
+                    {else/}
+                    {eq name="vo.introducer_uid" value="0"}  <td >无</td>
+                    {else/}
+                    <td><img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['introducer_uid'],60)}" />
+                        <a href="{:url('Member/view',array('id'=>$vo['introducer_uid']))}?ret_url=__SELF__">
+                            {$vo.introducer_uname ?? '--'}
+                        </a> [{$vo.introducer_uid}] [{$vo.extra ?? ''}]
+                    </td>
+                    {/eq}
+                    {/empty}
+                    <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                    {empty name="vo.user_info"}
+                    <td class="text-warning">用户已删除</td>
+                    {else/}
+                    <td>
+                        <a href="{:url('Member/view',array('id'=>$vo['uid']))}?ret_url=__SELF__">
+                            <img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],60)}" />
+                            <div style="display: inline-block"> {$vo.user_info.nickname}</div></a> / {$vo.user_info.mobile}
+
+                    </td>
+                    {/empty}
+                    <td>
+                        <a href="{:url('orders/view',['id'=>$vo.id])}?ret_url=__SELF__">{$vo.order_code}</a> /
+                        {$vo.order_type} /
+                        {$vo.pay_type}
+                    </td>
+                    <td><div style="width: 125px;">{$vo.item_price|number_format=2}[{$vo.item_count}]</div> </td>
+                </tr>
+                {/volist}
+                {/empty}
+                </tbody>
+            </table>
+            <div>{$show}</div>
+        </div>
+    </div>
+    <!-- END admin-main-content -->
+    <!-- Modal -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+<script>
+    function myalert(){
+        var msg  = ('undefined' == typeof arguments[0]) ? 'success' : arguments[0];
+        var type = ('undefined' == typeof arguments[1]) ? true : arguments[1];
+        $.scojs_message(msg, type ? $.scojs_message.TYPE_OK : $.scojs_message.TYPE_ERROR);
+    }
+    $(function() {
+        $('#js-down').click(function(){
+            $('input[name=down]').val(1);
+        });
+        $('#js-search').click(function(){
+            $('input[name=down]').val(0);
+        });
+        var aid,cid,flag;
+        $(document).on('change','#prov,#city',function(event) {
+            var $this = $(this),aid = $this.val(),type = $this.data('type');
+            $.getJSON("{:url('school/getArea')}",{ aid:aid,type:type },function(data){
+                //
+                var info = data.info;
+                flag = (type == 'city' ? true:false);
+                var str = "<option value=''>==选择==</option>";
+                if(data.status){
+                    if(flag && !info) myalert('请先选择省份',false);
+                    for (var i = 0;i < info.length ; i++) {
+                        if(flag){ //areas
+                            str += "<option value='"+info[i].areaID+"'>"+info[i].area+"</option>";
+                        }else{ //citys
+                            str += "<option value='"+info[i].cityID+"'>"+info[i].city+"</option>";
+                        }
+                    }
+                    if(str){
+                        if(type == 'province') $('#city').html(str);
+                        else if (type == 'city') $('#area').html(str);
+                    }
+                }else{
+                    myalert(info,false);
+                }
+            })
+        });
+        $('#start,#end').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+            allowBlank : true,
+        });
+        //选择用户 ajax start
+        $("#user_select2").select2({
+            width:280,
+            placeholder: "输入用户id或昵称查询",
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data, params) {
+                    if(!data.data){
+                        data.data = new Array();
+                        data.data['nodata']="无相关数据";
+                    }
+                    data.data.unshift({id:0,uid:0,nickname:'',head:''});
+                    return {
+                        results: data.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                if(repo.id){
+                    return repo.nickname ? '[id:'+repo.id+'] '+repo.nickname: (repo.text ? repo.text : '[id:'+repo.id+']');
+                }else{
+                    return repo.text;
+                }
+            },
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                if(repo.nodata)   return repo.nodata;
+                // var markup = '<div>'+repo.nickname+'</div>';
+                var markup = parseInt(repo.id) ? '<div><img src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>' : '<div>清除选择 X</div>';
+                return $(markup);
+            },
+        });
+        //选择用户 ajax end
+    });
+</script>
+
+{/block}

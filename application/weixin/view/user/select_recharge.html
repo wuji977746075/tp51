@@ -1,0 +1,46 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/wallet_in/style.css">
+{/block}
+{block name="body"}
+<div class="wallet-in-box">
+    <div class="wallet-in-item">请选择支付方式</div>
+    <div class="wallet-in-way">
+        <input type="radio" name="way" id="we_pay" checked>
+        <label for="we_pay">微信支付</label>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="way" id="ali_pay">
+        <label for="ali_pay">提现积分</label>
+    </div>
+    <div class="wallet-in-num">
+        <span>充值金额:</span>
+        {$money}
+        <input id="num" type="number hidden" title="" value="{$money*100}" hidden="hidden">
+    </div>
+    <input id="url_type" type="number hidden" title="" name="url_type" value="{$url_type}" hidden="hidden">
+    <button id="wallet_in_btn" class="weui-btn weui-btn_primary">确认</button>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+    $('#wallet_in_btn').click(function(){
+        var num = $('#num').val();
+        var way = $('#we_pay').is(':checked')?'1':'3';
+        var form = $('<form></form>');
+        var action =getBaseUrl() + '/weixin/user/recharge_product/url_type/'+{$url_type};
+        form.attr({action:action,method:'post',target:'_self'});
+
+        var points = $('<input type="num" name="points" />');
+        points.attr('value',num);
+        var type = $('<input type="num" name="type" />');
+        type.attr('value',way);
+
+        form.append(points);
+        form.append(type);
+        $('body').append(form);
+        form.submit().remove();
+    });
+</script>
+{/block}

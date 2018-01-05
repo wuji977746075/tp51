@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+<head>
+  <base href="{:config('site_url')}/" />
+  <meta charset="UTF-8">
+  <title> {$seo.title ?? L('TITLE')}-{:config('site_title')} </title>
+  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="keywords" content="{$seo.keywords|default=' '}" />
+  <meta name="description" content="{$seo.description|default=' '}" />
+  <meta name="author" content="{$cfg.owner|default=' rainbow '}" />
+
+  <link rel="stylesheet" href="__CDN__layui/2.2.4/css/layui.css" media="all">
+  <!-- nprogress + select2:4.0.0 + scojs:1.0.2 -->
+  <link rel="stylesheet" href="__SKIN__css/screen.css?v=2017101801" media="screen">
+  {if condition ="config('is_debug')" }
+  <link rel="stylesheet" id="style-color" href="__SKIN__css/skin.css" media="all">
+  {else /}
+  <link rel="stylesheet" id="style-color" href="__SKIN__css/skin/{$cfg.theme|default='df'}.css?v=20171121" media="all">
+  {/if}
+  {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css,__CDN__hover/css/hover-min.css"}
+
+  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.2.4/layui.js,__CDN__nprogress/nprogress.js"}
+  <script src="__SKIN__js/lib/lang_zh.js?v=2017101301"></script>
+  <script>
+  var _dir  = "{:config('is_debug') ? '' : 'min/'}";
+  var _top_menu_id = {$top_menu_id ?? '0'} || 0;
+  var _menu_id = {$menu_id ?? '0'} || 0;
+  if(!_top_menu_id) _top_menu_id = local('last_top_menu') || 0;
+  var _menu_ids = local('menu_ids') || {};
+  layui.config({
+    base : '__SKIN__/js/'+_dir,
+    version : ''
+  }).extend({
+    'scojs':'sco',
+    'picView':'picView',
+    'table2':'table223',
+  }).use('app');
+  function local(key=''){ // localStorage存/取
+    return ('undefined' != typeof arguments[1]) ? localStorage.setItem(key,JSON.stringify(arguments[1])) : JSON.parse(localStorage.getItem(key));
+  }
+  </script>

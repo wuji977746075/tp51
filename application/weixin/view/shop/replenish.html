@@ -1,0 +1,28 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/replenish/style.css">
+{/block}
+{block name="body"}
+<div class="replenish-sum">
+    总积分<span>{$user_Info['wallet']['stock_points']/100+$user_Info['wallet']['cash_points']/100}</span>：
+    <br/><span>{$user_Info['wallet']['stock_points']/100}</span>
+    (库存)+
+    <span>{$user_Info['wallet']['cash_points']/100}</span>(提现)
+</div>
+{volist name='product' id='vo'}
+    <div class="replenish-pro-box">
+        <div class="replenish-pro">
+            <div class="replenish-pro-title">{$vo.name}</div>
+            <div class="replenish-pro-price">我的进货价：<span>{$vo.price/100}积分</span></div>
+        </div>
+    </div>
+{/volist}
+<a href="{:url('shop/stock_add')}">
+    <button class="replenish-btn weui-btn weui-btn_primary">补货</button>
+</a>
+
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+{/block}

@@ -1,0 +1,128 @@
+{extend name="default/template/base_index" /}
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<link rel="stylesheet" type="text/css" media="all" href="__CSS__/bootstrap-treeview.min.css">
+	<style>
+	body{ overflow-x: hidden !important; }
+	.btn-controls.fixed{
+			position: fixed;
+			width: 100%;
+			line-height: 30px;
+			height: 30px;
+			z-index: 10000000;
+			background: #fff;
+		}
+	</style>
+	<script type="text/javascript" src="__JS__/bootstrap-treeview.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+        <div class="alert alert-info">
+					 注意:先选择在操作,仅3级单元可以管理题目
+        </div>
+
+				<div class="btn-controls fixed">
+					<a id="id-add" href="{:url('Admin/Bookunit/add',['pid'=>$pid])}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i>单元添加</a>
+					<a id="id-edt" class="btn btn-primary disabled btn-sm"><i class="fa fa-edit"></i>单元编辑</a>
+					<a id="id-del" class="btn btn-primary disabled btn-sm ajax-get confirm"><i class="fa fa-minus"></i>单元删除</a>
+					<a id="id-up" class="btn btn-primary disabled btn-sm ajax-get"><i class="fa fa-arrow-up"></i>上移</a>
+					<a id="id-down" class="btn btn-primary disabled btn-sm ajax-get"><i class="fa fa-arrow-down"></i>下移</a>
+					<a id="id-que" class="btn btn-primary disabled btn-sm "><i class="fa fa-wrench"></i>题目管理</a>
+				</div>
+
+				<!-- 答题时间 提交答案 免费体验 -->
+				<br />
+				<span class="label label-info" style="margin-top:30px;display:block;padding:10px 20px;line-height: 30px;text-align: left;"><< {$book_name|default="佚名"} >></span>
+				<div id="tree" style="overflow-x: hidden;"></div>
+
+			</div>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+		<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script>
+//操作按钮 parent(id) level / id parent/ id parent / id book_parent(parent)
+var add_uri = "{:url('Admin/Bookunit/add',['pid'=>$pid])}";
+var edt_uri = "{:url('Admin/Bookunit/edit',['pid'=>$pid])}";
+var del_uri = "{:url('Admin/Bookunit/delete',['pid'=>$pid])}";
+var que_uri = "{:url('Admin/Bookunit/edquestion',['pid'=>$pid])}";
+var sort_uri = "{:url('Admin/Bookunit/sort',['pid'=>$pid])}";
+
+var level = parseInt({$level ?? 0}),pid = parseInt({$pid ?? 0}),parent = parseInt({$parent ?? 0}),id = parseInt({$id ?? 0});
+window.tree_data = JSON.parse('{$units ?? ""}');
+$(function () {
+
+	if(id>0){
+		setUrl(id,level,parent,true);
+	}
+	function setUrl(id,l,p,f){
+		// console.log('setUrl');
+		// console.log(id,l);
+		// console.log(p,f);
+		if(f){ // 选择
+			$('#id-edt').removeClass('disabled').attr('href', edt_uri+'?parent='+p+'&id='+id);
+			$('#id-del').removeClass('disabled').attr('href', del_uri+'?parent='+p+'&id='+id);
+			$('#id-up').removeClass('disabled').attr('href', sort_uri+'?type=up&id='+id+'&parent='+p+'&level='+l);
+			$('#id-down').removeClass('disabled').attr('href', sort_uri+'?type=down&id='+id+'&parent='+p+'&level='+l);
+			if(l==3){
+				$('#id-que').removeClass('disabled').attr('href', que_uri+'?book_parent='+p+'&id='+id);
+				$('#id-add').addClass('disabled');
+			}else{
+				$('#id-add').removeClass('disabled').attr('href', add_uri+'?parent='+id+'&level='+l);
+				$('#id-que').addClass('disabled');
+			}
+		}else{ // 取消选择
+			$('#id-add').removeClass('disabled').attr('href', add_uri);
+			$('#id-que,#id-edt,#id-del,#id-up,#id-down').addClass('disabled');
+		}
+	}
+	function getTree() {
+		var data = window.tree_data;
+		function handle(obj){
+			// for (var i = 0; i < data.length; i++) {
+			// 	data[i].state = {
+			// 		expanded : false,
+			// 	};
+			// };
+		}
+		handle(data);
+    return data;
+	}
+	$('#tree').treeview({
+		data: getTree(),
+		levels: 3,
+	  color: '#d9230f',
+	  showTags : true,
+		// multiSelect:false,
+	  // onhoverColor: '#F5F5F5',
+	  onNodeSelected: function(e, nod) {
+	  	// console.log(e);
+	  	// console.log(nod);
+	  	// alert(nod.parent+':'+nod.id);
+	  	setUrl(nod.id,nod.level,nod.parent,true);
+	  },
+	  onNodeUnselected: function(e, nod) {
+			setUrl(nod.id,nod.level,nod.parent,false);
+	  }
+	});
+
+	// $('#startdatetime,#enddatetime').datetimepicker({
+	// 	lang: 'ch',
+	// 	format:'Y-m-d',
+	// 	timepicker:false,
+	// });
+	// $("#sel").change(function () {
+	// 	$('#fm').submit();
+	// })
+})
+</script>
+{/block}

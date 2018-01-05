@@ -1,0 +1,567 @@
+{extend name="default/template/base_index"/}
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+    <link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css"/>
+    <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="__CDN__/select2/3.5.2/select2.css"/>
+    <script type="text/javascript" src="__CDN__/select2/3.5.2/select2.min.js"></script>
+    <script type="text/javascript" src="__CDN__/select2/3.5.2/select2_locale_zh-CN.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+    <style type="text/css">
+        .prop-list .prop-item {
+            width: 100%;
+            clear: both;
+        }
+        .prop-list .prop-item .prop-value {
+            width: 100%;
+        }
+        .prop-list .prop-item > span {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .prop-list .prop-item .prop-value label {
+            font-weight: normal;
+            margin-left: 15px;
+        }
+        .admin-main { margin-top: 0px;}
+    </style>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+
+            <div class="col-main">
+                <div class="main-hd">
+                    <h2 style="margin: 0px;">添加商品</h2>
+                </div>
+                <div style="padding-top:0px;margin-top: 0px;" class="main-bd clearfix">
+                    <form class="productForm form-horizontal" method="post">
+                        <input type="hidden" name="store_id" value="{$store_id}"/>
+                        <input type="hidden" name="cate_id" value="{$cate_id}"/>
+                        <input type="hidden" name="cates" value="{$cates}"/>
+                        <input type="hidden" name="tariff_code" value=""/>
+
+                        <input type="hidden" name="main_img" value="" class="main_img"/>
+                        <input type="hidden" name="img" value="" id="img"/>
+                        <input type="hidden" name="img_post" value="" id="img_post"/>
+                        <input type="hidden" name="img_post_bg" value="" id="img_post_bg"/>
+                        <h3><i>●</i>基本信息</h3>
+                        <div class="form-group col-lg-12 col-md-12 clearfix hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品产销国</label>
+                            <div class="col-lg-10 col-md-10">
+                                {$Think.session.lang}
+                            </div>place_origin
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">选择类目</label>
+                            <div class="col-lg-10 col-md-10">
+                                <div class="category_select pt5" id="js_category_txt">
+                                    <span class="category_txt">{$catename}</span>
+                                    <a href="{:url('Product/precreate',array('store_id'=>$store_id))}"
+                                       class="js_categorychange">修改</a>
+                                </div>
+                                <span class="help-block">商品上架后不可修改，请谨慎选择</span>
+                            </div>
+                        </div>
+                        <div class="form-group hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">计量单位</label>
+                            <div class="col-lg-10 col-md-10">
+                                <select name="area" id="area" data-type="area">
+                                    <option value="">==选择==</option>
+                                </select>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品名称</label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="name" maxlength="60"
+                                       class="js_product_name form-control input-normal input-sm"/>
+                                <span class="help-block">限30个字</span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">副标题</label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="secondary_headlines" maxlength="60"
+                                       class="js_product_name form-control input-normal input-sm"/>
+                                <span class="help-block">限30个字</span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品编号</label>
+                            <div class="col-lg-10 col-md-10">
+                                <input type= 'text' name="product_code" maxlength="60" value=""
+                                       class="form-control input-normal input-sm"/>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix hide">
+                            <label for="" class="control-label col-lg-2 col-md-2 ">商品分组
+                                <br/><span class="help-block"></span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <select name="product_group" class="js_product_group">
+                                    <option value="0">=请选择=</option>
+                                    {:w_datatree(getDatatree('WXPRODUCTGROUP'),true,0)}
+                                </select>
+                            </div>
+                            <div class="js_group_time hide" style="margin-left: 280px">
+                                <label>起始时间:</label>&nbsp;<input type="text"
+                                                                 class="form-control input-normal input-sm startdatetime"
+                                                                 name="group_start_time"
+                                                                 {notempty name="vo"}
+                                                                 value="{$vo['start_time']|date='Y-m-d G:i:s',###}"
+                                                                 {/notempty}/>&nbsp;&nbsp;
+                                <label>终止时间:</label>&nbsp;<input type="text"
+                                                                 class="form-control input-normal input-sm enddatetime"
+                                                                 name="group_end_time"
+                                                                 {notempty name="vo"}
+                                                                 value="{$vo['end_time']|date='Y-m-d G:i:s',###}"
+                                                                 {/notempty}
+                                                        />
+                            </div>
+                        </div>
+                        <div class="js_prop form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品属性
+                                <br/><span class="help-block">(选填)</span>
+                            </label>
+                            <div class="col-lg-8 col-md-8">
+                                <div class="well">
+                                    <div class="loading">
+                                        <img src="__CDN__/common/loading.gif"/>
+                                    </div>
+                                    <div class="prop-list clearfix">
+                                    </div>
+                                    <hr>
+                                    <div class="btn-controls">
+                                        <a href="{:url('CategoryProp/add',array('cate_id'=>$cate_id))}"
+                                           target="_self" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i>添加属性</a>
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-primary js_prop_refresh"><i
+                                                class="fa fa-refresh"></i>刷新</a>
+                                    </div>
+                                </div>
+                                <span class="help-block"> </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品图片</label>
+                            <div class="col-lg-10 col-md-10">
+                                主图<span class="text-muted">(建议尺寸为640像素*640像素，大小不超过500kb)<i data-toggle="tooltip"
+                                                                                           class="fa fa-question"
+                                                                                           title="商品主图将会作为商品的默认图片出现在货架及商品详情页。"></i></span>
+                                <!-- 图片选择DOM结构 -->
+                                <div class="wxuploaderimg clearfix main_img" data-maxitems="1">
+                                    <div class="img-preview clearfix">
+                                    </div>
+                                    <div class="add">
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                </div>
+                                <!-- 图片选择DOM结构 -->
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="" class="control-label col-lg-2 col-md-2">&nbsp;</label>
+                            <div class="col-lg-10 col-md-10">
+                                其他图片<span class="text-muted">(选传，单张图片大小不超过500kb，最多5张)<i class="fa fa-question"
+                                                                                         data-toggle="tooltip"
+                                                                                         title="将出现在商品图片库，方便用户更好的了解您的商品。"></i></span>
+                                <!-- 图片选择DOM结构 -->
+                                <div class="wxuploaderimg clearfix product-imglist" data-maxitems="5">
+                                    <div class="img-preview clearfix">
+
+                                    </div>
+                                    <div class="add">
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                </div>
+                                <!-- 图片选择DOM结构 -->
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix">
+                            <label for="synopsis" class="control-label col-md-2 col-lg-2 ">商品简介</label>
+                            <div class="col-md-6 col-lg-6">
+                                <textarea name="synopsis" id="synopsis" class="form-control" rows="8"></textarea>
+                                <div class="help-block">(您最多可以输入500个字)</div>
+                            </div>
+                        </div>
+                        <div class="js_sku form-group col-lg-12 col-md-12 clearfix hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品规格</label>
+                            <div class="col-lg-10 col-md-10">
+                                <label class="radio-inline">
+                                    <input type="radio" name="has_sku" class="has_sku" checked="checked" value="0"> 统一规格
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">当前价</label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="price" class="form-control input-short input-sm"/>
+                                <select name="" id="" data-type="">
+                                    <option value="">元</option>
+                                    <option value="">美元</option>
+                                    <option value="">欧元</option>
+                                    <option value="">英磅</option>
+                                </select>
+                                <span class="help-block">当前价,需低于原价</span>
+                            </div>
+                        </div>
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">计量单位-->
+                                <!--<br/><span class="help-block"></span>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<select name="dt_goods_unit" style="width: 100px;" class="dt_goods_unit input-normal">-->
+                                    <!--{:w_datatree(getDatatree('GOODSUNIT'),true,0,1)}-->
+                                <!--</select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">商品重量(毛重)-->
+                                <!--<br/><span class="help-block"></span>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="weight" maxlength="60" class="oriprice form-control input-short input-sm"  style="width:100px;"/>克-->
+                                <!--<span class="help-block">商品单个重量(毛重)，单位：g（克）</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2">商品产地</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="place_origin" maxlength="60"-->
+                                       <!--class="form-control input-number input-sm"/>-->
+                                <!--<span class="help-block"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2">七天无理由退换货支持</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<label class="radio-inline">-->
+                                    <!--<input type="radio" name="support_replace" checked="checked" value="0">不支持-->
+                                <!--</label>-->
+                                <!--<label class="radio-inline">-->
+                                    <!--<input type="radio" name="support_replace" value="1">支持-->
+                                <!--</label>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">发货时间<br/>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<select name="consignment_time" >-->
+                                    <!--<option value="0">尽快发货</option>-->
+                                    <!--<option value="1">1天</option>-->
+                                    <!--<option value="3">3天</option>-->
+                                    <!--<option value="5">5天</option>-->
+                                    <!--<option value="7">7天</option>-->
+                                <!--</select>-->
+                                <!--<span class="help-block"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="expire_time" class="control-label col-lg-2 col-md-2 ">下架时间<br/>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="expire_time" id="expire_time" class="form-control input-short input-sm"/>-->
+                                <!--<span class="help-block"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">
+                            <label for="" class="control-label col-lg-2 col-md-2 ">商品总销量
+                                <br/><span class="help-block"></span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="total_sales" maxlength="60" value="0"
+                                       class="form-control input-short input-sm" style="width:100px;"/>
+                            </div>
+                        </div>
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="" class="control-label col-lg-2 col-md-2 ">商品总收藏-->
+                                <!--<br/><span class="help-block"></span>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="favorite_cnt" maxlength="60" value="0"-->
+                                       <!--class="form-control input-short input-sm" style="width:100px;"/>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">
+                            <label for="" class="control-label col-lg-2 col-md-2 ">商品总浏览量
+                                <br/><span class="help-block"></span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="view_cnt" maxlength="60" value="0"
+                                       class="form-control input-short input-sm" style="width:100px;"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku hide">
+                            <label for="" class="control-label col-lg-2 col-md-2 ">商品库存
+                                <br/><span class="help-block"></span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="quantity" maxlength="60"
+                                       class="oriprice form-control input-short input-sm"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品条码<i data-toggle="tooltip"
+                                                                                         class="fa fa-question"
+                                                                                         title="填写商品条码后，用户可通过扫码查找到你的商品，建议填写"></i>
+                                <br/><span class="help-block">(选填)</span>
+                            </label>
+                            <div class="col-lg-10 col-md-10">
+                                <input name="" maxlength="60"
+                                       class="oriprice form-control input-short input-sm"/>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">商品海报以及背景(用于APP首页展示)</label>
+                            <div class="col-lg-10 col-md-10">
+                                海报<span class="text-muted">(尺寸比例宽高比5:8，适合大小750*1200,大小不要超过500kb)<i data-toggle="tooltip"
+                                                                                                   class="fa fa-question"
+                                                                                                   title="商品海报主要用于APP首页展示。"></i></span>
+                                <!-- 图片选择DOM结构 -->
+                                <div class="wxuploaderimg clearfix img_post" data-maxitems="1">
+                                    <div class="img-preview clearfix">
+
+                                    </div>
+                                    <div class="add">
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                </div>
+                                <!-- 图片选择DOM结构 -->
+                            </div>
+                        </div>
+                        <div class="form-group col-lg-12 col-md-12 clearfix hide">
+                            <label for="" class="control-label col-lg-2 col-md-2">&nbsp;</label>
+                            <div class="col-lg-10 col-md-10">
+                                背景<span class="text-muted">(尺寸比例宽高比1.5:1,适合大小420*270,大小不要超过500kb)<i
+                                    data-toggle="tooltip" class="fa fa-question" title="商品海报主要作为海报的背景。"></i></span>
+                                <!-- 图片选择DOM结构 -->
+                                <div class="wxuploaderimg clearfix img_post_bg" data-maxitems="1">
+                                    <div class="img-preview clearfix">
+
+                                    </div>
+                                    <div class="add">
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                </div>
+                                <!-- 图片选择DOM结构 -->
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="contact_name" class="control-label col-lg-2 col-md-2 ">联系人姓名<br/>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="contact_name" id="contact_name" class="form-control input-short input-sm"/>-->
+                                <!--<span class="help-block"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group col-lg-12 col-md-12 clearfix js_frm_gp_sku">-->
+                            <!--<label for="contact_way" class="control-label col-lg-2 col-md-2 ">联系方式<br/>-->
+                            <!--</label>-->
+                            <!--<div class="col-lg-10 col-md-10">-->
+                                <!--<input name="contact_way" id="contact_way" class="form-control input-short input-sm"/>-->
+                                <!--<span class="help-block"></span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <div class="form-group col-lg-12 col-md-12 clearfix tool-bar text-center border">
+                            <a target-form="productForm" href="{:url('Product/create')}" onclick="return check();"
+                               class="ajax-post btn btn-primary btn-sm btn-block" id="js_submit"><i class="fa fa-check"></i>确定</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {include file="default/template/wxpicture"/}
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+    <script type="text/javascript">
+        window.ServicesURL = {
+            groupGetAll: "",
+            groupAdd: "",
+            cateAllProp: "{:url('Category/cateAllProp')}",
+            skulist: "{:url('Product/skulist')}",
+        };
+    </script>
+    <script type="text/javascript" src="__JS__/product.js?v=__APP_VERSION__"></script>
+    <script type="text/javascript">
+        function getData() {
+
+            var main_img = $(".main_img .img-preview img").attr("data-imageid");
+            if (main_img) {
+                $(".main_img").val(main_img);
+            }
+            $("#img").val("");
+            $(".product-imglist .img-preview img").each(function (index, item) {
+                $("#img").val($("#img").val() + $(item).attr("data-imageid") + ",");
+            });
+
+
+            var img_post = $(".img_post .img-preview img").attr("data-imageid");
+            if (img_post) {
+                $("#img_post").val(img_post);
+            }
+
+            var img_post_bg = $(".img_post_bg .img-preview img").attr("data-imageid");
+            if (img_post_bg) {
+                $("#img_post_bg").val(img_post_bg);
+            }
+
+        }
+
+
+        function check() {
+            getData();
+            return false;
+            var txt = $(".js_product_name").val();
+            var len = txt.replace(/[^\x00-\xff]/g, 'xx').length;
+            if (len == 0) {
+                $.scojs_message('商品名称必须填写', $.scojs_message.TYPE_ERROR);
+                return false;
+            }
+            if (len > 30) {
+                $.scojs_message('商品名称不能超过30个字', $.scojs_message.TYPE_ERROR);
+                return false;
+            }
+            return true;
+        }
+        function appendProp(list) {
+            $ele = $(".js_prop .prop-list");
+            $ele.empty();
+            for (var i = 0; i < list.length; i++) {
+                //创建一个dropdown
+                $propName = $('<span>' + list[i].name + '</span>');
+                $prop = $('<div class="prop-value"></div>');
+                $ele.append($("<div class='prop-item' ></div>").attr("data-id", list[i].id).append($propName).append($prop));
+                if (list[i].property_value) {
+                    var propvaluelist = list[i].property_value;
+                    for (var j = 0; j < propvaluelist.length; j++) {
+                        $_propValue = $('<label></label>').text(propvaluelist[j].valuename);
+                        $_propValue_check = $('<input type="checkbox" />').attr('name', 'prop[]').val(propvaluelist[j].id);
+                        $_propValue.prepend($_propValue_check);
+                        $prop.append($_propValue);
+                    }
+                }
+
+            }
+        }
+        //商品属性
+        function queryProp() {
+            $(".js_prop .loading").show();
+            var last_cate = "{$cate_id}";
+            $.post(window.ServicesURL.cateAllProp, {
+                cate_id: last_cate
+            }).done(function (data) {
+                if (data.code) {
+                    if (data.msg== null) {
+                        $ele = $(".js_prop .prop-list");
+                        $ele.html("无属性");
+                        return;
+                    }
+                    appendProp(data.msg);
+                    $(".propsel").select2({
+                        placeholder: "=选择=",
+                        language: "zh-CN",
+                    });
+                } else {
+                    $.scojs_message('数据获取失败!', $.scojs_message.TYPE_ERROR);
+                }
+            }).always(function () {
+                $(".js_prop .loading").hide();
+            });
+        }
+
+        function productProp() {
+            $(".js_prop .prop-list").click(function (ev) {
+                $ele = $(ev.target);
+                if (!$ele.hasClass('link_a')) {
+                    return;
+                }
+                $propitem = $ele.parents(".prop-item");
+                $ele.addClass("selected");
+                $propitem.find("button.dropdown-toggle").html($ele.text() + "<span class='caret'></span>");
+            });
+            setTimeout(queryProp, 700);
+        }
+        //国别选择时的操作
+        function initCountry() {
+            $(".dt_origin_country").change(function () {
+                var val = $(".dt_origin_country").find("option:selected").text();
+                $("input[name='source']").val(val);
+            });
+            $(".dt_origin_country").change();
+        }
+        //初始化select2 控件
+        function initSelect2() {
+            $('select').select2();
+        }
+        $(function () {
+            $(".js_prop_refresh").click(function () {
+                queryProp();
+            });
+
+            productProp();
+            //图片上传
+            wxuploadimg.init({cont: ".wxuploaderimg"});
+            //
+            $(".js_frm_gp_buylimit input[type=radio]").click(function () {
+                console.log($(this).val());
+                console.log($(".js_frm_gp_buylimit input[type=text]"));
+                if ($(this).val() == 1) {
+                    $(".js_frm_gp_buylimit input[type=text]").removeClass("hidden");
+                } else {
+                    $(".js_frm_gp_buylimit input[type=text]").addClass("hidden");
+                }
+            });
+            $(".js_frm_gp_buylimit input[type=text]").change(function () {
+                var tmp = $(this).val();
+                $(this).attr("value", tmp);
+            });
+            //initCountry();
+            initSelect2();
+            /*商品分组*/
+            $('.js_product_group').click(function () {
+                if ($(this).val() != 0) {
+                    $('.js_group_time').removeClass('hide');
+                } else {
+                    $('.js_group_time').addClass('hide');
+                }
+            });
+            $('#expire_time').datetimepicker({
+                lang: 'ch',
+                format:'Y-m-d H:i:s',
+            });
+            $('.startdatetime').datetimepicker({
+                lang: 'ch',
+                format: 'Y-m-d H:i:s',
+                timepicker: false,
+            });
+            $('.enddatetime').datetimepicker({
+                lang: 'ch',
+                format: 'Y-m-d  H:i:s',
+                timepicker: false,
+            });
+        })
+    </script>
+
+{/block}

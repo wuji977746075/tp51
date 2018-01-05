@@ -1,0 +1,88 @@
+<extend name="template/base_index" />
+
+<block name="area_header">
+
+    <link rel="stylesheet" href="__CSS__/pay_money.css">
+</block>
+
+<block name="area_body">
+    <style type="text/css">
+        .detail-margin {
+            margin-top:0;
+        }
+    </style>
+    <div class="weui_cells detail-margin">
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>订单编号:</p>
+            </div>
+            <div class="weui_cell_ft">
+                {$order_code}
+            </div>
+        </div>
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p>总共需要支付:</p>
+            </div>
+            <div class="weui_cell_ft">
+                ￥{$money}
+            </div>
+        </div>
+    </div>
+
+    <div class="weui_cells weui_cells_access">
+        <a class="weui_cell" href="javascript:;">
+            <div class="weui_cell_bd weui_cell_primary">
+                <p><i class="fa fa-weixin" style="color:#44B549"></i>微信支付</p>
+            </div>
+            <i class="fa fa-check-circle" style="color:#44B549"></i>
+        </a>
+    </div>
+    <div class="zf-button">
+        <a onclick="callpay()" class="weui_btn weui_btn_warn">确定</a>
+    </div>
+    <script src="__JS__/jquery-weui.min.js"></script>
+    <script type="text/javascript">
+        //调用微信JS api 支付
+        function jsApiCall()
+        {
+            WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest',
+                    {$jsApiParameters},
+                    function(res){
+                        if(res.err_msg === "get_brand_wcpay_request:ok" ) {
+                           window.location.href = "{:url('index/index')}";
+                        }
+                    }
+            );
+        }
+        function callpay()
+        {
+            if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                    document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+                }
+            }else{
+                jsApiCall();
+            }
+        }
+
+        window.onload = function(){
+            if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', editAddress, false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', editAddress);
+                    document.attachEvent('onWeixinJSBridgeReady', editAddress);
+                }
+            }else{
+                // editAddress();
+            }
+        };
+
+    </script>
+
+</block>

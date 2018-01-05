@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <link rel="stylesheet" href="__CDN__amazeui/2.5.2/amazeui.min.css">
+    <link rel="stylesheet" href="__CSS__/ava-test.css">
+    <style>.ms-controller{ display:none; }</style>
+    <script src="__CDN__jquery/3.0.0a/jquery.min.js"></script>
+    <script src="__CDN__amazeui/2.5.2/amazeui.min.js"></script>
+    <script src="__CDN__avalon.js/1.5.5/avalon.modern.shim.js"></script>
+<script>
+avalon.config({  interpolate:["[[","]]"] });
+var logs = true;
+function log(){
+ if(arguments.length == 1)  console.log(arguments[0]);
+ else if(arguments.length == 2)  console.log(arguments[0],arguments[1]);
+ else if(arguments.length == 3)  console.log(arguments[0],arguments[1],arguments[2]);
+ else console.log(arguments);
+};
+$(function(){
+    $('#key').focus();
+})
+var vm = avalon.define({
+ $id: "test",
+ inp:[],
+ btnstate:false,
+ param:{ api_ver:100 },
+ msg:"相安无事",
+ add:function(){
+    var len = vm.param.length;
+    var inp = vm.inp;
+    if(!inp[0]){
+        vm.msg = '无效操作';
+    }else{
+        logs && log('fun-add: ',inp);
+        if(inp[1].length == 0){
+            // vm.param[inp[0]] = undefined;//no
+            // vm.param.removeAt([inp[0]]);//no
+            // vm.param.set(inp[0],inp[1]); //no
+        }else{
+            vm.param[inp[0]] = inp[1];
+            vm.msg = '添加参数: '+inp[0]+'='+inp[1];
+        }
+        vm.inp=[];
+        // avalon.scan();
+        return;
+    }
+ },
+ sub:function(){
+    logs && log('vm-sub',vm.param.$model);
+    vm.msg = '提交请求: ';
+ },
+ cha:function(e){
+    vm.msg = '准备操作: '+e;
+    logs && log('vm-cha',e);
+    vm.inp = [];
+    vm.inp.pushArray([e,vm.param[e]]);
+ },
+ key:function(e){
+    var k = e.keyCode;
+    if(k == 13){
+     logs && log('vm-key',k,e.keyIdentifier);
+     vm.add();
+    }
+ },
+});
+// avalon.scan();
+</script>
+</head>
+<body>
+
+<div class="title">   <h1>测试</h1>  </div>
+<div class="content" ms-controller="test">
+    <label>添加参数 【无key添加; 有key修改,无value删除; 选择行编辑】</label>
+    <div class="am-form-inline">
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="key" ms-duplex="inp[0]" placeholder="参数名">
+      </div>
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="val" ms-on-keydown="key" ms-duplex="inp[1]" placeholder="参数值" >
+      </div>
+      <button class="am-btn" ms-click="add">添加</button>
+    </div>
+    <p></p>
+    <table class="am-table am-table-bordered am-table-radius">
+        <thead><tr><th>参数名</th><th>参数值</th></tr></thead>
+        <tbody>
+        <tr ms-repeat="param" ms-click="cha($key)">
+             <td>[[$key]]</td><td>[[$val]]</td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="am-btn am-btn-primary" ms-click="sub">提交</button>
+    <p>[[msg]]</p>
+</div>
+
+</body>
+</html>

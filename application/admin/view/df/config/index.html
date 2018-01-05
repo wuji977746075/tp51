@@ -1,0 +1,134 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-table-cell{height: auto !important;}
+</style>
+{/block}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>配置管理</legend>
+  <div class="layui-field-box">
+    {:html_head_tip('各类配置数据,点击单元格编辑')}
+    <form class="layui-form layui-form-pane">
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">title|name</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" value="{$kword ?:''}" placeholder="配置名|系统名">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <!-- <label for="jsf-group" class="layui-form-label">分组</label> -->
+        <div class="layui-input-inline" style="width: 150px;">
+          <select name="group" id="jsf-group" lay-filter="jsf-group">
+            <option value="-1"> 全部分组 </option>
+            {foreach :config('config_group_list') as $k=>$v}
+            <option value="{$k}" {eq name="group" value="$k"} selected {/eq}>{$v}({$k})</option>
+            {/foreach}
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn " id="js-search">搜索</a>
+        <button class="layui-btn" type="reset">重置</button>
+      </div>
+    </form>
+    <hr >
+    <div class="layui-btn-group">
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i>添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="fa fa-trash"></i> 批量删除</a>
+    </div>
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+<!-- script -->
+<script>
+var groups = JSON.parse('{:json_encode($group_list)}');
+// page init
+layui.use(['rb','table2','form'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  var group = parseInt({$group ?: -1}),kword = "{$kword ?: ''}";
+  rb.log('page','init');
+  //执行渲染
+  var Ltable = table.render({ elem: '#demo'
+    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: { sort : 'asc',group : group,kword: kword }
+    ,method: 'get'
+    ,request: { pageName: 'page',limitName: 'size', }
+    ,limits: [10,30]
+    ,limit: 10
+    ,loading: true
+    ,page: true
+    ,cols:  [[
+      {checkbox: true}, //,fixed: 'left',LAY_CHECKED: true
+      {field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
+      ,{field: 'title', title: '配置名 .', width: 150,edit: 'text'}
+      ,{field: 'name', title: '系统名 .', width: 150,edit: 'text'}
+      ,{field: 'value', title: '值 .', width: 150,edit: 'text',templet:'#valueTpl'}
+      ,{field: 'desc', title: '描述 .', width: 200,edit: 'text'}
+      ,{field: 'group', title: '分组 .', width: 80,edit: 'text',templet:'#groupTpl'}
+      // ,{field: 'status', title: '状态', width: 80}
+      ,{align:'left',title: '操作',width:150,toolbar: '#barDemo'} //,fixed: 'right'
+    ]]
+    ,done: function(res, page, count){
+      // 转换数据
+      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
+      // console.log(res);
+      // res.data[0].username = 'done-edit';
+      // console.log(page,count);
+      // res.count = 100;
+    }
+  });
+
+  // 单元格编辑
+  table.on('edit(fDemo)', function(obj){
+    // console.log(obj); // value , field ,data
+    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
+      rb.ajaxTip(data);
+    });
+  });
+  $('body').on('click', '#js-search', function(event) {
+    var kword = $('#jsf-kword').val();
+    var group = $('#jsf-group').val();
+    var where = { kword: kword,group: group };
+    Ltable.reload({
+      where: where,
+      page: {
+        curr : 1
+      }
+    });
+    event.preventDefault();
+    return false;
+  });
+  form.on('select(jsf-group)', function(data){
+    $('#js-search').trigger('click');
+  });
+});
+
+
+
+</script>
+<script type="text/html" id="valueTpl">
+{{# if(d.type == 3) { }} 数组 => {{# } }}
+{{ d.value }}
+</script>
+<script type="text/html" id="groupTpl">
+{{ groups[d.group] }}
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+</div>
+</script>
+{/block}
+
+{block name="area_foot"}
+{/block}

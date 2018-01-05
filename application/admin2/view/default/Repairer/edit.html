@@ -1,0 +1,31 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="table-responsive well">
+            <!-- 过滤\查询按钮 -->
+                <form action="{:url('Repairer/edit')}" class="memberForm form-inline" method="post">
+                    <!-- 操作按钮 -->
+                    <div class="btn-controls">
+                        <a class="btn btn-sm btn-primary" href="{:url('Repairer/add')}"><i class="fa fa-plus"></i>{:L('BTN_ADD')}</a>
+                    </div>
+
+                </form>
+        </div>
+    </div>
+    <!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

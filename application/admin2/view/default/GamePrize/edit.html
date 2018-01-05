@@ -1,0 +1,186 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+    <!-- <link type="text/css" rel="stylesheet" href="__CDN__/jquery-uploadify/3.2.1/uploadify.css" /> -->
+    
+    <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+    <style type="text/css">
+        .pt8{
+            width:2rem !important;
+            padding-top: 8px;
+        }
+        input.error {
+            border: 1px solid red;
+        }
+        label.checked {
+            padding-left: 25px;
+        }
+        label.error {
+            padding-left: 25px;
+            padding-bottom: 2px;
+            font-weight: bold;
+            color: #EA5200;
+        }
+    </style>
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <!-- 带验证 form -->
+            <form id="gameForm" class="form-horizontal well validateForm">
+                <fieldset>
+                    <legend>#{$game.name}# 奖品修改</legend>
+                      <div class="form-group">
+                        <label for="inputname" class="col-md-2 col-lg-2 control-label">奖品名</label>
+                        <div class="col-md-4 col-lg-4">
+                            <input type="text" class="required form-control input-normal" name="prize_name" id="inputname" placeholder="{:L('PLACEHOLDER_TITLE')}" value="{$prize['prize_name']}">
+                        </div>
+                         <div class="col-md-2 col-lg-2">
+                            <div class="help-block">(奖品名)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputname" class="col-md-2 col-lg-2 control-label">奖品数量</label>
+                        <div class="col-md-4 col-lg-4  input-number">
+                            <input class="required form-control input-number inputspin" name="prize_cnt" id="cnt" type="text" size="12" value="{$prize['prize_cnt']|default=0}"/>
+                        </div>
+                         <div class="col-md-2 col-lg-2">
+                            <div class="help-block">(奖品数量0-100，0表示无限)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputcnt" class="col-md-2 col-lg-2 control-label">奖品类型</label>
+                        <div class="col-md-2 col-lg-2 input-number">
+                            <select name="prize_type" id="inputtype"  class="form-control input-normal select2">
+                                <option value="0">请选择</option>
+                            <volist name="cats" id ="v">
+                                <option value="{$key}" {$prize['prize_type']==$key?'selected="selected"':''} >{$v}</option>
+                            {/volist}
+                            </select>
+                        </div>
+                        <div class="col-md-1 col-lg-1  input-number">
+                            <input class="required form-control input-number" name="prize_num" id="prize_num" type="text" size="12" value="{$prize['prize_num']|default=0}"/>
+                        </div>
+                        <div class="col-md-6 col-lg-6">
+                            <div class="help-block">(正整数:积分数量【即中即发】/购物券面额【即中即发，30天有效】/商品编号【人工操作】/其他请随意【人工操作，还不清楚的选此项】)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-md-2 col-lg-2 control-label">中奖概率</label>
+                        <div class="col-md-2 col-lg-2 input-number">
+                            <input size="12" type="text" class="required form-control input-number" name="probability" id="inputprobability" value="{$prize['probability']|default=0}">
+                        </div>
+                         <div class="col-md-6 col-lg-6">
+                            <div class="help-block">(0-1之间,最多保留小数点后2位)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="hidden" name="prize_icon" id="prizeIcon">
+                        <label for="" class="col-md-2 col-lg-2 control-label">图标</label>
+                        <div class="col-lg-5 col-md-5">
+                            <span class="text-muted">(不修改则不操作，建议尺寸为100像素*100像素，大小不超过100kb)<i data-toggle="tooltip" class="fa fa-question" title="图标将会在抽奖页面按排序顺时针显示"></i></span>
+                                <!-- 图片选择DOM结构 -->
+                                <div class="wxuploaderimg clearfix main_img"  data-maxitems="1"> 
+                                    <div class="img-preview clearfix" >
+                                    </div>
+                                    <div class="add">
+                                        <i class="fa fa-plus"></i>
+                                    </div>
+                                </div>
+                                <!-- 图片选择DOM结构 -->
+                        </div>
+                        <div class="col-lg-5 col-md-5">
+                            <span>(现图)</span>
+                            <img class="  thumbnail " src="{:url('Api/Picture/index')}?id={$prize['prize_icon']}" height="100">
+                            <!--  imgpath -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-md-2 col-lg-2 control-label">排序</label>
+                        <div class="col-md-10 col-lg-10  input-number">
+                            <input class="required form-control input-number inputspin" name="sort" id="sort" type="text" size="12" value="{$prize['sort']|default=0}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(CONTROLLER_NAME.'/edit',array('pid'=>$prize['id']))}" autofocus="autofocus"  data-loading-text="{:L('BTN_SAVE')}..." ><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default" href="{:url(CONTROLLER_NAME.'/index',array('gid'=>$game['id']))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <!-- form -->
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+    <include file="template/prizepicture" />
+{/block}
+
+{block name="area_footer"}
+    <script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+    <script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+    <script src="__CDN__/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+
+            //图片上传
+            wxuploadimg.init({cont:".wxuploaderimg"});
+
+            $(".inputspin").TouchSpin({initval: 0});
+            $(".validateForm").validate();
+            // $("#gameForm").validate({
+            //     errorPlacement: function(error, element) {
+            //         $(".checked", element.parent()).remove();
+            //         error.appendTo(element.parent());
+            //     },
+            //     success: function(label)
+            //     
+            //     
+            //     
+            //     
+            //     
+            //     {
+            //         label.removeClass("error").addClass("checked").text("验证成功!");
+            //     },
+            //     rules: {
+            //         name: {
+            //             required: true,
+            //             remote: {
+            //                 url: "{:url('Game/check_name')}"
+            //             }
+            //         }
+            //     }
+            // }) //end validate
+            $('#file_upload').uploadify({
+                'formData' : { '<?php echo session_name();?>' : '<?php echo session_id();?>' },
+                'swf'      : '/Public/Upload/jquery-uploadify/3.2.1/uploadify.swf',
+                'uploader' : '{:url("/Admin/GamePrize/upload")}',
+                'buttonText' : '上传奖品图片',
+                'onUploadSuccess' : function(file, data, response) {
+                    console.log(data);
+                    // console.log(response);
+                    // $('#image').attr('src','/Public/Uploads/100_'+data);
+                    // $('#pic').val(data);
+                }
+                ,'auto': true
+                ,'multi': false
+                ,'width':120
+                ,'height':40
+
+            });
+        }); //end ready
+    </script>
+{/block}

@@ -1,0 +1,159 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-table-cell{height: auto !important;}
+</style>
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>用户管理</legend>
+  <div class="layui-field-box">
+    {:html_head_tip('用户基础数据,点击单元格编辑')}
+    <form class="layui-form layui-form-pane">
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="昵称|用户名|手机|邮箱">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <!-- <label for="jsf-role" class="layui-form-label">角色</label> -->
+        <div class="layui-input-inline" style="width: 150px;">
+          <select name="role" id="jsf-role" lay-filter="jsf-role">
+            <option value="0"> 全部角色 </option>
+            {volist name="roles" id="v"}
+            <option value="{$v.id}">{$v.name}</option>
+            {/volist}
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">注册时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn " id="js-search">搜索</a>
+        <button class="layui-btn" type="reset">重置</button>
+      </div>
+    </form>
+    <hr >
+    <div class="layui-btn-group">
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i> 添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops"><i class="fa fa-trash"></i> 批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" class="layui-btn confirm js-ops"><i class="fa fa-ban"></i> 批量禁用</a>
+    </div>
+
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+<!-- tpl -->
+<script type="text/html" id="nickTpl">
+  <img src="{:config('avatar_url')}?uid={{ d.id }}&size=60" class="layui-nav-img js-view">  {{ d.nick }}
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-chevron-right "></i> 详情</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+</div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','element','form','picView'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  rb.log('page','init');
+  var role  = parseInt({$role ?: 0});
+  var start = "{$start ?: ''}";
+  var end   = "{$end ?: ''})";
+  var kword = "{$kword ?: ''}";
+  //执行渲染
+  var Ltable = table.render({ elem: '#demo'
+    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: { role : role,start:start,end:end,kword:kword }
+    ,method: 'get'
+    ,request: { pageName: 'page',limitName: 'size' }
+    ,limits: [10,30]
+    ,limit: 10
+    ,loading: true
+    ,page: true
+    ,cols:  [[
+      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
+      ,{field: 'nick', title: '昵称 .', width: 200,templet:'#nickTpl',edit: 'text'}
+      ,{field: 'name', title: '用户名', width: 100}
+      ,{field: 'email', title: '邮箱 .', width: 150,edit: 'text'}
+      ,{field: 'phone', title: '手机 .', width: 150,edit: 'text'}
+      ,{field: 'role_name', title: '角色', width: 80}
+      ,{field: 'status', title: '状态', width: 80}
+      ,{align:'left',title: '操作',width:250,toolbar: '#barDemo'} //,fixed: 'right'
+    ]]
+    ,done: function(res, page, count){
+      // 转换数据
+      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
+      // console.log(res);
+      // res.data[0].username = 'done-edit';
+      // console.log(page,count);
+      // res.count = 100;
+    }
+  });
+
+  // 单元格编辑
+  table.on('edit(fDemo)', function(obj){
+    // console.log(obj); // value , field ,data
+    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
+      rb.ajaxTip(data);
+    });
+  });
+  // 单选
+  form.on('switch', function(data){
+    // console.log(data); //elem elem.checked value othis
+    var el = data.elem;
+    rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'hide',val: el.checked ? 1:0,id:parseInt(el.getAttribute('data-id')) },true);
+  });
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+  $('body').on('click', '#js-search', function(event) {
+    var kword = $('#jsf-kword').val();
+    var start = $('#jsf-start').val();
+    var end   = $('#jsf-end').val();
+    var role  = parseInt($('#jsf-role').prop('value') || 0);
+    var where = { kword:kword,start:start,end:end,role:role };
+    Ltable.reload({
+      where: where,
+      page: {
+        curr : 1
+      }
+    });
+    event.preventDefault();
+    return false;
+  });
+  form.on('select(jsf-role)', function(data){
+    $('#js-search').trigger('click');
+  });
+});
+</script>
+{/block}

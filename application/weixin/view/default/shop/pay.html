@@ -1,0 +1,51 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/pay/index.css">
+{/block}
+{block name="body"}
+<div class="pay-time">
+    <div class="pay-time-text">剩余支付时间</div>
+    <div class="pay-time-num">
+        <span class="pay-time-num1">1</span>
+        <span class="pay-time-num2">5</span>
+        <p>:</p>
+        <span class="pay-time-num3">0</span>
+        <span class="pay-time-num4">0</span>
+    </div>
+</div>
+<div class="pay-way">
+    <div class="pay-way-img"><img src="__IMG__/shop/weixin.png"></div>
+    <div class="pay-way-way">
+        <div>微信支付</div>
+        <div class="pay-way-way-2">微信5.0版本以上的用户可以使用</div>
+    </div>
+    <i class="weui-icon-success pay-way-right"></i>
+</div>
+<div class="pay-btn">
+    <button class="weui-btn weui-btn_primary">确认支付<span>880.00</span>元</button><!--微信支付接口-->
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/common.js"></script>
+<script type="text/javascript" src="__JS__/index/common.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    var time = 900;
+    var timer = setInterval(function () {
+        time -= 1;
+        var num1 = Math.floor(time/600);
+        var num2 = Math.floor(time/60)-num1*10;
+        var num3 = Math.floor((time-Math.floor(time/60)*60)/10);
+        var num4 = (time-Math.floor(time/60)*60)-num3*10;
+        $('.pay-time-num1').text(num1);
+        $('.pay-time-num2').text(num2);
+        $('.pay-time-num3').text(num3);
+        $('.pay-time-num4').text(num4);
+        if(time<=0){
+            clearInterval(timer);
+        }
+    },1000);
+})
+</script>
+{/block}

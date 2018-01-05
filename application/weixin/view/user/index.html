@@ -1,0 +1,123 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/user/style.css">
+{/block}
+{block name="body"}
+<div class="userIndex-box">
+    <div class="userIndex-head">
+        <div class="userIndex-head-img"><img src="{$user_Info.head}" alt=""></div>
+        <div class="userIndex-head-right">
+            <div class="userIndex-head-msg"><span class="userIndex-head-name">{$user_Info.nickname}</span> <span class="userIndex-head-level">{$level}</span></div>
+            <div class="userIndex-head-score"><span>积分:</span>{$user_Info['wallet']['stock_points']/100+$user_Info['wallet']['cash_points']/100}</div>
+        </div>
+    </div>
+    <div class="userIndex-order">
+        <a href="{:url('user/my_order')}">
+            <div class="userIndex-order-item">
+                <div class="userIndex-order-item-img"><img src="__IMG__/user/quanbu.png" alt=""></div>
+                <div class="userIndex-order-item-text">全部订单</div>
+            </div>
+        </a>
+        <a href="{:url('user/my_order',array('orderstatus'=>3))}">
+            <div class="userIndex-order-item">
+                <div class="userIndex-order-item-img"><img src="__IMG__/user/shouhou.png" alt=""></div>
+                <div class="userIndex-order-item-text">待发货</div>
+                <!--<span>2</span>-->
+            </div>
+        </a>
+        <a href="{:url('user/my_order',array('orderstatus'=>4))}">
+            <div class="userIndex-order-item">
+                <div class="userIndex-order-item-img"><img src="__IMG__/user/quanbu.png" alt=""></div>
+                <div class="userIndex-order-item-text">已发货</div>
+            </div>
+        </a>
+        <a href="{:url('user/my_order',array('orderstatus'=>7))}">
+            <div class="userIndex-order-item">
+                <div class="userIndex-order-item-img"><img src="__IMG__/user/shouhou.png" alt=""></div>
+                <div class="userIndex-order-item-text">已完成</div>
+                <!--<span>2</span>-->
+            </div>
+        </a>
+    </div>
+    <div class="userIndex-kind">
+        <a href="{:url('address/index')}">
+            <div class="userIndex-kind-item">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/dinwei.png" alt=""></div>
+                <div class="userIndex-kind-item-text">收货信息</div>
+            </div>
+        </a>
+        <div class="userIndex-kind-item userIndex-kind-score">
+            <div class="userIndex-kind-item-img"><img src="__IMG__/user/jifen.png" alt=""></div>
+            <div class="userIndex-kind-item-text">我的积分</div>
+        </div>
+        <a href="{:url('user/two_code')}">
+            <div class="userIndex-kind-item">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/erweima.png" alt=""></div>
+                <div class="userIndex-kind-item-text">我的二维码</div>
+            </div>
+        </a>
+        <a href="{:url('user/my_income')}">
+            <div class="userIndex-kind-item">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/mingxi.png" alt=""></div>
+                <div class="userIndex-kind-item-text">提成明细</div>
+            </div>
+        </a>
+        <a href="{:url('user/my_next')}">
+            <div class="userIndex-kind-item">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/xiaxian.png" alt=""></div>
+                <div class="userIndex-kind-item-text">健康团队</div>
+            </div>
+        </a>
+        <div class="userIndex-kind-item">
+            <div class="userIndex-kind-item-img"><img src="__IMG__/user/help.png" alt=""></div>
+            <div class="userIndex-kind-item-text">帮助中心</div>
+        </div>
+        <a href="{:url('user/my_task')}">
+            <div class="userIndex-kind-item userIndex-kind-replenish">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/buhuo.png" alt=""></div>
+                <div class="userIndex-kind-item-text">我的任务</div>
+            </div>
+        </a>
+        <a href="{:url('user/withdraw_list')}">
+            <div class="userIndex-kind-item userIndex-kind-replenish">
+                <div class="userIndex-kind-item-img"><img src="__IMG__/user/cash_recode.png" alt=""></div>
+                <div class="userIndex-kind-item-text">提现记录</div>
+            </div>
+        </a>
+    </div>
+    <div class="bind-phone">
+        <a href="{:url('binding/changebinding')}">
+            <button class="weui-btn weui-btn_primary">绑定手机号</button>
+        </a>
+    </div>
+</div>
+{include file="template/nav_bar"}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+
+    {empty name="$user_Info.roles_info.group_info"}
+    var group_id = '';
+    {else/}
+    var group_id = {$user_Info['roles_info']['group_info']['group_id']};
+    {/empty}
+
+    $('.userIndex-kind-score').click(function () {
+        if(!group_id){
+            $.toast('你不是会员', "cancel")
+        }else{
+            location.href = 'http://dehong.8raw.com/weixin.php/weixin/user/my_score.html'
+        }
+    });
+    $('.userIndex-kind-replenish').click(function () {
+        if(!group_id){
+            $.toast('你不是会员', "cancel")
+        }else{
+            location.href = 'http://dehong.8raw.com/weixin.php/weixin/shop/replenish.html'
+        }
+    })
+</script>
+{/block}

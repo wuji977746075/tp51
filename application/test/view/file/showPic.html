@@ -1,0 +1,33 @@
+{extend name="template/base-ava-2-1-14" /}
+
+{block name="head"}
+<script>
+function check(){
+  // alert('check');
+  // return true;
+}
+</script>
+{/block}
+
+{block name="body"}
+<div class="title">  <h1>BOYE测试 <span>{$type?:'NO_API...'}</span></h1>  </div>
+<div class="content am-panel">
+ <form action="{$post_url?:''}" class="am-form"  target="_blank">
+    <div class="am-form-group">
+     	<label for="id">图片ID</label>
+      <input type="text" name="id" value="21" id="id"/>
+    </div>
+    <div class="am-form-group">
+      <label for="size">图片大小</label>
+      <select id="size" name="size">
+        <option value="">默认</option>
+        {volist name="sizes" id="v"}
+        <option value="{$v}">{$v}</option>
+				{/volist}
+      </select>
+      <span class="am-form-caret"></span>
+    </div>
+    <button type="submit" class="am-btn" onclick="return check();">提交</button>
+</form>
+</div>
+{/block}

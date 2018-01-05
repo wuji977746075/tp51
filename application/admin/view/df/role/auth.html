@@ -1,0 +1,153 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .block.block-bordered {
+    border: 1px solid #e9e9e9;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+  .block.block-bordered>.block-header { border-bottom: 1px solid #e9e9e9; }
+  .block-content {
+    margin: 0 auto;
+    padding: 20px 20px 1px;
+    max-width: 100%;
+    overflow-x: visible;
+    -webkit-transition: opacity 0.2s ease-out;
+    transition: opacity 0.2s ease-out;
+  }
+</style>
+{/block}
+
+{block name="area_body"}
+<div class="page-header">
+  <div class="page-title"><i></i>
+    设置角色[{$info['name'] ?: ' ..'}]的权限
+  </div>
+</div>
+{:html_head_tip('菜单权限即ADMIN权限,API那边设置的暂未使用.')}
+<div class="layui-tab layui-tab-card ">
+  <ul class="layui-tab-title">
+    <li class="layui-this">菜单权限</li>
+    <li>API权限</li>
+  </ul>
+  <div class="layui-tab-content">
+    <div class="layui-tab-item layui-show">
+      <!-- 菜单权限:最高支持4级 -->
+      <form class="layui-form menuForm">
+      {volist name="menus" id="v"}
+      <div class="block block-bordered layui-form mb20">
+        <div class="block-header auth-node-top">
+          <input type="checkbox" name="menu_auth[]" data-parent="0" value="{$v.id}" title="{$v.name}" lay-skin="primary" data-icon="fa fa-fw fa-home" lay-filter="lv1" {eq name="v.sel" value="1"}checked{/eq}>
+        </div>
+        {volist name="v.child" id="v2"}
+        <div class="block-content">
+          <div class="auth-node-parent">
+            <input type="checkbox" name="menu_auth[]" data-parent="{$v.id}" value="{$v2.id}" data-icon="fa fa-fw fa-folder-open-o" title="{$v2.name}" lay-skin="primary" lay-filter="lv2" {eq name="v2.sel" value="1"}checked{/eq}>
+          </div>
+          {present name="v2.child"}
+          <div class="auth-node-child ml20">
+            {volist name="v2.child" id="v3"}
+            <div class="auth-node-row layui-inline">
+              <div>
+                <input type="checkbox" name="menu_auth[]" data-parent="{$v2.id}" value="{$v3.id}" data-icon="fa fa-fw fa-tachometer" title="{$v3.name}" lay-skin="primary" lay-filter="lv3" {eq name="v3.sel" value="1"}checked{/eq}>
+              </div>
+              {present name="v3.child"}
+              <div class="auth-node-child ml20 mt10">
+                {volist name="v3.child" id="v4"}
+                <input type="checkbox" name="menu_auth[]" data-parent="{$v3.id}" value="{$v4.id}" title="{$v4.name}" lay-skin="primary" lay-filter="lv4"  {eq name="v4.sel" value="1"}checked{/eq}>
+                {/volist}
+              </div>
+              {/present}
+            </div>
+            {/volist}
+          </div>
+          {/present}
+        </div>
+        {/volist}
+      </div>
+      {/volist}
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'menu'])}" class="layui-btn ajax-post" target-form="menuForm">确定</button>
+      {$html_return|raw}
+      </form>
+    </div>
+    <div class="layui-tab-item">
+      <!-- API权限 -->
+      <form class="layui-form apiForm">
+      {volist name="auths" id="v"}
+      <div class="block block-bordered layui-form mb20">
+        <div class="block-header auth-node-top">
+          <input type="checkbox" name="api_auth[]" data-parent="0" value="{$v.id}" title="{$v.client_name} [{$v.client_id}]" lay-skin="primary" data-icon="fa fa-fw fa-home" lay-filter="av1">
+        </div>
+        <div class="block-content p20">
+          <div class="auth-node-parent">
+            {volist name="v.nodes" id="v2"}
+            <input type="checkbox" name="api_auth[]" data-parent="{$v.id}" value="{$v.id},{$v2.id}" data-icon="fa fa-fw fa-folder-open-o" title="{$v2.title} [{$v2.name}]" lay-skin="primary" lay-filter="av2" {eq name="v2.sel" value="1"}checked{/eq}>
+            {/volist}
+          </div>
+        </div>
+      </div>
+      {/volist}
+      <div class="mb20"></div>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'api'])}" class="layui-btn ajax-post" target-form="apiForm">确定</button>
+      {$html_return|raw}
+      </form>
+    </div>
+  </div>
+</div>
+
+{/block}
+
+{block name="area_foot"}
+<script>
+layui.use(['rb','form','element'], function(){
+  var form = layui.form
+  ,$ = layui.$
+  ,rb = layui.rb
+  ,el = layui.element
+  ;
+
+  // layer.open({
+  //   type:1,
+  //   content: $('#form'),
+  //   area:['600px','300px']
+  // })
+  // $("option[value='台州']").attr('selected','selected')
+  // form.render('select');
+  // 权限选择
+  // 选中 : 全选上下级
+  // 取消 : 全消下级
+  form.on('checkbox', function(data){
+    var dom = data.elem;
+    var chk = dom.checked;
+    var $dom = $(dom);
+    var lv = $dom.attr('lay-filter');
+    var p1=0,p2=0,p3=0;
+    // var val = dom.value; // or data.value
+    // console.log(data.othis); // 得到美化后的DOM对象
+    if(rb.in_array(lv,['lv1','lv2','lv3','lv4'])){ // menu auth
+      $childs = $dom.parent().next('div').find('input:checkbox');
+      p3 = $dom.data('parent') || 0;
+      p3 && (p2 = $('input:checkbox[value='+p3+']').data('parent') || 0);
+      p2 && (p1 = $('input:checkbox[value='+p2+']').data('parent') || 0);
+      if(chk){
+        $childs.not(':checked').prop('checked',true);
+        p3 && $('input:checkbox[value='+p3+']').prop('checked',true);
+        p2 && $('input:checkbox[value='+p2+']').prop('checked',true);
+        p1 && $('input:checkbox[value='+p1+']').prop('checked',true);
+      }else{
+        $childs.removeAttr("checked");
+      }
+      form.render('checkbox');
+    }else if(rb.in_array(lv,['av1','av2'])){ // api auth
+      $childs = $dom.parent().next('div').find('input:checkbox');
+      if(lv == 'av1'){
+        if(chk) $childs.not(':checked').prop('checked',true);
+        else $childs.removeAttr("checked");
+        form.render('checkbox');
+      }
+    }
+  });
+});
+</script>
+{/block}

@@ -1,0 +1,197 @@
+{extend name="new/template/base" /}
+
+{block name="area_header"}
+	{include file="new/template/base_bootstrap" /}
+ 	<link rel="stylesheet" type="text/css" media="all" href="__CSS__wxshop.css">
+<!-- 	<link type="text/css" rel="stylesheet" src="__CDN__jquery-uploadify/3.2.1/uploadify.css" />
+	<script type="text/javascript" src="__CDN__jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+ -->
+  <script type="text/javascript" src="__CDN__jquery-validation/1.13.1/jquery.validate.min.js"></script>
+  <script type="text/javascript" src="__CDN__jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+  <style type="text/css">
+    .pt8{ width:2rem !important;padding-top: 8px; }
+    input.error { border: 1px solid red; }
+    label.checked { padding-left: 25px; }
+    label.error { padding-left: 25px;padding-bottom: 2px;font-weight: bold;color: #EA5200; }
+  </style>
+{/block}
+
+{block name="area_body"}
+  <div class="admin-main container-fluid">
+    <div class="admin-main-content">
+      <!-- 带验证 form -->
+      <form id="validateForm" class="form-horizontal well validateForm">
+					<!-- <input type="hidden" name="main_img" class="main_img" value="" required/>
+					<input type="hidden" name="img" id="img" value="" /> -->
+          <fieldset>
+              <legend>添加学校</legend>
+              <div class="form-group">
+                  <label for="inputname" class="col-md-2 col-lg-2 control-label">名称</label>
+                  <div class="col-md-10 col-lg-10">
+                      <input type="text" class="required form-control input-normal" name="zone_name" id="zonename"  maxlength="32" placeholder="学校名称,最多32位">
+                      <div class="help-block"></div>
+                  </div>
+              </div>
+              <div class="form-group">
+                <label for="inputname" class="col-md-2 col-lg-2 control-label">别名</label>
+                <div class="col-md-10 col-lg-10">
+                    <input type="text" class="required form-control input-normal" name="alias_name" id="aliasname" maxlength="64" placeholder="学校别名,最多64位">
+                    <div class="help-block"></div>
+            		</div>
+              </div>
+              <div class="form-group row">
+                  <label for="inputname" class="col-md-2 col-lg-2 control-label">所在区域</label>
+                  <div class="col-md-10 col-lg-10">
+                      <select name="province" id="province"  class="form-control inline input-number input-sm" data-type="province">
+				                <option value="">==省份==</option>
+				                {volist name="provinces" id="v"}
+				                  <option value="{$v.provinceID}">{$v.province}</option>
+				                {/volist}
+				              </select>
+				              <select name="city" id="city" class="form-control inline input-number input-sm" data-type="city">
+				                <option value="">==城市==</option>
+				              </select>
+				              <select name="area" class="form-control input-number inline input-sm" id="area" data-type='area'>
+				                <option value="">==市区==</option>
+				              </select>
+                      <div class="help-block"></div>
+                  </div>
+              </div>
+              <div class="form-group">
+                <label for="inputname" class="col-md-2 col-lg-2 control-label">地址</label>
+                <div class="col-md-10 col-lg-10">
+                    <input type="text" class="required form-control input-normal" name="address" id="address" maxlength="64" placeholder="学校地址,最多64位">
+                    <div class="help-block"></div>
+            		</div>
+              </div>
+              <div class="form-group">
+                  <label for="inputname" class="col-md-2 col-lg-2 control-label">经度</label>
+                  <div class="col-md-10 col-lg-10">
+                      <input type="text" class="required form-control input-normal" name="lng" id="lng" maxlength="10" placeholder="经度">
+                      <div class="help-block">经度</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="inputname" class="col-md-2 col-lg-2 control-label">纬度</label>
+                  <div class="col-md-10 col-lg-10">
+                      <input type="text" class="required form-control input-normal" name="lat" id="lat" maxlength="9" placeholder="纬度">
+                      <div class="help-block">纬度</div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                  <div class="col-lg-10 col-md-10">
+                      <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(CONTROLLER_NAME.'/add')}"  onclick="return check();"   autofocus="autofocus"  data-loading-text="{:L('BTN_SAVE')}..." ><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                      <a class="btn btn-default" href="{:url(CONTROLLER_NAME.'/index',array('temp'=>''))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                  </div>
+              </div>
+          </fieldset>
+      </form>
+      <!-- form -->
+	    <!-- <include file="template/wxpicture" /> -->
+	  </div>
+	  <!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+	<script type="text/javascript">var city = '浙江 杭州';</script>
+	{include file="default/template/baidumap_school" /}
+{/block}
+
+{block name="area_footer"}
+  <script type="text/javascript">
+		// function getData(){
+		// 	var main_img = $(".main_img .img-preview img").attr("data-imageid");
+		// 	if(main_img){
+		// 		$(".main_img").val(main_img);
+		// 	}
+		// 	$("#img").val("");
+		// 	$(".product-imglist .img-preview img").each(function(index,item){
+		// 		$("#img").val($("#img").val()+$(item).attr("data-imageid")+",");
+		// 	});
+		// }
+		// function check(){
+		// 	getData();
+		// 	return true;
+		// }
+		$(function() {
+			var aid,cid,flag,pro_name,city_name;
+		  $(document).on('change','#province,#city,#area',function(event) {
+		    var $this = $(this),aid = $this.val(),type = $this.data('type');
+		    flag = (type == 'city' ? true:false);
+		    var ajax = false;
+			  city =$this.find("option:selected").text();
+		    if(type =='province'){
+		    	pro_name = city;
+		    	ajax = true;
+		    }else if(type=='city'){
+		    	ajax = true;
+		    	city_name = city;
+		    	city = pro_name + ' ' +city;
+		    }else{
+		    	city = pro_name + ' ' + city_name + '' + city;
+		    }
+		    map.centerAndZoom(city,11);
+		    if(ajax){
+		    	$.getJSON("{:url('school/getArea')}",{ aid:aid,type:type },function(data){
+			      //
+			      var info = data.info;
+			      var str = "<option value=''>==选择==</option>";
+			      if(data.status){
+			        if(flag && !info) alert('请选择省份');
+			        for (var i = 0;i < info.length ; i++) {
+			          if(flag){ //areas
+			            str += "<option value='"+info[i].areaID+"'>"+info[i].area+"</option>";
+			          }else{ //citys
+			            str += "<option value='"+info[i].cityID+"'>"+info[i].city+"</option>";
+			          }
+			        }
+			        if(str){
+			          if(type == 'province') $('#city').html(str);
+			          else if (type == 'city') $('#area').html(str);
+			        }
+			      }else{
+			        alert(info);
+			      }
+			    })
+		    }
+		  });
+			//图片上传
+			// wxuploadimg.init({cont:".wxuploaderimg"});
+			// 是否中文名字
+			// $.validator.addMethod("isCnName", function(value, element) {
+			//    var tel = /[a-z0-9.*?,(!)&amp;%$^……！·￥——（）　#@]/g;
+			//    return this.optional(element) || !(tel.test(value));
+			// }, "请填写正确的姓名");
+			// // 联系电话(手机/电话皆可)验证
+			// $.validator.addMethod("isPhone", function(value, element) {
+			//    var length = value.length;
+			//    var mobile = /^(((13[0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+			//    var tel = /^\d{3,4}-?\d{7,9}$/;
+			//    return this.optional(element) || (tel.test(value) || mobile.test(value));
+			// }, "请正确填写您的联系电话");
+			// // 身份证号码验证
+			// $.validator.addMethod("isIdCardNo", function(value, element) {
+			//    return this.optional(element) || IdCardValidate(value);
+			// }, "请正确输入您的身份证号码");
+			$("#validateForm").validate({
+				// debug:true,//只验证不提交表单
+		    errorPlacement: function(error, element) {
+		        $(".checked", element.parent()).remove();
+		        error.appendTo(element.parent());
+		    }
+		    ,success: function(label) {
+		        label.removeClass("error").addClass("checked").text("通过");
+		    }
+				// ,rules: {
+				//     name: {
+				//         required: true,
+				//         remote: {
+				//             url: "{:url('Game/check_name')}"
+				//         }
+				//     }
+				// }
+			}) //end validate
+		}); //end ready
+    </script>
+{/block}

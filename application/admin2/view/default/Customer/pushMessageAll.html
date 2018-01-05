@@ -1,0 +1,109 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+	<link src="__CDN__/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" type="text/css" />
+
+	<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+	<script type="text/javascript" charset="utf-8" src="__UPLOAD__/ueditor/1.4.3/ueditor.config.js"></script>
+	<script type="text/javascript" charset="utf-8" src="__UPLOAD__/ueditor/1.4.3/ueditor.all.min.js"> </script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- form -->
+			<form class="form-horizontal well validateForm">
+				<fieldset>
+					<legend>客户管理-发送消息</legend>
+					<div class="form-group">
+						<div class="col-md-10 col-lg-10">
+							<input type="hidden" name="uid" value="{:I('uid')}" >
+							<input type="hidden" name="pushAll" value="{:I('pushAll',false)}" >
+						</div>
+
+					</div>
+					<div class="form-group">
+						<label for="inputtitle" class="col-md-2 col-lg-2 control-label">消息标题</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="title" id="inputtitle" placeholder="请输入消息标题">
+							<div class="help-block">(消息标题)</div>
+						</div>
+
+					</div>
+					<div class="form-group">
+						<label for="inputtitle" class="col-md-2 col-lg-2 control-label">消息摘要</label>
+						<div class="col-md-10 col-lg-10">
+							<textarea class="required form-control input-normal" rows="3" id="inputtext" name="summary"  placeholder="请输入消息摘要"></textarea>
+							<div class="help-block">(消息摘要)</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputtext" class="col-md-2 col-lg-2 control-label">消息内容</label>
+						<div class="col-md-10 col-lg-10">
+							<script id="ueditor" name="content" type="text/plain" style="height: 480px;" ></script>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">消息类型</label>
+						<div class="col-md-10 col-lg-10">
+							<label class="checkbox-inline">
+								<input type="radio" value="1" name="type" checked> 推送消息
+							</label>
+							<label class="checkbox-inline">
+								<input type="radio" value="2" name="type"> 其他消息
+							</label>
+						</div>
+
+					</div>
+
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url('Customer/pushMessage')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SEND')}</a>
+							<a class="btn btn-default" href="{:url('Customer/index')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+
+	</div>
+{/block}
+
+{block name="area_footer"}
+	
+	<script src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+	<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+	<script src="__CDN__/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+	<script>
+		var ue = UE.getEditor('ueditor',{
+			toolbars:[
+				['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
+					, 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map','print', 'preview',  'drafts','forecolor','backcolor'
+				]
+			]});
+	</script>
+	<script type="text/javascript">
+
+		function getData(){
+			$("#main_img").val($(".wxuploaderimg img").attr("src"));
+		}
+
+		$(function(){
+			wxuploadimg.init({cont:".wxuploaderimg"});
+
+			$('#starttime').datetimepicker({
+				lang: 'ch'
+			});
+			$('#endtime').datetimepicker({
+				lang: 'ch'
+			});
+		})
+	</script>
+{/block}

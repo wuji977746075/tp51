@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <link rel="stylesheet" href="__CDN__amazeui/2.5.2/amazeui.min.css">
+    <link rel="stylesheet" href="__CSS__/ava-test.css">
+    <style>.ms-controller{ display:none; }</style>
+    <script src="__CDN__jquery/3.0.0a/jquery.min.js"></script>
+    <script src="__CDN__amazeui/2.5.2/amazeui.min.js"></script>
+    <script src="__CDN__avalon.js/1.5.5/avalon.modern.shim.js"></script>
+<script>
+var logs = true;
+function log(){
+ if(arguments.length == 1)  console.log(arguments[0]);
+ else if(arguments.length == 2)  console.log(arguments[0],arguments[1]);
+ else if(arguments.length == 3)  console.log(arguments[0],arguments[1],arguments[2]);
+ else console.log(arguments);
+};
+$(function(){
+    $('#key').focus();
+})
+avalon.config({ interpolate:["[[","]]"] });
+var vm = avalon.define({
+ $id: "test",
+ inp:[],
+ state:false,
+ param: [
+    ['api_ver',100],
+ ],
+ msg:"相安无事",
+ add:function(){
+    var len = vm.param.length;
+    var inp = vm.inp;
+    if(!inp[0]){ vm.msg = '无效操作'; }else{
+        logs && log('fun-add:',inp.$model);
+        $('#key').focus();
+        for (var i = 0; i < len; i++) {
+            if(vm.param[i][0]==inp[0]){
+                if(inp[1].length){
+                    vm.msg = '修改参数:'+inp[0]+'='+inp[1];
+                    vm.param[i].set(1,inp[1]);
+                }else{
+                    vm.msg = '删除参数:'+inp[0];
+                    vm.param.splice(i,1);
+                }
+                vm.inp=[];
+                return;
+            }
+        };
+        vm.msg = '添加参数:'+inp[0]+'='+inp[1];
+        vm.param.push([inp[0],inp[1]]);
+        vm.inp=[];
+        return;
+    }
+ },
+ sub:function(){
+    logs && log('vm-sub',vm.param[0].$model);
+    vm.msg = '提交请求';
+ },
+ cha:function(e){
+    logs && log('vm-cha',e);
+    var dat = vm.param[e];
+    vm.msg = '准备操作: '+dat[0];
+    vm.inp = [];
+    vm.inp.pushArray([dat[0],dat[1]]);
+    $('#val').focus();
+ },
+ key:function(e){
+    var k = e.keyCode;
+    if(k == 13){
+     logs && log('vm-key',k,e.keyIdentifier);
+     vm.add();
+    }
+ }
+});
+// avalon.scan();
+</script>
+</head>
+<body>
+<div class="title">
+    <h1>测试</h1>
+</div>
+<div class="content" ms-controller="test">
+    <label>添加参数 【无key添加；有key修改,无value删除】</label>
+    <div class="am-form-inline">
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="key"  ms-duplex="inp[0]" placeholder="参数名">
+      </div>
+      <div class="am-form-group">
+        <input type="text" class="am-form-field" id="val" ms-on-keydown="key" ms-duplex="inp[1]" placeholder="参数值">
+      </div>
+      <button class="am-btn" ms-click="add">添加</button>
+    </div>
+    <p></p>
+    <table class="am-table am-table-bordered am-table-radius">
+        <thead><tr><th>参数名</th><th>参数值</th></tr></thead>
+        <tbody>
+        <tr ms-repeat="param" ms-click="cha($index)">
+            <td ms-repeat-ele="el">[[ele]]</td>
+        </tr>
+        </tbody>
+    </table>
+    <button class="am-btn am-btn-primary" ms-click="sub">提交</button>
+    <p>[[msg]]</p>
+</div>
+
+</body>
+</html>

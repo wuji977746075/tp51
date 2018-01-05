@@ -1,0 +1,193 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<style>
+th{ vertical-align: middle !important; }
+.pink{ color:pink; }
+.p0{ padding: 0 !important; }
+.form-group{ margin-bottom: 5px !important; }
+.select2-selection{ border:none !important;height:34px !important; }
+.select2-selection .select2-selection__rendered{ height:35px !important; }
+.select2-dropdown{ border-color: #ddd !important; }
+.vertical-align-middle>td{
+    vertical-align: middle!important;
+}
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+
+        <div class="table well">
+            <div class="h4"><b>充值订单管理</b> - <a title="充值订单管理说明" data-toggle="tooltip" data-placement="right">说明</a></div>
+            <br >
+            <div class="filter-controls">
+                <form class="form-inline searchForm" method="post" action="{:url('Withdraw/order')}">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-user"></i>用户</div>
+                            <div class="form-control p0">
+                                <select id="user_select2" name="uid">
+                            {if condition="$uid gt 0"}<option value="{$uid}" selected="selected"}> [id:{$uid}] {$nickname|default=''}</option>{/if}
+                            </select>
+                            </div>
+                        </div>
+                    </div><br/>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">手机号</div>
+                            <input type="text" name="mobile" placeholder="请输入手机号" class="form-control" value="{$mobile|default=''}" />
+                        </div>
+                    </div><br/>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">订单编号</div>
+                            <input type="text" name="order_code" placeholder="请输入订单编号！" class="form-control" value="{$order_code|default=''}" />
+                        </div>
+                    </div><br/>
+                    <div class="form-group">
+                        <div class="input-group ">
+                            <div class="input-group-addon">支付状态</div>
+                            <div class="form-control">
+                                <label class="radio-inline">
+                                    <input type="radio" name="pay_status" {eq name="pay_status" value=""}checked="checked"{/eq} value="">不限
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="pay_status" {eq name="pay_status" value="0"}checked="checked"{/eq} value="0">待支付
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="pay_status" {eq name="pay_status" value="1"}checked="checked"{/eq} value="1">已支付
+                                </label>
+                            </div>
+                        </div>
+                    </div><br/>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                时间<i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" name="start_time" id="start-time" class="form-control input-short" value="{$start_time|default=''}" />
+                            <div class="input-group-addon">
+                                <i class="fa fa-long-arrow-right"></i>
+                            </div>
+                            <input type="text" name="end_time" id="end-time" class="form-control input-short" value="{$end_time|default=''}" />
+                        </div>
+                        <button class="btn btn-primary" type="submit"> <i class="fa fa-search"></i>查询</button>
+                    </div>
+                </form>
+            </div>
+            <br >
+            <table class="table table-bordered table-striped table-condensed table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户昵称</th>
+                    <th>手机号</th>
+                    <th>订单编号</th>
+                    <th>创建时间</th>
+                    <th>金额</th>
+                    <th>支付状态</th>
+                    <th>支付方式 [支付单号]</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="list" id="v"}
+                <tr class="vertical-align-middle">
+                    <td>
+                        {$v.id}</td>
+                    <td>
+                        <a href="{:url('Member/view',array('id'=>$v['uid']))}" title="点击查看该用户详情" data-toggle="tooltip"><img src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($v['uid'],60)}" style="width: 40px;height:40px;border-radius: 50%" />{$v.nickname|default='--'}</a></td>
+                    <td>
+                        {$v.mobile}</td>
+                    <td>
+                        {$v.order_code}</td>
+                    <td>
+                        {:date("Y-m-d H:i:s",$v['create_time'])}</td>
+                    <td>
+                        {$v.money|number_format=2}</td>
+                    <td>
+                        {:getPayStatus($v['pay_status'])}</td>
+                    <td>
+                        {:getPayType($v['pay_type'])} <br/>[{$v.pay_code}]</td>
+                  </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <div>{$show}</div>
+        </div>
+
+    </div>
+    <!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".paystatus").click(function(){
+            $(".searchForm").submit();
+        })
+
+        $('#start-time').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+            // format:'Y-m-d',
+            // timepicker:false,
+        });
+        $('#end-time').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+        });
+        //选择用户 ajax start
+        $("#user_select2").select2({
+            width:520,
+            placeholder: "输入用户id或昵称查询",
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data, params) {
+                    if(!data.data){
+                        data.data = new Array();
+                        data.data['nodata']="无相关数据";
+                    }
+                    return {
+                        results: data.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                return repo.nickname ? '[id:'+repo.id+'] '+repo.nickname : repo.text;
+            },
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                if(repo.nodata)   return repo.nodata;
+                // var markup = '<div>'+repo.nickname+'</div>';
+                var markup = '<div><img src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+                return $(markup);
+            },
+        });
+        //选择用户 ajax end
+    });
+</script>
+{/block}

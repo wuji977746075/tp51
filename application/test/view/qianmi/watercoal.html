@@ -1,0 +1,233 @@
+{extend name="template/base-ava-2-1-14" /}
+
+{block name="head"}
+<script src="__JS__lodash.min.js"></script>
+{/block}
+
+{block name="body"}
+<div class="title">  <h1>BOYE测试 <span>{$type}</span></h1>  </div>
+<div class="am-g"  ms-controller="test">
+
+    <div class="am-u-sm-5">
+        <label>操作参数 【无key添加；有key修改,无value删除】</label>
+        <div class="am-form-inline">
+          <div class="am-form-group">
+            <input type="text" class="am-form-field" id="key"  ms-duplex="@inp[0] | change" placeholder="参数名">
+          </div>
+          <div class="am-form-group">
+            <input type="text" class="am-form-field" id="val" ms-on-keydown="@add | enter" ms-duplex="@inp[1]" placeholder="参数值">
+          </div>
+          <button class="am-btn" ms-click="@add">确定</button>
+          <div class="am-form-group am-padding">[[@msg]]</div>
+        </div>
+        <button class="am-btn am-btn-primary" ms-click="@sub">启动</button>
+        <button class="am-btn am-btn-primary" ms-click="@ret">重置</button>
+        <p></p>
+        <table class="table-form am-table am-table-hover am-table-bordered am-table-radius">
+            <thead><tr><th>参数名</th><th>参数值</th><th>参数说明[**为必选]</th></tr></thead>
+            <tbody>
+            <tr ms-for="(k,v) in @param" ms-click="@cha($event,k)">
+               <td ms-for="e in v" ms-html="e | sanitize"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p></p>
+        <div class="am-form-inline">
+          <label>查看代缴商品</label> &nbsp;&nbsp;&nbsp;
+          <div class="am-form-group">
+            <select id="js-provinceId" name="provinceId" class="am-form-field">
+                <option value="">请选择省份</option>
+            </select>
+            <select id="js-cityId" name="cityId" class="am-form-field">
+                <option value="">请选择城市</option>
+            </select>
+          </div>
+        </div>
+        <p id='js-items'></p>
+    </div>
+    <div class="am-u-sm-7">
+        <label>请求结果</label>
+        <!-- <p ms-html="@htm | sanitize">view bug</p> -->
+        <block id="htm"></block>
+    </div>
+</div>
+{/block}
+
+
+{block name="foot"}
+<script src="http://pic.qianmi.com/cloudshop/qmopen/elife/items_localLife.js"></script>
+<script type="text/javascript">
+// items_localLife
+// _
+var s1,s2,p,list1,list2,list3,html,item,index,l;
+$(function(){
+    s1 = $('#js-provinceId');
+    s2 = $('#js-cityId');
+    p  = $('#js-items');
+    list1 = items_localLife.RECORDS;
+
+    //设置省份
+    l = list1.length;
+    html = '';
+    for (var i = 0; i < l; i++) {
+        item = list1[i];
+        html += "<option value='" + i + "' >"+ item.provinceName + " ("+ item.provinceId + ") </option>";
+    };
+    if(html) s1.append(html);
+
+    //选择省份 设置对应城市
+    s1.change(function(e) {
+        index = $(this).val();
+        list2 = list1[index].cityList;
+        l  = list2.length;
+        html = '<option value="">请选择城市</option>';
+        for (var i = 0; i < l; i++) {
+            item = list2[i];
+            html += "<option value='" + i + "' >"+ item.cityName + " ("+ item.cityId + ") </option>";
+        };
+        if(html) s2.html(html);
+    });
+
+    //选择城市 显示缴费数据
+    s2.change(function(e) {
+        index = $(this).val();
+        list3 = list2[index].projectList;
+        l  = list3.length;
+        html = '';
+        for (var i = 0; i < l; i++) {
+            item = list3[i];//缴费类型
+            html += "<b>" + item.projectName + " ("+ item.projectId + ")</b><table class='am-table am-table-hover am-table-bordered am-table-radius ' ><tr><th>缴费单位</th><th>代缴商品(itemId)</th></tr>";
+            l2 = item.unitList.length;
+            for (var j = 0; j < l2; j++) {
+                item2 = item.unitList[j];//缴费公司
+                html += "<tr><td>" + item2.unitName + " ("+ item2.unitId + ")</td><td>";
+                l3 = item2.modeList.length;
+                for (var k = 0; k < l3; k++) {
+                    item3 = item2.modeList[k];
+                    // html += "<td>" + item3.modeName + " ("+ item3.modeId + ")</td><td>";
+                    l4 = item3.itemList.length;
+                    for (var h = 0; h < l4; h++) {
+                        item4 = item3.itemList[h];
+                        html += "<div>" + item4.itemName + " ("+ item4.itemId + ") </div>";
+                    }
+                }
+                html += "</td></tr>";
+            }
+            html += "</table>";
+
+        };
+        if(html) p.html(html);
+    });
+})
+</script>
+<script>
+//set viewModel
+var vm = avalon.define({
+ $id: "test",
+ dat:'',
+ inp:['','',''],
+ state:'',
+ param: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ msg:"相安无事",
+ reparam: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ ret:function(){
+    vm.param = vm.reparam;
+    vm.msg   = '勿忘初心，回归本源';
+ },
+ add:function(){
+    var len = vm.param.length;
+    var inp = vm.inp;
+    if(!inp[0]){ vm.msg = '无效操作';return; }else{
+        log('fun-add:',inp.$model);
+        $('#key').focus();
+        for (var i = 0; i < len; i++) {
+            if(vm.param[i][0]==inp[0]){
+                if(inp[1].length){
+                    if(inp[1]!=vm.param[i][1]){
+                        vm.msg = '修改参数:'+inp[0]+'='+inp[1];
+                        vm.param[i].set(1,inp[1],vm.param[i][2]);
+                    }else{ vm.msg = '无用操作'; }
+                    $('tbody>tr').stop().removeClass().eq(i).addClass('am-primary');
+                }else{
+                    vm.msg = '删除参数:'+inp[0];
+                    vm.param.splice(i,1);
+                }
+                vm.inp = ['','',''];
+                return;
+            }
+        };
+        if(!inp[1]){ vm.msg = '无效操作';return; }
+        vm.msg = '添加参数:'+inp[0]+'='+inp[1];
+        vm.param.push([inp[0],inp[1],'']);
+        vm.inp = ['','',''];
+        //等待vm-ready
+        setTimeout(function(){$('tbody>tr').stop().removeClass().last().addClass('am-primary');},200);
+        return;
+    }
+ },
+ sub:function(){
+    progress.start();
+    var param = vm.param.$model,dat={};
+    var len  = param.length;
+    var p,k,i1,i2,k1,k2;
+    for (var i = 0; i < len; i++) {
+        k = param[i][0];
+        if(k.search(reg)<0) alert('参数名格式错误');
+        // 暂时后端处理数组
+        i1 = k.search(/\[/);
+        if(i1>0){
+          //数组
+          i2=k.search(/\]/);
+          k1=k.slice(0,i1); //key
+          k2=k.slice(i1+1,i2); //value
+          if(k2 == ''){
+            if(dat[k1] instanceof Array){ }else{
+              dat[k1] = [];
+            }
+            dat[k1].push(param[i][1]);
+          }else{
+            if(dat[k1] instanceof Object){ }else{
+              dat[k1] = { };
+            }
+            dat[k1][k2] = param[i][1];
+          }
+        }else{
+          //字符串
+          dat[k] = param[i][1];
+        }
+    };
+    for(i in dat){
+        p = dat[i];
+        if(p instanceof Object){
+            dat[i] = JSON.stringify(p);
+        }
+    }
+    log('vm-sub===',dat);
+    vm.msg = '提交请求';
+    $.post('',dat,function(data) { //{ data:JSON.stringify(dat) }
+        s = data;
+        handlepost(data);
+    });
+    outtime();
+ },
+ cha:function(e,k){
+    log('vm-cha',k,e);
+    var dat = vm.param[k];
+    vm.msg = '准备操作: '+dat[0];
+    vm.inp = [];
+    $('tbody>tr').stop().removeClass().eq(k).addClass('am-primary');
+    vm.inp.pushArray([dat[0],dat[1]]);
+    $('#val').focus();
+ }
+});
+// avalon.scan();
+</script>
+{/block}

@@ -1,0 +1,85 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<style type="text/css">
+  .input-sort{
+    max-width: 65px !important;
+  }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+  {include file="default/Widget/left" /}
+  <div class="admin-main-content">
+  {include file="default/Widget/breadcrumb" /}
+    <div class="table-responsive well">
+      <h2>{$unit_name} 下的题目列表</h2>
+
+      <form  class="hide-data  form-horizontal">
+      <div class="btn-controls">
+        <a class="btn btn-sm btn-primary" href="{:url('Bookunit/question',['id'=>$unit_id,'book_parent'=>$book_parent,'pid'=>$pid])}"
+           ><i class="fa fa-plus"></i>添加题目</a>
+        <a class="btn btn-danger btn-sm ajax-post " href="{:url('Bookunit/bulkqdel')}"
+           target-form="selectitem"><i class="fa fa-trash-o"></i>删除选中</a>
+        <a hide-data='true' class="ajax-post btn btn-primary btn-sm" href="{:url('Bookunit/qsort')}"><i class="fa fa-save"></i>排序选中</a>
+        <a href="{:url('Bookunit/index',['parent'=>$book_parent,'pid'=>$pid])}" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+      </div>
+
+      <table class="table table-striped table table-hover  table-condensed">
+          <thead>
+          <tr>
+            <th width="80px;">
+              <input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');"/>原题ID</th>
+            <th>类型</th>
+            <th>标志</th>
+            <th>状态</th>
+            <th>排序</th>
+            <th>操作</th>
+          </tr>
+          </thead>
+          <tbody>
+
+            {empty name="list"}
+            <tr>
+              <td colspan="7" class="text-center">{:L('NO_DATA')}</td>
+            </tr>
+            {else/}
+            {volist name="list"  id="vo"}
+            <tr>
+              <td data-id="{$vo['id']}">
+                <input type="checkbox" value="{$vo.id}" name="ids[]" class="selectitem"/>{$vo.question_id}</td>
+              <td>
+                {:$dt_types[$vo['dt_type']]['name']}</td>
+              <td>
+                {$vo['note']|default=''}</td>
+              <td>
+                {:getQuestionState($vo.status)}</td>
+              <td>
+                <input type="number" value="{$vo['sort']|default=''}" name="sort_{$vo.id}" class="form-contrl input-sm input-sort" min="0"/>
+                </td>
+              <td>
+                <a href="{:url('question/index',['id'=>$vo.question_id,'all'=>1])}" class="btn btn-sm btn-default"><i class="fa fa-eye"></i>原题查看</a>
+                <a class="ajax-get btn btn-primary btn-sm confirm" href="{:url('Bookunit/qdel',['id'=>$vo['id']])}"><i class="fa fa-trash-o"></i>{:L('BTN_DELETE')}</a>
+              </td>
+            </tr>
+            {/volist}
+            {/empty}
+
+          </tbody>
+      </table>
+      </form>
+      <!--<div>{$show}</div>-->
+    </div>
+  </div>
+  <!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script>
+
+</script>
+{/block}

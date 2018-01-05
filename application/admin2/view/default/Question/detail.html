@@ -1,0 +1,424 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<style type="text/css">
+   tr.real{ background-color: #eee; }
+  .hide{ display:none !important; }
+  .p5{ padding:5px 0 !important;}
+  input.error { border: 1px solid red; }
+  label.checked { padding-left: 25px; }
+  label.error {
+    padding-left: 25px;
+    padding-bottom: 2px;
+    font-weight: bold;
+    color: #EA5200;
+  }
+  .red{ color:red !important; }
+  .color-note{ color:#029ACF !important; }
+  .input-sort{ max-width: 65px; }
+  .img-item-show{ background-color: #eee; }
+  .show { display:block !important; }
+  .content-preview{ border:1px solid #ccc;padding:10px;height:auto;min-height:223px;word-wrap:break-word;word-break:break-all; }
+  .preview-table{
+  }
+  .preview-table td{
+    border: 1px solid #ddd;padding: 5px;
+  }
+  .img-item div.thumbnail{ background:url(__IMG__/mp3.jpg) center center no-repeat;
+    background-size: 100px 100px; }
+</style>
+{/block}
+
+{block name="area_body"}
+  {include file="default/Widget/topbar" /}
+  <div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+      {include file="default/Widget/breadcrumb" /}
+      <!-- 带验证 form -->
+      <form id="registerForm" class="form-horizontal well validateForm">
+        <fieldset>
+          <legend>设置题面 & 音频 & 答案 </legend>
+          <div class="form-group">
+            <label  for="js-title" class="col-md-2 col-lg-1 control-label">类型 - 标记</label>
+            <div class="col-md-10 col-lg-10" style="padding-top:10px">{$dt_type_name} - {:getQuestionState($info['status'])} - {$info['note']}</div>
+          </div>
+          <div class="form-group">
+            <label  for="js-question" class="col-md-2 col-lg-1 control-label">提问 - 文本</label>
+            <div class="col-md-10 col-lg-10" style="padding-top:10px">
+              <input type="text" name="question" value="{$info['question']|default=''}" placeholder="题目的提问部分,很多题型没有" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+          {if condition="$con_type eq 'str'"}
+            <label  for="js-content" class="col-md-2 col-lg-1 control-label">题面 - 文本</label>
+            <div class="col-md-5 col-lg-5">
+              <div class="p5">
+                <a id="js-btn-co" class="btn btn-sm btn-info" data-toggle="tooltip" data-placement="top" title="插入特殊控制符{{co}}">控制</a>
+                <a id="js-btn-td" class="btn btn-sm btn-info" data-toggle="tooltip" data-placement="top" title="插入行内分割符{{td}}">分隔</a>
+                <a id="js-btn-tr" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="插入下一段标志符{{tr}}">换段</a>
+                <a id="js-btn-br" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" html="插入换行符{{br}},因为有自动换行,一般可不用">换行</a>
+              </div>
+              <textarea id="js-content" name="content" class="form-control" rows="10">{$info['content']|default=''}</textarea>
+              <div class="help-block color-note">
+                <span class="red">尽量不使用标记</span>,需要换行和段时优先使用换行标记,<span class="red">现仅对话/表格/完型为多段结构</span>,<br />题面,某些题型会忽略控制和分割,<br /><span class="red">注意</span>:对话题型时,每段一人,段中以{{td}}分割说话人和说话内容,且说话人部分不能有额外标志<br />编辑后自动预览,一切以APP显示为准</div>
+            </div>
+            <div class="col-md-5 col-lg-5">
+              <label for="">题面预览 (仅做参考,APP为准)</label>
+              <div class="form-control content-preview" id="js-content-preview" disable></div>
+            </div>
+          {elseif condition="$con_type eq 'img'"}
+            <input type="hidden" name="content" id="js-content" value="{$info.content}" />
+            <label  class="control-label col-md-2 col-lg-1">题面 - 图片</label>
+            <div class="col-lg-10 col-md-10">
+              其他图片<span class="text-muted">(选传，单张图片大小不超过500kb，最多10张)<i class="fa fa-question" data-toggle="tooltip" title="将出现在商品图片库，方便用户更好的了解您的商品。"></i></span>
+              <!-- 图片选择DOM结构 -->
+              <div class="wxuploaderimg clearfix product-imglist "  data-maxitems="10">
+                <div class="img-preview clearfix" {if condition="count($imgs) gt 0" } style="display:inline-block;"{/if}>
+                  {notempty name="$imgs"}
+                    {volist name="imgs" id="v"}
+                    <div class="pull-left clearfix img-item">
+                      <img src="{:getImgUrl($v,120)}" alt="image" data-imageid="{$v}"/>
+                      <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
+                    </div>
+                    {/volist}
+                  {/notempty}
+                </div>
+                <div class="add" {if condition="count($imgs) eq 10"}style="display:none;"{/if} >
+                  <i class="fa fa-plus"></i>
+                </div>
+              </div>
+            </div>
+          {else /}
+            <label for="" class="col-md-2 col-lg-1 control-label">未知类型</label>
+          {/if}
+          </div>
+
+          <div class="form-group">
+              <input type="hidden" name="audio_id" id="js-audio-id" value="{$audio_id}">
+              <label for="" class="col-md-2 col-lg-1 control-label">mp3文件</label>
+              <div class="col-lg-10 col-md-10">
+                  <span class="text-muted">(注意:当前仅支持mp3，大小不超过5M)<i data-toggle="tooltip" class="fa fa-question" title=""></i></span>
+                  <!-- 图片选择DOM结构 -->
+                  <div class="wxuploaderaudio clearfix main_img"  data-maxitems="1">
+                      <div class="audio-preview show clearfix" >
+                        <div class='img-item {notpresent name="file"}hide{/notpresent} img-item-show'>
+                          {present name="file"}
+                          <div class="thumbnail"><p class='img-desc'>{$file.ori_name}</p></div>
+                          <p class='img-desc' onclick='playControll(this)' data-path='{$file.path}'><i class='fa fa-play'></i> {$file.duration_desc}</p>
+                          <div class="clearfix" style="width: 100%;height: 20px;position: absolute;bottom:30px;left:0;">
+                            <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete_audio"></a></div>
+                          </div>
+                          {else /}
+                          无音频文件
+                          {/present}
+                        </div>
+                        <div class='img-item {present name="file"}hide{/present} img-item-add'>
+                          <div class="add">
+                            <i class="fa fa-plus"></i>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label for="btns" class="col-md-2 col-lg-1 control-label">&nbsp;</label>
+            <div class="col-lg-10 col-md-10">
+              <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm" href="{:url(CONTROLLER_NAME.'/detail',['id'=>$id])}"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+              <a class="btn btn-default btn-sm" href="{$cancel|default=''}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+<div class="table-responsive well">
+<h3>备选答案</h3>
+{eq name="is_word_answer" value="1"}
+<form  class="hide-data form-horizontal">
+  <input style="display:inline" type="text" name="answers" value="" class="form-control">
+  <button href="{:url('answer/adds',['q_id'=>$id])}" class="btn btn-primary ajax-post"  hide-data='true'>批量添加</button>( 多个答案以'|'分开 )
+</form>
+{/eq}
+{eq name="is_str_answer" value="1"}
+<form  class="hide-data form-horizontal">
+  <input style="display:inline" type="text" name="answer" value="" class="form-control">
+  <button href="{:url('answer/addstrs',['q_id'=>$id])}" class="btn btn-primary ajax-post"  hide-data='true'>批量添加</button>( 多个答案以'|'分开 )
+</form>
+{/eq}
+{eq name="is_kv_answer" value="1"}
+<form  class="hide-data form-horizontal">
+  <input style="display:inline" type="text" name="answer" value="" class="form-control">
+  <button href="{:url('answer/addkvs',['q_id'=>$id])}" class="btn btn-primary ajax-post"  hide-data='true'>批量添加</button>( 例: 'A:this is a!' 将生成答案A,其内容为this is a!,多个答案以'|'分开 )
+</form>
+{/eq}
+{eq name="is_bool_answer" value="1"}
+<button href="{:url('answer/addbools',['q_id'=>$id])}" class="btn btn-primary ajax-get"  hide-data='true'>快捷添加真(T)假(F)</button>
+<button href="{:url('answer/addbools',['q_id'=>$id,'q_type'=>1])}" class="btn btn-primary ajax-get"  hide-data='true'>快捷添加对(1)错(0)</button>
+{/eq}
+
+
+<form  class="hide-data form-horizontal">
+<div>
+  <a href="{:url('answer/add',['q_id'=>$id])}" class="btn btn-sm btn-primary">添加</a>
+  <a href="{:url('answer/dels')}" target-form="selectitem" class="btn ajax-post btn-sm btn-primary">删除选中</a>
+  <a href="{:url('answer/sort')}" hide-data='true' class="btn btn-sm btn-primary ajax-post">排序选中</a>
+</div><br />
+<label class="color-note">请确保答案类型一致,无答案的题目不设置正确答案即可,某些题型可以快捷添加</label><br/>
+<label>当前正确答案:</label>
+{volist name="$real_answers" id="v"}
+<label class="text-info">{$v}</label>
+{/volist}
+<table class="table table-bordered table-condensed table-condensed">
+  <thead>
+  <tr>
+    <th width=100><input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');"/> ID</th>
+    <th width=120>答案</th>
+    <th>内容</th>
+    <th width=150>显示顺序(大到小)</th>
+    <th width=120>是否正确</th>
+    <th width=150>正确顺序(大到小)</th>
+    <th width=220>操作</th>
+  </tr>
+</thead>
+<tbody>
+  {empty name="list"}
+  <tr>
+    <td colspan="7" class="text-center">{:L('NO_DATA')}</td>
+  </tr>
+  {else/}
+  {volist name="list"  id="v"}
+  <tr class="{$v['is_real'] ? 'real' : ''}">
+    <td data-id="{$v['id']}">
+      <input type="checkbox" value="{$v.id}" name="ids[]" class="selectitem"/> {$v.id}</td>
+    <td>{$v.title}</td>
+    <td>
+      {if condition="$v['type'] eq 'str'"}
+       {$v.content}
+      {elseif condition="$v['type'] eq 'bool'"}
+        {$v.content ? 'ture' : 'false'}
+      {elseif condition="$v['type'] eq 'img'"}
+        <img src="{:config('picture_url')}{$v.content}&size=100" width=100>
+      {/if}
+    </td>
+    <td>
+      <input type="number" class="form-control input-sort input-sm" name="sort_{$v.id}" value="{$v.sort|default=0}"></td>
+    <td>
+      {eq name="v.is_real" value="1"}
+        是 <a href="{:url('Admin/Answer/real',['id'=>$v['id'],'is_real'=>0])}" class="btn btn-sm btn-danger ajax-get">否</a>
+      {else /}
+        否 <a href="{:url('Admin/Answer/real',['id'=>$v['id'],'is_real'=>1])}" class="btn btn-sm btn-info ajax-get">是</a>
+      {/eq}</td>
+    <td>
+      <input type="number" class="form-control input-sort input-sm" name="real_sort_{$v.id}" value="{$v.real_sort|default=0}"></td>
+    <td>
+      <a href="{:url('answer/edit',['id'=>$v['id']])}" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i>编辑</a>
+      <a href="{:url('answer/del',['id'=>$v['id']])}" class="btn btn-sm btn-danger ajax-get" ><i class="fa fa-times"></i>删除</a></td>
+    </td>
+  </tr>
+  {/volist}
+  {/empty}
+</tbody>
+</table>
+</form>
+  </div>
+</div>
+    <!-- form -->
+    {include file="default/template/audio_upload" /}
+    {if condition="$con_type eq 'img'"}
+    {include file="default/template/wxpicture" /}
+    {/if}
+    </div>
+    <!-- END admin-main-content -->
+  </div>
+  <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+var $content = $('#js-content');
+var $preview_c = $('#js-content-preview');
+var html = '';
+var is_table  = {$is_table|default=0};
+var is_dialog = {$is_dialog|default=0};
+var position = {"start":0,"end":0};
+$(function() {
+  //文件上传
+  wxuploadaudio.init({cont:".wxuploaderaudio"});
+  //图片上传
+  {if condition="$con_type eq 'img'"}
+  wxuploadimg.init({cont:".wxuploaderimg",callback:function(){
+    var data = arguments,id;
+    for(var i=0;i<data.length;i++){
+      var $ele = $('<div class="pull-left clearfix img-item"><div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div></div>');
+      $(".img-preview",wxuploadimg.current).append($ele).css("display","inline-block");//.show();
+      $ele.prepend($(data[i]).clone());
+
+      //设置img
+      $content.val("");
+      $(".product-imglist .img-preview img").each(function(index,item){
+        $content.val($content.val()+$(item).data("imageid")+",");
+      });
+    }
+  }});
+  {else /}
+    parseContent();
+  {/if}
+  //点击 控制
+  $('#js-btn-co').click(function(e){
+    html = $content.val();
+    insertText($content.get(0),"{{co}}");
+    $content.focus();
+  })
+  //点击 换段
+  $('#js-btn-tr').click(function(e){
+     html = $content.val();
+     insertText($content.get(0),"{{tr}}");
+    $content.focus();
+  })
+  //点击 分隔(行内)
+  $('#js-btn-td').click(function(e){
+     html = $content.val();
+     insertText($content.get(0),"{{td}}");
+    $content.focus();
+  })
+  //点击 换行
+  $('#js-btn-br').click(function(e){
+     html = $content.val();
+     insertText($content.get(0),"{{br}}");
+    $content.focus();
+  })
+
+  function parseContent(){
+    html = $content.val(),str='';
+    html = html
+      .replaceAll(" ","&nbsp;")
+      .replaceAll("\r","<br />")
+    // .replace(/\n/g,'')
+      ;
+    console.log('html - ',html);
+    if(is_table){
+
+      str = '<table class="preview-table">';
+      strs=html.split("{{tr}}");
+      console.log('strs',strs);
+      for (i=0;i<strs.length ;i++ ){
+        str += '<tr>';
+        strs2 = strs[i].split("{{td}}");
+        console.log('strs2',strs2);
+        for (j=0;j<strs2.length ;j++ ){
+          str += '<td>'+ strs2[j] +'</td>';
+        }
+        str += '</tr>';
+      }
+      str += '</table>';
+      str = str
+        .replaceAll("{{co}}","&nbsp;&nbsp;&nbsp;")
+        .replaceAll("{{br}}","<br />")
+        // .replace(/\{\{co\}\}/g, "")
+        // .replace(/\{\{br\}\}/g,'<br />')
+        ;
+      ;
+      html = str;
+    }else if(is_dialog){
+      html = html
+        .replaceAll("{{co}}","___")
+        .replaceAll("{{br}}","<br />&nbsp;&nbsp;&nbsp;");
+      html_temp = html.split("{{tr}}");
+      html = '';
+      for (var i = 0; i < html_temp.length; i++) {
+        html += (html ? "<br /><br />" : "")+html_temp[i].replace("{{td}}","<br />&nbsp;&nbsp;&nbsp;").replaceAll("{{td}}","&nbsp;&nbsp;");
+      };
+    }else{
+      html = html
+        .replaceAll("{{co}}","___")
+        .replaceAll("{{br}}","<br />")
+        .replaceAll("{{td}}","")
+        .replaceAll("{{tr}}","<br /><br />")
+      ;
+    }
+    console.log('html -- ',html);
+    $preview_c.html(html);
+  }
+  $content.blur(function(e) {
+    // moveEnd();
+    // position = getPositions();
+    // console.log('position',p);
+    parseContent();
+  });
+
+  // @todo 获取所选文本的开始和结束位置
+}); //end ready
+// function getPositions() {
+//   var el = document.getElementById('js-content');
+//   var startPosition = 0;//所选文本的开始位置
+//   var endPosition = 0;//所选文本的结束位置
+//   if(document.selection) {
+//   //IE
+//   var range = document.selection.createRange();//创建范围对象
+//   var drange = range.duplicate();//克隆对象
+
+//   drange.moveToElementText(el);  //复制范围
+//   drange.setEndPoint('EndToEnd', range);
+
+//   startPosition = drange.text.length - range.text.length;
+//   endPosition = startPosition + range.text.length;
+//   }
+//   else if(window.getSelection) {
+//   //Firefox,Chrome,Safari etc
+//   startPosition = el.selectionStart;
+//   endPosition = el.selectionEnd;
+//   }
+//   return {
+//   'start':startPosition,
+//   'end':endPosition
+//   }
+// }
+
+// //@todo 获取textarea中，选中的文本
+// function getSelected() {
+//   position  = getPositions();
+//   var start = position.start;//开始位置
+//   var end   = position.end;//结束位置
+//   var text  = document.getElementById('js-content').value;
+//   var selectText = text.substr(start, (end - start));//textarea中，选中的文本
+// }
+String.prototype.replaceAll = function(s1,s2){
+  return this.replace(new RegExp(s1,"gm"),s2);
+}
+function insertText(obj,str) {
+  if (document.selection) {
+      var sel = document.selection.createRange();
+      sel.text = str;
+  } else if (typeof obj.selectionStart === 'number' && typeof obj.selectionEnd === 'number') {
+      var startPos = obj.selectionStart,
+          endPos = obj.selectionEnd,
+          cursorPos = startPos,
+          tmpStr = obj.value;
+      obj.value = tmpStr.substring(0, startPos) + str + tmpStr.substring(endPos, tmpStr.length);
+      cursorPos += str.length;
+      obj.selectionStart = obj.selectionEnd = cursorPos;
+  } else {
+      obj.value += str;
+  }
+}
+function moveEnd(obj){
+  obj.focus();
+  var len = obj.value.length;
+  if (document.selection) {
+      var sel = obj.createTextRange();
+      sel.moveStart('character',len);
+      sel.collapse();
+      sel.select();
+  } else if (typeof obj.selectionStart == 'number' && typeof obj.selectionEnd == 'number') {
+      obj.selectionStart = obj.selectionEnd = len;
+  }
+}
+</script>
+{/block}

@@ -1,0 +1,135 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<style type="text/css">
+    .warn-picture {
+        background: #c9302c;
+        color: #FFFFFF;
+    }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="table-responsive well">
+            <div class="h4">
+            </div>
+            <div class="form-control-static">
+                <form action="{:url('UserPicture/index')}" method="post" class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            可能值
+                            <input type="text" value="{$l_prop}" name="l_prop"/>
+                            -
+                            <input type="text" value="{$r_prop}" name="r_prop"/>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                </form>
+            </div>
+            <div class="form-control-static">
+              </div>
+            <table class="table table-striped table table-hover  table-condensed">
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');" />{:L('SELECT_ALL')}
+                    </th>
+                    <th>
+                        图片
+                    </th>
+                    <th width="120px">
+                        违法可能值（0-100）-2表示无法自动检测
+                    </th>
+                    <th>
+                        创建人头像
+                    </th>
+                    <th>
+                        创建时间
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {empty name="list"}
+                <tr>
+                    <td colspan="4" class="text-center">{:L('NO_DATA')}</td>
+                </tr>
+                {/empty}
+                {volist name="list" id="vo"}
+                <tr
+                >
+                    <td>
+                        <input type="checkbox" value="{$vo.id}" name="ids[]" class="selectitem" />{$vo.id}</td>
+                    <td>
+                        <a href="{$vo.imgurl}" title="点击查看原图" target="_blank">
+                            <img style="width:60px;height:60px;" src="{:getImgUrl($vo['id'],120)}" alt="imgurl" />
+                        </a>
+                    </td>
+
+                    <td>{$vo.porn_prop}</td>
+
+                    <td>
+
+                        <img style="width:60px;height:60px;"
+                             src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],120)}" alt="imgurl"/>
+                    </td>
+
+                    <td>
+                        {$vo.create_time|date="Y/m/d H:i:s",###}
+                    </td>
+                    <td>
+                        {if condition="$vo.porn_prop egt 100"}
+                        手动标记的违法图片
+                        {/if}
+                        {if condition="$vo.porn_prop egt 0 and $vo.porn_prop lt 50"}
+                        正常图片
+                        {/if}
+                        {if condition="$vo.porn_prop egt 50 and $vo.porn_prop lt 100"}
+                        疑似违法图片
+                        {/if}
+                        {if condition="$vo.porn_prop lt 0 "}
+                        无法判定
+                        {/if}
+                        <a class="ajax-get btn btn-danger btn-sm" href="{:url('UserPicture/illegal')}?id={$vo.id}">
+                            手动标记为违法 </a>
+                        <a class="ajax-get btn btn-primary btn-sm" href="{:url('UserPicture/legal')}?id={$vo.id}">
+                            手动标记为合法 </a>
+                    </td>
+                </tr>
+
+                {/volist}
+                </tbody>
+            </table>
+            <div>
+                {$show}
+            </div>
+        </div>
+
+    </div>
+</div>
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+    $(function() {
+        $('#startdatetime').datetimepicker({
+            format:"Y-m-d H:i",
+            lang: 'ch'
+        });
+        $('#enddatetime').datetimepicker({
+            format:"Y-m-d H:i",
+            lang: 'ch'
+        });
+    })
+</script>
+{/block}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>base.php</title>
+</head>
+<body>
+
+<table>
+  <tr>
+    <th>id</th>
+    <th>name</th>
+  </tr>
+  {volist name="data" id="v"}
+  <tr>
+    <td>{$v.id}</td>
+    <td>{$v.name}</td>
+  </tr>
+  {/volist}
+</table>
+
+</body>
+</html>

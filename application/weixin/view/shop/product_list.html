@@ -1,0 +1,166 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/product_list/index.css">
+{/block}
+{block name="body"}
+<!--<div class="weui-pull-to-refresh__layer">
+    <div class='weui-pull-to-refresh__arrow'></div>
+    <div class='weui-pull-to-refresh__preloader'></div>
+    <div class="down">下拉刷新</div>
+    <div class="up">释放刷新</div>
+    <div class="refresh">正在刷新</div>
+</div>-->
+<div class="product-list-head-box">
+    <div class="product-list-head">
+        <div  class="product-list-head-left">
+            <span>排序</span>
+            <span class="anticon anticon-caret-down product-list-down"></span>
+        </div>
+        <div  class="product-list-head-right">
+            <span>筛选</span>
+            <span class="anticon anticon-caret-down product-list-down"></span>
+        </div>
+    </div>
+    <div class="product-list-cart">
+        <a href="{:url('shop/coding')}"><i class="anticon anticon-shopping-cart"></i></a>
+    </div>
+    <div class="product-list-head-sort">
+        <div class="product-list-head-sort-item">
+            <span>默认排序</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('order','d') eq 'd'"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>价格从低到高</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('order','d') eq 'pa'"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>价格从高到低</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('order','d') eq 'pd'"}style="display:inline-block"{/if}></i>
+        </div>
+    </div>
+    <div class="product-list-head-filter">
+        <div class="product-list-head-sort-item">
+            <span>不限</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('price',0) eq 0"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>0-1000元</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('price',0) eq 1"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>1000-2000元</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('price',0) eq 2"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>2000-3000元</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('price',0) eq 3"}style="display:inline-block"{/if}></i>
+        </div>
+        <div class="product-list-head-sort-item">
+            <span>>3000元</span>
+            <i class="weui-icon-success-no-circle" {if condition="input('price',0) eq 4"}style="display:inline-block"{/if}></i>
+        </div>
+    </div>
+    <div id="cover"></div>
+</div>
+<div class="product-list-body">
+
+    {volist name='list' id='vo'}
+
+    <div class="product-list-item">
+        <a href="{:url('shop/product_detail',array('pid'=>$vo.id))}">
+            <div class="product-list-item-img"><img src="{:getImgUrl($vo['img_follow']['img_id'])}"></div>
+            <div class="product-list-item-right">
+                <div class="product-list-item-title">{$vo.name}</div>
+                <div class="product-list-item-content">{$vo.name}</div>
+                <div>
+                    <div class="product-list-item-price">¥{$vo.sku.price/100}</div>
+                    <div class="product-list-item-add">购买</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {/volist}
+</div>
+<!--<div class="weui-loadmore" style="display: none">
+    <i class="weui-loading"></i>
+    <span class="weui-loadmore__tips">正在加载</span>
+</div>-->
+{include file="template/nav_bar"}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+   /* var page = 2;
+    var loading = false;
+    var ajax_data = function() {
+        /!*if(loading) return;
+        $('.weui-loadmore').show();
+        loading = true;
+        var data = {
+            p: page,
+            keyword: "{:input('keyword')}",
+            order: "{:input('order','d')}",
+            price: "{:input('price',0)}"
+        };
+        ajax_post('__SELF__', jQuery.param(data),{
+            success: function(data){
+                if(data.msg.length>0){
+                    page++;
+                    data.msg.forEach(function (val) {
+                        $(".product-list-body").append('<div class="product-list-item"> ' +
+                                '<a href="' + getBaseUrl() + '/shop/product_detail/pid' + val.id +'">' +
+                                '<div class="product-list-item-img"><img src="' + val.main_img + '"></div> ' +
+                                '<div class="product-list-item-title">' + val.name + '</div> ' +
+                                '<div class="product-list-item-content">' + val.name + '</div> ' +
+                                '<div class="product-list-item-price">¥' + val.price + '</div></a></div>');
+                    });
+
+                }
+                setTimeout(function(){
+                    loading = false;
+                    $('.weui-loadmore').hide();
+                    $(document.body).pullToRefreshDone();
+                },1000)
+            },
+            error: function(){}
+        });*!/
+    };
+    //下拉刷新
+    $(document.body).pullToRefresh().on("pull-to-refresh", function() {
+        page = 1;
+        $(".product-list-body").children().remove();
+        ajax_data();
+    });
+    //上拉刷新
+    $(document.body).infinite().on("infinite", ajax_data);*/
+    //加载完成后隐藏遮罩和选项
+    $(document).ready(function(){
+        $('#cover').hide();
+        $('.product-list-head-sort,.product-list-head-filter').hide();
+    });
+    //点击显示遮罩
+    $('.product-list-head-left,.product-list-head-right').click(function(){
+        $('#cover').show();
+    });
+    //点击隐藏遮罩和选项
+    $('#cover').click(function(){
+        $('#cover').hide();
+        $('.product-list-head-sort,.product-list-head-filter').hide();
+    });
+    //点击显示选项
+    $('.product-list-head-left').click(function(){
+        $(".product-list-head-filter").hide();
+        $(".product-list-head-sort").show()
+    });
+    $('.product-list-head-right').click(function(){
+        $(".product-list-head-sort").hide();
+        $(".product-list-head-filter").show()
+    });
+    //选择排序或筛选条件
+    $('.product-list-head-sort-item').click(function(){
+        $(this).parent().find('i').css('display','none');
+        $(this).find('i').css('display','inline-block');
+    })
+</script>
+{/block}

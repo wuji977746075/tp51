@@ -1,0 +1,116 @@
+{extend name="template/base_default"}
+{block name="header"}
+<style type="text/css">
+    ul,li,div{
+        padding: 0;
+        margin: 0;
+    }
+    ul{
+        list-style: none;
+    }
+    .list-main{
+        width: 100%;
+        height: auto;
+        padding:16px;
+        border-bottom:1px solid #f5f5f9;
+        font-size:1.2em;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        /*text-align:center;*/
+    }
+    .list-left{
+        float: left;
+        width: 100%;
+        padding:5px 0px 0px 5px;
+        color:#b2b2b2;
+    }
+    .list-right{
+        float: left;
+        width: 100%;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+    .list-botton{
+        float: left;
+        width:100%;
+    }
+    .date{
+        font-size:22px;
+        line-height:28px;
+    }
+    .time{
+        padding-left: 15px;
+        letter-spacing:2px;
+    }
+    .price{
+        width:50%;
+        float: left;
+        font-size:22px;
+    }
+    .after{
+        width:50%;
+        float: left;
+        font-size:17px;
+        visibility:visible;
+    }
+    .reason{
+        font-weight:500;
+        color: #727272;
+    }
+
+</style>
+{/block}
+{block name="body"}
+<div class="balance_wrap">
+    {volist name='data' id='vo'}
+    <ul class="balance-list">
+        <!--增加金额-->
+        {notempty name="vo.plus"}
+            <li>
+                <div class="list-main">
+                    <div class="">
+                        <span class="date">{:date("Y-m-d",$vo['create_time'])}</span>
+                        <span class="time">{:date("H:i:s",$vo['create_time'])}</span>
+                    </div>
+                    <div class="">
+                        <span class="price">+{$vo.plus}</span><span class="after">余额：￥{$vo.after_money}</span>
+                    </div>
+                    {notempty name="vo.reason"}
+                    <div class="list-botton">
+                        <span class="reason">{$vo.reason}</span>
+                    </div>
+                    {/notempty}
+                </div>
+            </li>
+        {/notempty}
+
+        <!--减少金额-->
+        {notempty name="vo.minus"}
+            <li>
+                <div class="list-main">
+                    <div class="">
+                        <div class="">
+                            <span class="date">{:date("Y-m-d",$vo['create_time'])}</span>
+                            <span class="time">{:date("H:i:s",$vo['create_time'])}</span>
+                        </div>
+                    </div>
+                    <div class="">
+                        <span class="price">-{$vo.minus}</span><span class="after">余额：￥{$vo.after_money}</span>
+                    </div>
+                    {notempty name="vo.reason"}
+                    <div class="list-botton">
+                        <span class="reason">{$vo.reason}</span>
+                    </div>
+                    {/notempty}
+                </div>
+            </li>
+        {/notempty}
+
+    </ul>
+    {/volist}
+</div>
+
+
+{/block}
+{block name="footer"}
+{/block}

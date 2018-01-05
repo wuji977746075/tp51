@@ -1,0 +1,93 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+                <!-- 过滤\查询按钮 -->
+                <div class="filter-controls">
+                    <form action="{:url(CONTROLLER_NAME.'/search')}" class="memberForm form-inline" method="post">
+                        <div class="form-group">
+                            <label class="control-label">萌币商品名或编号ID</label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="kword" placeholder="萌币商品名或编号ID" value="{$kword}"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i>查询</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- 操作按钮 -->
+                <div class="btn-controls">
+                    <a class="btn btn-sm btn-primary" href="{:url(CONTROLLER_NAME.'/add')}"><i class="fa fa-plus"></i>{:L('BTN_ADD')}</a>
+                </div>
+
+                <table class="table table-striped table table-hover  table-condensed">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>品牌</th>
+                        <th>缩略图</th>
+                        <th>库存</th>
+                        <th>限购</th>
+                        <th>类型</th>
+                        <th>兑换</th>
+                        <th>排序</th>
+                        <th>{:L('OPERATOR')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {empty name="list"}
+                        <tr>
+                            <td colspan="6" class="text-center">{:L('NO_DATA')}</td>
+                        </tr>
+                        {else/}
+{volist name="list" id="vo"}
+<tr>
+    <td>{$vo.id}</td>
+    <td data-id="{$vo.id}">
+        <a href="{:url(CONTROLLER_NAME.'/edit',array('gid'=>$vo['id']))}">{$vo['name']|default='未知商品'}</a></td>
+    <td>{$vo.brand}</td>
+    <td><img src="{:getImgUrl($vo['main_img'])}" alt="" width="60" height="60"></td>
+    <th><if condition="$vo['count'] eq -1">无限<elseif condition="$vo['count'] eq 0" />已兑玩{else /}{$vo.count}</if></th>
+    <td><eq name="vo.buy_limit" value="0">不限{else /}{$vo['buy_limit']}件{/eq}</td>
+    <td>{$types[$vo['type']]} - {$vo['tpl_name']}</td>
+    <td>{$vo.score}萌币<if condition="$vo['price'] neq 0"> + {$vo.price}RMB</if><notin name="vo.type" value="2,3">+{$vo['tpl_name']}</notin></td>
+    <td>{$vo.sort}</td>
+    <td>
+        <a class="btn btn-sm btn-default" href="{:url(CONTROLLER_NAME.'/edit',array('gid'=>$vo['id']))}"><i class="fa fa-edit"  data-loading-text="{:L('BTN_EDIT')}..." ></i>{:L('BTN_EDIT')}</a>
+        <if condition ="$vo['onshelf']">
+        <a class="btn btn-sm btn-primary" href="{:url(CONTROLLER_NAME.'/change',array('gid'=>$vo['id'],'onshelf'=>0))}"><i class="fa fa-edit"  data-loading-text="{:L('BTN_EDIT')}..." ></i>下架</a>
+        {else /}
+        <a class="btn btn-sm btn-primary" href="{:url(CONTROLLER_NAME.'/change',array('gid'=>$vo['id'],'onshelf'=>1))}"><i class="fa fa-edit"  data-loading-text="{:L('BTN_EDIT')}..." ></i>上架</a>
+        </if>
+        <a href="{:url(CONTROLLER_NAME .'/delete',array('gid'=>$vo['id']))}" class="btn btn-danger btn-sm ajax-get confirm" ><i class="fa fa-trash-o"></i> {:L('BTN_DELETE')} </a>
+    </td>
+</tr>
+{/volist}
+                    {/empty}
+                    </tbody>
+                </table>
+                <div>{$show}</div>
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

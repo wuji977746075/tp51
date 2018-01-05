@@ -1,0 +1,70 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<form class="form form-horizontal validateForm returnForm">
+				<input type="hidden" value="{$id}" name="id" />
+				<input type="hidden" value="{$thid}" name="thid" />
+				<fieldset>
+					<legend>退款备注信息填写
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">&nbsp;</label>
+							<div class="col-lg-10 col-md-10">
+								<a target-form="returnForm" href="{:url('Orders/refund')}" class="ajax-post btn btn-default btn-sm"><i class="fa fa-save"></i>保存</a>
+								<a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">订单实际支付</label>
+							<div class="col-lg-10 col-md-10">
+								<span class="help-block">填写退款金额！</span>
+							</div>
+						</div><div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">退款金额</label>
+							<div class="col-lg-10 col-md-10">
+								<span class="help-block">填写退款金额！</span>
+								<input type="number" class="form-control required" name="money"  placeholder="请填写退款金额">
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">退款备注</label>
+							<div class="col-lg-10 col-md-10">
+								<span class="help-block">填写退款备注！</span>
+								<textarea class="form-control required" name="note" rows="3" placeholder="请填写退款备注信息">{$message}</textarea>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="control-label col-lg-2 col-md-2">&nbsp;</label>
+							<div class="col-lg-10 col-md-10">
+								<a target-form="returnForm" href="{:url('Orders/refund')}" class="ajax-post btn btn-default btn-sm"><i class="fa fa-save"></i>保存</a>
+								<a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+							</div>
+						</div>
+					</legend>
+				</fieldset>
+			</form>
+			<script type="text/javascript">
+				$(function() {});
+			</script>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

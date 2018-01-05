@@ -1,0 +1,71 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+<script src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+<empty name="entry">
+	<tr>
+	    <td colspan="2" class="text-center">{:L('NO_DATA')}</td>
+	</tr>
+{else/}
+<!-- <form action="" id="expressForm form clearfix validate-form" method="post"> -->
+                <form id="gameForm" class="form-horizontal well validateForm">
+                <fieldset>
+                    <legend>#{$entry.pname}# 发货</legend>
+                    <input type="hidden" name="id" value="{$entry.id}">
+                    <div class="form-group">
+                        <label for="" class="col-md-2 col-lg-2 control-label">快递公司</label>
+                        <div class="col-md-10 col-lg-10  input-number">
+                            <select name="express_company" id="express_company" class="form-control">
+                                <option value="">= 请选择 =</option>
+                                <volist name="eCompanys" id="v">
+                                    <option value="{$v.id}" <eq name="v.name" value="$entry.express_company"> selected="selected" </eq>>{$v.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-md-2 col-lg-2 control-label">快递单号</label>
+                        <div class="col-md-10 col-lg-10  input-number">
+                            <input class="required form-control" name="express_no" id="express_no" type="text" size="12" value="{$entry['express_no']|default=''}"/>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url('ScoreExLog/express')}" autofocus="autofocus"  data-loading-text="{:L('BTN_SAVE')}..." ><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                        </div>
+                    </div>
+</fieldset>
+</form>
+{/empty}
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+$(function(){
+    $("#gameForm").validate();
+    $(document).keydown(function(event) {
+        if (event.keyCode == 13) {
+            alert();
+            $(".ajax-post").click();
+        }
+    });
+});
+</script>
+{/block}

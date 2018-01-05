@@ -1,0 +1,415 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+    <link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+    <!-- <link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" /> -->
+    <style type="text/css">
+        #select{
+            height:auto!important;
+            height:500px;
+            min-height:500px;
+        }
+        .red{ color:red !important; }
+        table{
+            border-collapse: collapse;
+            border-spacing: 0;
+            width:100%;
+        }
+        /*#exist tr{
+            height:50px;
+            line-height:50px;
+            vertical-align: middle;
+            width:100%;
+        }*/
+        table td:first-child,table th:first-child{ text-align: left; }
+        table tr td,table tr th{ text-align: center;line-height: 40px; }
+        /* #exist tr:nth-of-type(even){
+            border-top: 1px solid #dddddd;
+            background:rgb(252,252,252);
+        }
+        #select tr{ height:35px; }
+        #select tr:nth-of-type(even){ background:aliceblue; }
+        /*#exist tr td div, .new td div{
+            width:180px;
+            margin:0 auto;
+        }*/
+        input{ text-align: center; }
+        .controls{ margin-bottom: 20px; }
+        .select2-container { z-index:999999999; }
+    </style>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+                <div class="h3">{$name}</div>
+                <!-- 过滤\查询按钮 -->
+                <div class="filter-controls">
+                    <!-- 日期查询 -->
+                    <form action="{:url('ProductGroup/index',['id'=>$id])}" method="get" class="form-inline">
+                        <select class="form-control input-short input-sm select_cate_parent" name="cate" style="float: left" id="js-select2">
+                            <option value="0">全部</option>
+                            {volist name="cate_parent" id="vo"}
+                            <option value="{$vo.id}">{$vo.name}</option>
+                            {/volist}
+                        </select> &nbsp; &nbsp;
+                        <button type="submit" class="btn btn-default btn-sm" id="searchFormSubmit"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                    </form>
+                </div>
+                <hr/>
+                <div class="controls">
+                    <a class="btn btn-primary btn-sm add" href="javascript:void(0)">
+                       <i class="fa fa-plus"></i>添加商品
+                    </a>
+                </div>
+                <!-- 带验证 form -->
+                <form class="form-horizontal well validateForm">
+                    <input type="hidden" name="g_id" value="{$id}" />
+                    <fieldset>
+                        <!-- <legend></legend>
+                        <div class="form-group hide">
+                            <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                            <div class="col-lg-10 col-md-10">
+                                <a target-form="validateForm" class="ajax-post btn-sm btn btn-primary" href="{ :url('ProductGroup/add')}" autofocus="autofocus"><i class="fa fa-save"></i> { :L('BTN_SAVE')}</a>
+                                <a class="btn btn-default btn-sm " href="javascript:window.history.go(-1)"><i class="fa fa-reply"></i>返回</a>
+                            </div>
+                        </div> -->
+
+                        <table id="exist">
+                            <tr>
+                                <th>商品名称</th>
+                                <!-- <th>规格</th> -->
+                                <!-- <th>售价(￥)</th> -->
+                                <!-- <th>活动价(￥,最多2位小数)</th> -->
+                                <th>起始时间</th>
+                                <th>终止时间</th>
+                                <th>显示顺序</th>
+                                <th>操作</th>
+                            </tr>
+                            <!-- 添加modal -->
+                            <tr class="new hide">
+                                <td>
+                                    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" data-backdrop="false">选择商品</a></td>
+                                <!-- <td></td> -->
+                                <!-- <td></td> -->
+                                <!-- <td>
+                                    <input type="number" class="form-control input-normal input-sm" name="new_price"/></td> -->
+                                <td>
+                                	<input type="hidden" name="new_sku_id" id="new_skuid"/>
+                                    <input type="hidden" name="new_p_id" id="new_pid"/>
+                                    <input type="text" class="form-control input-normal input-sm startdatetime" name="new_start_time"/></td>
+                                <td>
+                                    <input type="text" class="form-control input-normal input-sm enddatetime" name="new_end_time"/></td>
+                                <td>
+                                    <input type="number" class="form-control input-normal input-sm" name="new_display_order" value="1"/></td>
+                                <td>
+                                    <a target-form="validateForm" class="ajax-post btn-sm btn btn-primary" href="{:url('ProductGroup/add')}" autofocus="autofocus"><i class="fa fa-plus"></i>添加</a>
+                                    <a class="btn btn-default btn-sm" id="js-new-cancel" href="{:url('ProductGroup/index',['id'=>$id])}">取消</a></td>
+                            </tr>
+                            {volist name="list" id="vo"}
+                            <tr>
+                                <td>{$vo['name']} {eq name="vo.onshelf" value="0"} <span class="red">(已下架)</span>{/eq}</td>
+                                <!-- <td>{ $vo['sku_desc']}</td> -->
+                                <!-- <td>{ $vo['sku_price']/100}</td> -->
+                                <!-- <td>
+                                    <div>
+                                        <input type="text" class="form-control input-normal input-sm price" name="price_{ $vo['p_id']}" value="{ $vo['price']/100}" disabled="disabled"/>
+                                    </div></td> -->
+                                <td>
+                                    <div>
+                                        <input type="text" class="form-control input-normal input-sm startdatetime" name="start_time_{$vo['p_id']}" value="{$vo['start_time']|date='Y-m-d G:i',###}" disabled="disabled"/>
+                                    </div></td>
+                                <td>
+                                    <div>
+                                        <input type="text" class="form-control input-normal input-sm enddatetime" name="end_time_{$vo['p_id']}" value="{$vo['end_time']|date='Y-m-d G:i',###}" disabled="disabled"/>
+                                    </div></td>
+                                <td>
+                                    <div>
+                                        <input type="number" class="form-control input-normal input-sm" name="display_order_{$vo.p_id}" value="{$vo.display_order}" disabled="disabled"/>
+                                    </div></td>
+                                <td>
+                                    <button class="btn btn-default btn-sm edit"><i class="fa fa-edit"></i>编辑</button>
+                                    <a href="{:url('ProductGroup/delete',['id'=>$vo['id']])}"  class="ajax-get btn btn-danger btn-sm confirm delete" ><i class="fa fa-trash-o"></i>删除</a>
+                                    <a target-form="validateForm" class="ajax-post btn-sm btn btn-primary hide save" href="{:url('ProductGroup/edit',['p_id'=>$vo['p_id'],'sku_id'=>$vo['sku_id']])}" autofocus="autofocus"><i class="fa fa-save"></i>保存</a>
+                                    <a class="btn btn-default btn-sm hide cancel">取消</a></td>
+                            </tr>
+                            {/volist}
+                        </table>
+                        <div>{$show}</div>
+                    </fieldset>
+                </form>
+                <!-- form -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="margin-top: 20px;">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">选择商品</h4>
+                            </div>
+                            <div class="modal-body">
+                                <select class="form-control input-short input-sm" id="select_cate_parent" name="select_cate_parent" style="float: left">
+                                    <option value="0">全部</option>
+                                    {volist name="cate_parent" id="vo"}
+                                    <option value="{$vo.id}">{$vo.name}</option>
+                                    {/volist}
+                                </select>
+                                <table id="select">
+                                    <!-- <tr>
+                                        <th width="5%">商品id</th>
+                                        <th width="50%">商品名称</th>
+                                        <th width="15%">规格</th>
+                                        <th width="10%">当前售价</th>
+                                        <th width="20">操作</th>
+                                    </tr>
+                                    { volist name="group" id="vo"}
+                                        <tr>
+                                            <td class="selected_id">
+                                                { $vo.p_id}</td>
+                                            <td class="selected_name">
+                                                <img src="{ $vo.icon_url}" alt=""><br/>{ $vo.name}</td>
+                                            <td class="selected_sku_id">
+                                                { $vo.sku_desc}</td>
+                                            <td class="selected_price">
+                                                { $vo.price/100}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary btn-sm selected" href="javascript:void(0)" data-dismiss="modal">选择</a>
+                                            </td>
+                                        </tr>
+                                    { /volist} -->
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                            	<div id='show'></div>
+                                <!-- <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">确认</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+    <script>
+        // function getGroupId(g,k){
+        //     if(g.checked){
+        //         $(".group-time-"+k).show();
+        //         $(".group-price").show();
+        //     }else{
+        //         $(".group-time-"+k).hide();
+        //         $(".group-price").hide();
+        //     }
+        // }
+        var cate = {$cate|default=0};
+        var g_id = {$id|default=0};
+        $(function(){
+            $("#js-select2,#select_cate_parent").val(cate).select2({
+                width: 200,
+                placeholder: "",
+                language: "zh-CN",
+            });
+
+            //modal - 翻页
+            $(".modal-body").on("click","#show a",function(){
+                //取参数
+                $this = $(this);
+                var p = parseInt($this.attr("value"));
+                var page = parseInt($this.data('page'));
+                var cate_s = $('#select_cate_parent').val();
+                if($this.hasClass("prev-page")){
+                    p = Math.max(p - 1,1); //上一页
+                }else{
+                    p = Math.min(p + 1,page); //下一页
+                }
+                //ajax传值
+                $.ajax( {
+                    url:"{:url('ProductGroup/ajaxGetProduct')}",
+                    data:{
+                        cate:cate_s,
+                        p:p,
+                        group:g_id,
+                    },
+                    type:'post',
+                    dataType:'json',
+                    success:function(data) {
+                    	handleAjaxData(data);
+                    },
+                    error : function() {
+                        alert("数据异常！");
+                    }
+                });
+            });
+
+			function handleAjaxData(data){
+                var tr = "";
+                var info = data.info;
+				if(!data.status){
+					alert(info);
+					return;
+				}
+                var list = info.list;
+                var item,tmp,price;
+                for(var i in list){
+                	item = list[i];
+                	price = item.price/100;
+                    tmp = "<tr><td>" + item.p_id + "</td><td><img src='{:config('picture_url')}" + item.icon_url + "&size=120' alt=''><br/>" + item.name + "</td>";
+                    // tmp += "<td>" + item.sku_desc + "</td><td>" + price + "</td>";
+                    tmp += "<td><a type='button' class='btn btn-primary btn-sm selected' href='javascript:void(0)' data-dismiss='modal' data-pid='"+item.p_id+"' data-name='"+item.name+"'";// data-price='"+ price+"' data-skudesc='"+item.sku_desc+"'"; // data-skuid='"+item.sku_id+"'
+                    tmp += (item.able ? ">选择" : " disabled='disabled'>已选");
+                    tmp += "</a></td></tr>";
+                    tr += tmp;
+                }
+                $('#select').html("<tr><th width='5%'>商品id</th><th width='50%'>商品名称</th><th width='20%'>操作</th><tr/>" + tr);//<th width='15%'>规格</th><th width='10%'>当前售价</th>
+                var show = "共"+ info.count +"条记录<a class='btn-sm btn btn-primary prev-page' data-page='"+ info.page +"' value='"+ info.p +"'>上一页</a><a class='btn-sm btn btn-primary next-page' data-page='"+ info.page +"' value='"+ info.p +"'>下一页</a>当前"+ info.p +"/"+ info.page +"页";
+                $('#show').html(show);
+			}
+            //modal - 分类
+            $('#select_cate_parent').change(function(){
+                var cate_s = $(this).val();
+                $.ajax( {
+                    url:"{:url('ProductGroup/ajaxGetProduct')}",
+                    data:{
+						cate:cate_s,
+                    	p:1,
+                    	group:g_id,
+                    },
+                    type:'post',
+                    dataType:'json',
+                    success:function(data) {
+                        handleAjaxData(data);
+                    },
+                    error : function() {
+                        alert("数据异常！");
+                    }
+                });
+            });
+
+            //点击类目ajax请求
+            /* $('#select_cate_parent option').click(function(){
+                var cate_s = $('#select_cate_parent').val();
+                $.ajax( {
+                    url:"{:url('ProductGroup/getProduct')}",
+                    data:{
+                        cate:cate_s,
+                        p:1,
+                        group:g_id,
+                    },
+                    type:'post',
+                    dataType:'json',
+                    success:function(data) {
+                        handleAjaxData(data);
+                    },
+                    error : function() {
+                        alert("数据异常！");
+                    }
+                });
+            });*/
+
+            //model - 第一页 全部分类
+            $('#myModal').on('show.bs.modal', function (e) {
+                $.ajax( {
+                    url:"{:url('ProductGroup/ajaxGetProduct')}",
+                    data:{
+                    	cate:cate,
+                    	p:1,
+                    	group:g_id,
+                    },
+                    type:'post',
+                    dataType:'json',
+                    success:function(data) {
+                        handleAjaxData(data);
+                    },
+                    error : function() {
+                        alert("数据异常！");
+                    }
+               });
+            });
+            //modal 选择商品
+            $('#select').on("click",'.selected',function(){
+            	$this = $(this);
+                // $('#new_skuid').val($this.data('skuid'));
+                $('#new_pid').val($this.data('pid'));
+                $('.new td:eq(0)').text($this.data('name'));
+                // $('.new td:eq(1)').text($this.data('skudesc'));
+                // $('.new td:eq(2)').text($this.data('price'));
+                //
+            });
+
+            // $(":checked").each(function(){
+            //     if($(this).val()==5999){
+            //         $(".group-time-4").show();
+            //         $(".group-price").show();
+            //     }
+            // });
+
+            //添加 - 点击
+            $('.add').click(function(){
+                $('.new').removeClass('hide');
+            });
+            //取消添加 - 点击
+            // $('#js-new-cancel').click(function(){
+            //     $('.new').addClass('hide');
+            //     return false;
+            // });
+
+            $('.startdatetime').datetimepicker({
+                lang: 'ch',
+                format:'Y-m-d H:i',
+                // timepicker:false,
+            });
+            $('.enddatetime').datetimepicker({
+                lang: 'ch',
+                format:'Y-m-d H:i',
+                // timepicker:false,
+            });
+            // $(".xdsoft_today_button").click();
+
+            var flag = false;
+            //行编辑 - 点击
+            $('.edit').click(function(){
+                if(flag) return false; //排他行
+                flag = true;
+
+                var par = $(this).parent();
+                //恢复为可编辑状态
+                par.parent().find('td:eq(1) input').removeAttr('disabled');
+                par.parent().find('td:eq(2) input').removeAttr('disabled');
+                par.parent().find('td:eq(3) input').removeAttr('disabled');
+                //改变按钮
+                par.find('.save').toggleClass('hide')
+                .siblings('.cancel').toggleClass('hide')
+                .siblings('.edit').toggleClass('hide')
+                .siblings('.delete').toggleClass('hide');
+                return false;
+            });
+            //行编辑取消 - 点击
+            $('.cancel').click(function(){
+                flag = false;
+                var par = $(this).parent();
+                //恢复为可编辑状态
+                par.parent().find('td:eq(1) input').attr("disabled",true);;
+                par.parent().find('td:eq(2) input').attr("disabled",true);;
+                par.parent().find('td:eq(3) input').attr("disabled",true);;
+                //改变按钮
+                par.find('.save').addClass('hide')
+                .siblings('.cancel').addClass('hide')
+                .siblings('.edit').removeClass('hide')
+                .siblings('.delete').removeClass('hide');
+                return false;
+            });
+
+        });
+    </script>
+{/block}

@@ -1,0 +1,107 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<style type="text/css">
+    .freight-templates{
+        padding: 20px 0;
+    }
+    .freight-templates .delete{
+        display: inline-block;
+        float: right;
+        color: #0000cc;
+        margin-right: 20px;
+    }
+    .freight-templates .controll-box{
+        position: absolute;
+        right: 0;
+        top:10px;
+    }
+    .freight-templates td.addresses{
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+    }
+</style>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+
+                <!-- 操作按钮 -->
+                <div class="btn-controls">
+                    <label class="control-label col-md-3 col-lg-3">什么是运费模版 <i class="fa fa-exclamation-circle" data-container="body" data-toggle="popover" data-placement="bottom" data-content="运费模板就是为一批商品设置同一个运费。当您需要修改运费的时候，这些关联商品的运费将一起被修改。"></i></label><a class="btn btn-sm btn-primary" href="{:url(''.CONTROLLER_NAME.'/edit')}"><i class="fa fa-plus"></i>新建运费模版</a>
+                </div>
+
+                <div class="freight-templates">
+                    <div class="panel-group" aria-multiselectable="true" role="tablist" id="templates">
+                        {volist name="list" id="vo"}
+                            <div class="panel panel-default ">
+                                <div role="tab" class="panel-heading" style="position: relative">
+                                    <h4 class="panel-title collapsed" aria-expanded="false" href="#collapse_template_{$vo.id}" data-parent="#templates" data-toggle="collapse" role="button" style="cursor: pointer; font-family: 微软雅黑">
+                                        (模版){$vo.name}
+                                    </h4>
+                                    <div class="controll-box">
+                                        <a class="delete ajax-get confirm" href="{:url('FreightTemplate/delete',array('id'=>$vo['id']))}">删除</a>
+                                        <a class="delete" href="{:url('FreightTemplate/edit',array('id'=>$vo['id']))}">编辑</a>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="panel-collapse collapse" id="collapse_template_{$vo.id}" aria-expanded="false">
+                                    <div class="panel-body">
+                                        <table class="able table-striped table table-hover  table-condensed">
+                                            <thead>
+                                            <th>配送方式</th>
+                                            <th>配送范围</th>
+                                            <th>计费类型</th>
+                                            <th>首N件</th>
+                                            <th>首费</th>
+                                            <th>续N件</th>
+                                            <th>续费</th>
+                                            </thead>
+                                            <tbody>
+                                            {volist name="vo.freightAddress" id="data"}
+                                                <tr>
+                                                    <td>{$vo.freight_type}</td>
+                                                    <td class="addresses">{$data.addresses}</td>
+                                                    <td>
+                                                        <switch name="vo.type">
+                                                            <case value="1">件数</case>
+                                                            <case value="2">重量</case>
+                                                            <case value="3">体积</case>
+                                                            <default />未知
+                                                        </switch>
+                                                    </td>
+                                                    <td>{$data.firstpiece}</td>
+                                                    <td>{$data.firstmoney}</td>
+                                                    <td>{$data.replenishpiece}</td>
+                                                    <td>{$data.replenishmoney}</td>
+                                                </tr>
+                                            {/volist}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        {/volist}
+                    </div>
+                </div>
+                <div>
+                    {$show}
+                </div>
+
+
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

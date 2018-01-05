@@ -1,0 +1,135 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+    <link rel="stylesheet" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+    <!--<link rel="stylesheet" href="//cdn.bootcss.com/jquery-datetimepicker/2.5.1/jquery.datetimepicker.min.css">-->
+    <script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+    <!--<script type="text/javascript" src="//cdn.bootcss.com/jquery-datetimepicker/2.5.1/jquery.datetimepicker.min.js"></script>-->
+    <script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+    <style type="text/css">
+        .pt8{
+            width:2rem !important;
+            padding-top: 8px;
+        }
+        input.error {
+            border: 1px solid red;
+        }
+        label.checked {
+            padding-left: 25px;
+        }
+        label.error {
+            padding-left: 25px;
+            padding-bottom: 2px;
+            font-weight: bold;
+            color: #EA5200;
+        }
+    </style>
+
+{/block}
+
+{block name="area_body"}
+    this is edit page! {:I('get.id')};;;
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <!-- 带验证 form -->
+            <form id="gameForm" class="form-horizontal well validateForm">
+                <fieldset>
+                    <legend>#{$game.name}# 编辑抽奖</legend>
+                    <input type="hidden" name="id" value="{$game.id}">
+                    <div class="form-group">
+                        <label for="inputname" class="col-md-2 col-lg-2 control-label">标题</label>
+                        <div class="col-md-10 col-lg-10">
+                            <input type="text" class="required form-control input-normal" name="name" id="inputname" placeholder="{:L('PLACEHOLDER_TITLE')}" value="{$game.name}">
+                            <div class="help-block">(抽奖标题)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputdesc" class="col-md-2 col-lg-2 control-label">说明</label>
+                        <div class="col-md-10 col-lg-10">
+                            <textarea class="required input-normal" name="description" id="description" style="height:300px">{$game.description}</textarea>
+                            <div class="help-block">(抽奖说明)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="" class="col-md-2 col-lg-2 control-label">抽奖时间</label>
+                        <div class="col-md-2 col-lg-2">
+                            <input size="12" type="text" class="required form-control input-number form_datetime" name="start_time" id="inputstartTime" value="{$game['start_time']|date='Y-m-d h:i:s',###}">
+                        </div>
+                        <div class="col-md-1 col-lg-1 pt8">至</div>
+                        <div class="col-md-2 col-lg-2">
+                            <input  size="12" type="text" class="required form-control  input-short form_datetime" name="end_time" id="inputendTime" value="{$game['end_time']|date='Y-m-d h:i:s',###}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(CONTROLLER_NAME.'/edit',array('gid'=>$game['id']))}" autofocus="autofocus" data-loading-text="{:L('BTN_SAVE')}..." ><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default" href="{:url(CONTROLLER_NAME.'/index',array('gid'=>$game['id']))}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <!-- form -->
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+    <script type="text/javascript" src="/Public/Upload/ueditor/1.4.3/ueditor.config.js"></script>
+    <script type="text/javascript" src="/Public/Upload/ueditor/1.4.3/ueditor.all.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            // window.UEDITOR_HOME_URL = "/Public/Upload/ueditor/1.4.3";  //UEDITOR_HOME_URL、config、all这三个顺序不能改变
+            // window.onload=function(){
+            //     window.UEDITOR_CONFIG.initialFrameHeight=300;//编辑器的高度
+            //     window.UEDITOR_CONFIG.imageUrl="{:url('Category/checkPic')}";          //图片上传提交地址
+            //     window.UEDITOR_CONFIG.imagePath=' /Uploads/thumb/';//编辑器调用图片的地址
+            //     UE.getEditor('desc');//里面的contents是我的textarea的id值
+
+            //     }
+            var ue = UE.getEditor('description',{
+                toolbars: [
+                    ['fullscreen', 'source', 'undo', 'redo', 'bold']
+                ]
+                // ,initialFrameWidth:1000
+                ,initialFrameHeight:300
+                ,autoHeightEnabled:false
+            });
+            //datetimepicker 日期选择器
+            $('.form_datetime').datetimepicker({
+                lang:"ch",
+                format:"Y-m-d h:i:s",
+//              timepicker:false,    //关闭时间选项
+                yearStart:2016,     //设置最小年份
+                yearEnd:2099,        //设置最大年份
+//              todayButton:false    //关闭选择今天按钮
+            });
+            $("#gameForm").validate({
+                errorPlacement: function(error, element) {
+                    $(".checked", element.parent()).remove();
+                    error.appendTo(element.parent());
+                },
+                success: function(label) {
+                    label.removeClass("error").addClass("checked").text("验证成功!");
+                },
+                rules: {
+                    name: {
+                        required: true,
+                        remote: {
+                            url: "{:url('Game/check_name')}"
+                        }
+                    }
+                }
+            }) //end validate
+        }); //end ready
+    </script>
+{/block}

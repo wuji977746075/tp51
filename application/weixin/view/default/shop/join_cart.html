@@ -1,0 +1,57 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/join_cart/index.css">
+{/block}
+{block name="body"}
+<div class="join-cart">
+    <div class="join-cart-img">
+        <img src="https://gw.alicdn.com/tps/TB1xFEKOVXXXXc7XFXXXXXXXXXX-520-280.jpg_.webp" />
+    </div>
+    <div class="join-cart-size">
+        <span>规格：</span>
+        <div class="join-cart-size-group">
+            <!-- 给有库存的加上available类名，没库存的加上disabled属性 -->
+            <button disabled>规格1</button>
+            <button class="available">规格2</button>
+            <button class="available">规格3</button>
+        </div>
+    </div>
+    <div class="join-cart-num">
+        <span class="join-cart-num-text">数量：</span>
+        <div class="join-cart-num-control">
+            <span class="join-cart-num-minus">-</span>
+            <input class="join-cart-num-value" type="number" value="1" />
+            <span class="join-cart-num-plus">+</span>
+        </div>
+    </div>
+</div>
+<button class="join-cart-btn">确定加入</button><!--提示框-->
+{/block}
+{block name="footer"}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".join-cart-size-group").children().filter('.available').css('border','1px solid #000');
+    });
+    //给按钮添加选中样式
+    $(".join-cart-size-group").children().click(function(){
+        $(".join-cart-size-group").children().filter('.available').css('border','1px solid #000');
+        $(this).css('border','1px solid deepskyblue');
+    });
+    //增加减少数量
+    $('.join-cart-num-minus').click(function () {
+        var num = $('.join-cart-num-value').val();
+        if(num<1){
+            num = 1
+        }
+        $('.join-cart-num-value').val(num-1);
+    });
+    $('.join-cart-num-plus').click(function () {
+        var num = parseInt($('.join-cart-num-value').val());
+        if(num>=99){
+            num = 98
+        }
+        $('.join-cart-num-value').val(num+1);
+    })
+</script>
+{/block}

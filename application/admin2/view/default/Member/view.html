@@ -1,0 +1,274 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+<style type="text/css">
+	input.error {	border: 1px solid red; }
+	label.checked {	padding-left: 25px;	}
+	.w80{ width:71px !important; }
+	.inline{ display: inline-block !important; }
+	label.error {
+		padding-left: 25px;
+		padding-bottom: 2px;
+		font-weight: bold;
+		color: #EA5200;
+	}
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+	{include file="default/Widget/left" /}
+	<div class="admin-main-content">
+		{include file="default/Widget/breadcrumb" /}
+		<div class="margin-sm clearfix">
+			<a class="btn btn-default btn-sm" href="{$_g_ret_url}" target="_self"><i class="fa fa-reply"></i>返回</a>
+
+			<div class="margin-sm col-md-12 col-lg-12">
+				<label class="col-md-2 col-lg-2 control-label">常用操作</label>
+				<div class="col-md-10 col-lg-10">
+					<a class="btn btn-xs btn-primary ajax-get confirm" href="{:url("Account/resetPwd")}?id={$userinfo['id']}">重置密码</a>
+					<a href="{:url('userDevice/index',array('uid'=>$userinfo['id']))}" target="_self"  class="btn btn-xs btn-primary" >设备管理</a>
+					<a href="{:byUrl('Member/user_role',array('id'=>$userinfo['id']))}" target="_self" class="btn btn-xs btn-default" >角色管理</a>
+					<a href="{:url('Member/addMoney',array('id'=>$userinfo['id']))}" target="_blank" class="btn btn-xs btn-default" >余额充值</a>
+				</div>
+			</div>
+		</div>
+		<ul class="nav nav-tabs">
+			<li class="active" ><a href="#base" data-toggle="tab">1. 基本信息</a></li>
+			<li><a href="#role" data-toggle="tab">2. 用户角色</a></li>
+			<li><a href="#login" data-toggle="tab">3. 登录信息</a></li>
+			<li class="" ><a href="#book" data-toggle="tab">4. 已购书籍</a></li>
+			<!--<li><a href="#order" data-toggle="tab">5. 订单信息</a></li>-->
+		</ul>
+
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="base">
+				<!-- 带验证 form -->
+				<form id="registerForm" class="form-horizontal well validateForm">
+					<fieldset>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">用户头像</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">
+									<img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($userinfo['id'],60)}" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">用户登录账号</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$userinfo.email}</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">用户手机号</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$userinfo.mobile}</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">用户昵称</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">{$userinfo.nickname}</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">性别</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">	{$userinfo.sex == 0 ? "女":"男"}</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">注册时间</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">	{$userinfo['reg_time']|date='Y-m-d H:i:s',###}</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">最后登录时间</label>
+							<div class="col-md-10 col-lg-10">
+								<div class="h4">	{$userinfo['last_login_time']|date='Y-m-d H:i:s',###}</div>
+							</div>
+						</div>
+
+					</fieldset>
+				</form>
+				<!-- form -->
+			</div>
+			<div class="tab-pane fade" id="login">
+				{empty name="login_session"}
+				用户从未登录过该账号
+				{else/}
+				<form class="form-horizontal well ">
+					<fieldset>
+						<div class="form-group col-md-12 col-lg-12">
+							<label  class="col-md-2 col-lg-2 control-label">登录会话生命周期</label>
+							<div class="col-lg-10 col-md-10">
+								{if condition="$login_session['expire_time'] lt time()"}
+								已过期
+								{else/}
+								{:date("Y-m-d H:i:s",$login_session['update_time'])} - {:date("Y-m-d H:i:s",$login_session['expire_time'])}
+								{/if}
+							</div>
+						</div>
+						<div class="form-group col-md-12 col-lg-12">
+							<label  class="col-md-2 col-lg-2 control-label">登录设备类型</label>
+							<div class="col-lg-10 col-md-10">
+								{:empty($login_session['login_device_type'])?"未知":$login_session.login_device_type}
+							</div>
+						</div>
+						<div class="form-group">
+							<label  class="col-md-2 col-lg-2 control-label">登录附加信息</label>
+							<div class="col-lg-10 col-md-10">
+								{:dump($login_session['login_info'])}
+							</div>
+						</div>
+						<div class="form-group">
+							<label  class="col-md-2 col-lg-2 control-label">强制下线</label>
+							<a href="{:url('LoginSession/remove',array('s_id'=>$login_session['log_session_id'],'uid'=>$userinfo['id']))}" class="btn btn-danger btn-sm ajax-get confirm"><i class="fa fa-trash-o"></i>强制下线</a>
+						</div>
+					</fieldset>
+				</form>
+				{/empty}
+			</div>
+			<div class="tab-pane fade" id="role">
+				<form class="form-horizontal well validateForm">
+					<fieldset>
+
+						<div class="form-group">
+							<label class="col-md-2 col-lg-2 control-label">用户拥有的角色</label>
+							<div class="col-md-10 col-lg-10">
+								<table class="table table-bordered" >
+									<thead>
+									<tr>
+										<th>角色名</th>
+										<th>角色权限描述</th>
+										<th>操作</th>
+									</tr>
+									</thead>
+									<tbody>
+									{volist name="userroles" id="vo"}
+									<tr>
+										<td>{$vo['title']}</td>
+										<td>{$vo['notes']}</td>
+										<td>
+											<a class="ajax-get btn btn-xs btn-danger" href="{:url('AuthGroupAccess/delFromGroup')}?uid={$userinfo.id}&groupid={$vo.id}"><i class="fa  fa-trash-o"></i>移除</a>
+										</td>
+									</tr>
+									{/volist}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<div class="tab-pane fade" id="book">
+				<div class="well form-horizontal">
+				<div class="form-group">
+					<label class="col-md-2 col-lg-2 control-label">用户已购书籍列表<br/>
+						<a href="{:url('orders/index',['uid'=>$userinfo['id'],'paystatus'=>1])}">购买历史</a></label>
+					<div class="col-md-10 col-lg-10">
+						<table class="table table-bordered" >
+							<thead>
+							<tr>
+								<th>书籍名</th>
+								<th>最近购买</th>
+								<th>有效期</th>
+								<th>操作</th>
+							</tr>
+							</thead>
+							<tbody id="tbody">
+							{volist name="books" id="vo"}
+							<tr>
+								<td>{$vo['name']}</td>
+								<td>{$vo['buy_time']|date='Y-m-d H:i',###}</td>
+								<td>{$vo['expire_time']|date='Y-m-d H:i',###}</td>
+								<td>
+									{if condition="$vo['expire_time'] > time()"}
+									<a class="ajax-get btn btn-xs btn-danger confirm" href="{:url('member/userBookDel')}?pid={$vo.p_id}&uid={$userinfo.id}"><i class="fa fa-trash-o"></i>删除</a>
+									<form class="hide-data form-inline form-horizontal inline" name='expire_{$vo.p_id}'>
+										<button hide-data='true' class="ajax-post btn btn-xs btn-danger" href="{:url('member/userBookExpire')}?pid={$vo.p_id}&uid={$userinfo.id}&add=1">有效期<i class="fa fa-plus"></i></button>
+										<input type="number" min="1" name="day_{$vo.p_id}" class="form-control input-xs w80"/>天
+										<button hide-data='true' class="ajax-post btn btn-xs btn-danger" href="{:url('member/userBookExpire')}?pid={$vo.p_id}&uid={$userinfo.id}&add=-1"><i class="fa fa-minus"></i>有效期</button>
+									</form>
+									{/if}
+								</td>
+							</tr>
+							{/volist}
+							</tbody>
+						</table>
+						<div>{$books_show}</div>
+					</div>
+				</div>
+
+
+					<div class="filter-controls">
+						<form class="form-inline"   method="post">
+							<input hidden="hidden" name="uid" value="{$userinfo['id']}" />
+							<div class="form-group">
+								<div class="input-group">
+									<div class="input-group-addon">选择书籍</div>
+									<select name="bookid" class="form-control bookid">
+										{volist name="allbooks" id='vo'}
+										<option value="{$vo.id}">{$vo.name}</option>
+										{/volist}
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="input-group">
+									<div class="input-group-addon">选择有效期</div>
+									<select name="time" class="form-control time">
+										<option value="1">1个月</option>
+										<option value="3">3个月</option>
+										<option value="6">6个月</option>
+										<option value="12">12个月</option>
+									</select>
+								</div>
+							</div>
+							<a  onclick="addbook()" class="btn btn-default btn-sm">给此用户添加书籍</a>
+						</form>
+
+					</div>
+
+
+			</div>
+		</div>
+		<div class="tab-pane fade" id="order">
+			TODO: 用户订单信息
+		</div>
+	</div>
+
+
+</div>
+<!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+<script type="text/javascript">
+	$(function() {
+		var active_tab = '{$active|default=""}';
+		if(active_tab) $('.nav a[href="#'+active_tab+'"]').tab('show');
+	}); //end ready
+
+	function addbook(){
+		var bookid = $('.bookid').val();
+		var time = $('.time').val();
+		var uid = "{$userinfo['id']}";
+		var body = '';
+		$.post("{:url('member/addbook')}",{bookid:bookid,time:time,uid:uid},function(){
+			location.reload()
+		});
+	}
+
+</script>
+
+{/block}

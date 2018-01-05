@@ -1,0 +1,203 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+	<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+	<style>
+	.pink{ color:pink !important; }
+	.tooltip{width:auto !important;}
+	.tooltip-inner{ text-align: left;width:auto !important;max-width: none !important; }
+	</style>
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- 过滤\查询按钮 -->
+			<div class="filter-controls">
+				 {:widget('OrgArea/area')}
+				<!-- 日期查询 -->
+				<form action="{:url('Orders/afterSale')}" method="post" class="searchForm form-inline">
+					<div class="form-group col-lg-12 col-md-12">
+						<div class="input-group"  style="width:480px;">
+							<div class="input-group-addon input-sm">订单编号</div>
+							<input type="text" name="nickname" placeholder="请输入用户名！" class="form-control input-sm" value="{$nickname}" />
+						</div>
+						<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+					</div>
+						<div class="form-group col-lg-12 col-md-12">
+							<div class="input-group"  style="width:480px;">
+								<div class="input-group-addon input-sm">订单编号</div>
+								<input type="text" name="order_code" placeholder="请输入订单编号！" class="form-control input-sm" value="{$order_code}" />
+							</div>
+							<button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+						</div>
+						<div class="form-group col-lg-12 col-md-12" >
+							<div class="input-group" style="width:480px;">
+								<div class="input-group-addon input-sm">售后状态</div>
+								<div class="form-control input-sm">
+									<label class="radio-inline">
+										<input type="radio" name="cs_status" class="orderstatus" {eq name="cs_status" value="0"}checked="checked"{/eq} value="0">不限
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="cs_status" class="orderstatus" {eq name="cs_status" value="2"}checked="checked"{/eq} value="2">待处理
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="cs_status" class="orderstatus" {eq name="cs_status" value="3"}checked="checked"{/eq} value="3">已通过
+									</label>
+								</div>
+							</div>
+						</div>
+				</form>
+			</div>
+			<!-- 操作按钮 -->
+			<div class="btn-controls row col-lg-12 col-md-12">
+			</div>
+			<form action="" method="post" class="deliverForm" >
+			<table class="table table-striped table-bordered table-hover  table-condensed">
+				<thead>
+					<tr>
+						<th>
+							<input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');" />
+						</th>
+						<th>订单编号</th>
+						<th width="200">下单用户</th>
+						<th>收货人</th>
+						<th>联系电话</th>
+						<th width="200">订单总额(元,含运费) - 优惠</th>
+						<th width="80">支付方式</th>
+						<th width="110">货物状态<br/>售后类型</th>
+						<th width="120">售后原因</th>
+						<th width="260">订单状态</th>
+						<th>申请时间</th>
+						<th width="200">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{empty name="list"}
+						<tr>
+							<td colspan="12" class="text-center">{:L('NO_DATA')}</td>
+						</tr>
+						{else/}
+						{volist name="list" id="vo"}
+							<tr>
+								<td>
+									<input type="checkbox" value="{$vo.id}" name="ids[]" class="selectitem" />
+								</td>
+								<td>
+									<a href="{:url('Orders/view',array('id'=>$vo['id']))}">{$vo.order_code}</a>
+								</td>
+								<td>
+									<a href="{:url('Member/view',array('id'=>$vo['uid']))}?ret_url=__SELF__">{$vo.username|default='--'}</a>
+								</td>
+								<td>
+									{$vo.contactname}
+								</td>
+								<td>
+									{$vo.mobile}
+								</td>
+								<td>
+									{$vo['price']} - {$vo['discount_money']}<a href="{:url('Orders/view',array('id'=>$vo['id']))}">支付详情</a>
+								</td>
+								<td>
+									{$vo['pay_type']|getPayType}{if condition="$vo['pay_type'] neq 3 and $vo['pay_balance'] gt 0" }+余额支付{/if}
+								</td>
+								<td>
+									[货物 {if condition="$vo.goods_get eq 1"}收到{elseif condition="$vo.goods_get eq 2" /}<font class="pink">未收到</font>{else /}<font class="pink">不清楚</font>{/if}]<br/>[{$vo['refund_type']|getRefundType}{if condition="$vo['refund_money'] gt 0"}<font class="pink">{$vo['refund_money']}</font>元{/if}]
+								</td>
+								<td>
+									{$vo['reason']}
+								</td>
+								<td>
+									订单 [{$vo['pay_status']|getPayStatus}][{$vo['order_status']|getOrderStatus}]									 [{$vo['cs_status']|getCsStatus}]<br/>
+									售后 {if condition="$vo['valid_status'] eq 0"}[待处理]{/if}{if condition="$vo['valid_status'] eq 1"}[同意 原因:{$vo['reply_msg']|default=""}]{/if}{if condition="$vo['valid_status'] eq 2"}[驳回 原因:{$vo['reply_msg']|default=""}]{/if}
+								</td>
+								<td>
+									{$vo.create_time|date='Y-m-d H:i:s',###}
+								</td>
+								<td>
+									<a href="{:url('Orders/returnGoods',array('id'=>$vo['id'],'thid'=>$vo['thid']))}" class="btn btn-default btn-sm">退货</a><a href="{:url('Orders/refund',array('id'=>$vo['id'],'thid'=>$vo['thid']))}" class="btn btn-primary btn-sm" target="_self">退款</a><a href="{:url('Orders/close',array('id'=>$vo['id'],'thid'=>$vo['thid']))}" class="ajax-get btn btn-info btn-sm confirm"><i class="fa fa-check-circle"></i>完成售后</a><br/>
+									<a href="{:url('Orders/afterSalebh',array('id'=>$vo['id'],'thid'=>$vo['thid']))}" class="btn btn-info btn-sm"><i class="fa fa-check-circle"></i>驳回</a>
+								</td>
+							</tr>
+						{/volist}
+					{/empty}
+				</tbody>
+			</table>
+			<div>{$show}</div>
+		</form>
+
+		<script type="text/javascript">
+			$(".orderstatus").click(function(){
+				$(".searchForm").submit();
+			});
+			function submitForm(){
+				$(".submitForm").submit();
+			}
+
+			$(function() {
+
+			});
+		</script>
+	</div>
+	<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+	<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+	<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+	<script type="text/javascript">
+	$(function(){
+		$("#user_select2").select2({
+			placeholder: "输入用户id或昵称查询"	,
+			language: "zh-CN",
+			ajax: {
+			    url: "{:url('Member/select')}",
+			    dataType: 'json',
+			    delay: 250,
+			    data: function (params) {
+			    	var queryParameters = {
+				      q: params.term
+				    }
+    				return queryParameters;
+
+			    },
+			    processResults: function (data, page) {
+			    	if(!data.info){
+			    		data.info = new Array();
+			    		data.info['nodata']="无相关数据";
+			    	}
+			      	// parse the results into the format expected by Select2.
+			      	// since we are using custom formatting functions we do not need to
+			      	// alter the remote JSON data
+			      	return {
+			        	results: data.info
+			      	};
+			    },
+			    cache: true
+		  	},
+			  	minimumInputLength: 0,
+				templateSelection: function (repo) {
+	  				return repo.nickname ? '[id:'+repo.id+']'+repo.nickname : repo.text;
+				},
+			  templateResult: function (repo) {
+
+      				if (repo.loading) return repo.text;
+					if(repo.nodata) return repo.nodata;
+//    				var markup = '<div>'+repo.nickname+'</div>';
+              var markup = '<div><img src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+              return $(markup);
+    			},
+		});
+	});
+	</script>
+
+{/block}

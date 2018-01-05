@@ -1,0 +1,233 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/product_detail/index.css">
+{/block}
+{block name="body"}
+<div class="product-detail-body">
+    <div class="product_detail_box">
+        <div id="product_detail"></div>
+        <div class="product-detail title">{$detail.name}</div>
+        <div class="product-detail money"><span>￥0</span><del>￥0</del></div>
+        <div class="product-detail selected">
+            <div class="product-detail selected-left"><span>已选：</span></div>
+            <div class="product-detail selected-mid"></div>
+            <div class="product-detail selected-right anticon anticon-down"></div>
+        </div>
+
+    <pre class="product-detail content">{$detail.synopsis}</pre>
+        <div class="product-detail delivery">邮费：<span>包邮</span></div>
+    </div>
+    <div class="product-detail btn">
+        <div class="product-detail btn-left">
+            <a href="{:url('shop/cart')}">
+                <i class="anticon anticon-shopping-cart"></i>
+                <div>购物车 </div>
+            </a>
+        </div>
+        <button id="add2cart">加入购物车</button><!--提示框-->
+    </div>
+</div>
+<div class="product-detail selected-area-cover"></div>
+<div class="product-detail selected-area-box">
+    <div class="product-detail selected-area">
+        <div class="selected-area-head1">
+            <div class="selected-area-pic"><img src="https://api.ryzcgf.com/public/index.php/picture/index?id=&size=120"></div>
+        </div>
+        <div class="selected-area-body">
+            <div class="selected-item">
+                <div class="selected-item-price">￥<b>0</b></div>
+                <div class="selected-item-quantity">库存还剩余<b>0</b>件</div>
+                <div class="selected-item-size"></div>
+            </div>
+            <i class="weui-icon-cancel selected-area-close"></i>
+        </div>
+    </div>
+    <div class="product-detail selected-area before">
+        <div class="selected-area-head1"><span>数量：</span></div>
+        <div class="selected-area-body1">
+            <div class="product-detail-minus">-</div>
+            <input class="product-detail-num" type="number" value="1" />
+            <div class="product-detail-plus">+</div>
+        </div>
+    </div>
+    <div class="product-detail selected-area">
+        <div class="selected-area-head1"><span>单价：</span></div>
+        <div class="selected-area-body1">
+            <div class="product-detail-price">￥0.00</div>
+        </div>
+    </div>
+    <div class="product-detail selected-area">
+        <button id="add3cart" class="weui-btn weui-btn_primary">确认加入</button>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script>
+    var product_sku = {$product_sku};
+</script>
+<script>
+    var product_detail_carousel = [
+        {volist name="detail.carousel_images" id="vo"}
+        {img:"{$vo}", href:''},
+        {/volist}
+    ];
+</script>
+<script type="text/javascript" src="__JS__/product_detail/index.js"></script>
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+
+    //动态添加规格
+    $(document).ready(function(){
+        //设置默认选中的规格sku_desc_obj
+        var sku_desc_obj = {};
+        var default_select_arr = product_sku.sku_list[0].sku_desc.split(';');
+        for(var k=0;k<default_select_arr.length-1;k++){
+            var default_select_arr_k = default_select_arr[k].split(':');
+            sku_desc_obj[default_select_arr_k[0]+':'] = ''
+        }
+        //设置默认的target_obj
+        var target_obj={};
+        for (var key in product_sku.sku_list[0]) {
+            target_obj[key] = product_sku.sku_list[0][key];
+        }
+        //有规格的情况下将默认的sku_pkid为空
+        if(product_sku.sku_info.length !=0){
+            target_obj.sku_pkid='';
+        }
+
+        //设置各个地方的默认价格
+        $('.product-detail.money span').text('￥'+target_obj.price);
+        $('.product-detail.money del').text('￥'+target_obj.ori_price);
+        $('.product-detail-price').text('￥'+target_obj.price);
+        $('.selected-item-price b').text(target_obj.price);
+        //根据规格显示图片
+        $('.selected-area-pic img').attr('src',product_detail_carousel[0].img);
+        //显示库存
+        $('.selected-item-quantity b').text(target_obj.quantity);
+
+        //向页面中添加规格dom元素
+        for(var x = 0;x<product_sku.sku_info.length;x++){
+            var val_list = '';
+            for(var y = 0;y<product_sku.sku_info[x].value_list.length;y++){
+                val_list += '<span>'+ product_sku.sku_info[x].value_list[y].value_name+'</span>';
+            }
+            var pro_select_item = '' +
+                    '<div class="product-detail selected-area">'+
+                    '<div class="selected-area-head"><span>'+ product_sku.sku_info[x].sku_name+':</span></div>'+
+                    '<div class="selected-area-body">'+
+                        val_list+
+                    '</div>'+
+                    '</div>';
+            $('.product-detail.selected-area.before').before(pro_select_item);
+        }
+
+        $('.selected-area-body span').not('.disabled').click(function(){
+            //给选择的规格加上边框
+            $(this).siblings().removeClass('select');
+            $(this).addClass('select');
+
+            //将选择的规格显示在上面
+            text = '';
+            var sku_desc_text = '';
+            var arr = $(".selected-area-body span").filter('.select');
+            for(var i=0;i<arr.length;i++){
+                text += arr[i].innerText+'&nbsp;&nbsp;';
+            }
+            $('.product-detail.selected-mid,.selected-item-size').html('<b>'+text+'</b>');
+            //将选择的规格储存在sku_desc_obj中
+            sku_desc_obj[$(this).parents('.product-detail.selected-area').children('.selected-area-head').children('span').text()] = $(this).text();
+            for(var sku_desc_obj_i in sku_desc_obj){
+                sku_desc_text += sku_desc_obj_i + sku_desc_obj[sku_desc_obj_i]+';'
+            }
+            //获取价格所在的obj(target_obj)----------------------------------------------------------------------------------
+            target_obj = _.find(product_sku.sku_list, { 'sku_desc': sku_desc_text });
+            //选完全部规格的情况下
+            if(target_obj){
+                //设置各个地方的价格
+                $('.product-detail.money span').text('￥'+target_obj.price);
+                $('.product-detail.money del').text('￥'+target_obj.ori_price);
+                $('.product-detail-price').text('￥'+target_obj.price);
+                $('.selected-item-price b').text(target_obj.price);
+                //根据规格显示图片
+                $('.selected-area-pic img').attr('src',target_obj.icon_url);
+                //显示库存
+                $('.selected-item-quantity b').text(target_obj.quantity)
+            }
+        });
+
+        //数量在1-库存之间
+        $('.product-detail-num').blur(function(){
+            var $product_detail_num = parseInt($(this).val());
+            $product_detail_num = isNaN($product_detail_num) ? 1 : $product_detail_num;
+            $product_detail_num = $product_detail_num>target_obj.quantity?target_obj.quantity:$product_detail_num;
+            $product_detail_num = $product_detail_num<1?1:$product_detail_num;
+            $(this).val($product_detail_num);
+        });
+        //数量加减
+        $('.product-detail-plus').click(function(){
+            var $num = parseInt($(this).parent().children('.product-detail-num').val());
+            var num = $num?$num:1;
+            if(num>=target_obj.quantity){
+                $(this).parent().children('.product-detail-num').val(target_obj.quantity);
+            }else{
+                $(this).parent().children('.product-detail-num').val(num + 1);
+            }
+        });
+        $('.product-detail-minus').click(function(){
+            var $num = parseInt($(this).parent().children('.product-detail-num').val());
+            var num = $num?$num:1;
+            $(this).parent().children('.product-detail-num').val(num - 1);
+            if(num<2){
+                $(this).parent().children('.product-detail-num').val(1);
+            }
+        });
+        //显示/隐藏规格列表
+        $('.product-detail.selected').click(function(){
+            $('.product-detail.selected-area-box').slideDown();
+            $('.product-detail.selected-area-cover').show()
+        });
+        $('.product-detail.selected-area-cover,.selected-area-close').click(function(){
+            $('.product-detail.selected-area-box').slideUp();
+            $('.product-detail.selected-area-cover').hide();
+
+        });
+
+        $.toast.prototype.defaults.duration = 1500;
+
+        $('#add2cart,#add3cart').click(function(){
+            var count = parseInt($('.product-detail-num').val());
+            if(count<0){
+                $.toast("商品数量必须大于0", "cancel");
+                return;
+            }
+
+            if(!target_obj||!target_obj.sku_pkid){
+                $.toast("请先选择规格", "cancel");
+                $('.product-detail.selected-area-box').slideDown();
+                $('.product-detail.selected-area-cover').show();
+                return null;
+            }
+            var body = {
+                pid: {$pid},
+                sku_pkid: target_obj.sku_pkid,
+                count: count
+            };
+            var $this = $(this);
+            $this.addClass('weui-btn_disabled').attr('disabled','disabled');
+            ajax_post(getBaseUrl()+'/shop/cart_add',jQuery.param(body),{
+                success:function(data){
+                    $.toast("添加成功", "success");
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                },
+                error:function(data){
+                    $.toast(data.msg, "cancel");
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                }
+            })
+
+        });
+    });
+
+</script>
+{/block}

@@ -1,0 +1,66 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/commission_detail/style.css">
+{/block}
+{block name="body"}
+<div class="commission-detail-head">
+    <span class="commission-detail-head-left">提成累计</span>
+    <span class="commission-detail-head-right">+0.00元</span>
+</div>
+<div class="weui-tab">
+    <div class="weui-navbar">
+        <a class="weui-navbar__item weui-bar__item--on" href="#tab1">
+            所有
+        </a>
+        <a class="weui-navbar__item" href="#tab2">
+            已完成
+        </a>
+    </div>
+    <div class="weui-tab__bd">
+        <div id="tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+            <div class="commission-detail-item">
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">交易号</div>
+                    <div class="commission-detail-item1-right">201703215135</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">提现时间</div>
+                    <div class="commission-detail-item1-right">2017年2月14号</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">体现方式</div>
+                    <div class="commission-detail-item1-right">支付宝</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">当前状态</div>
+                    <div class="commission-detail-item1-right"><span class="brown">审核中</span></div>
+                </div>
+            </div>
+        </div>
+        <div id="tab2" class="weui-tab__bd-item">
+            <div class="commission-detail-item">
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">交易号</div>
+                    <div class="commission-detail-item1-right">1111111111111</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">提现时间</div>
+                    <div class="commission-detail-item1-right">2011年11月11号</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">体现方式</div>
+                    <div class="commission-detail-item1-right">支付宝</div>
+                </div>
+                <div class="commission-detail-item1">
+                    <div class="commission-detail-item1-left">当前状态</div>
+                    <div class="commission-detail-item1-right"><span class="brown">审核中</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+{/block}

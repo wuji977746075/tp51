@@ -1,0 +1,25 @@
+<?php
+//测试模块is8n 中文语言包 字母排序
+return [
+	'app-type'=>'ios/android/pc/other',
+	'address-detail'=>'详细地址',
+	'code-type'=>'类型<br>【1=>注册,2=>改密,3=>绑定手机,4=>换绑,5=>验证码登陆】',
+	'encrypt-data'=>'加密后的数据',
+	'express-tpl'=>'快递模板 <br>【0=>本地重组(优先),1=>远程快递100内嵌】',
+	'file-type'=>'类型<br>【avatar=头像,gallery=相册,other=其它,ID=身份证,bbs=论坛,bg=空间背景】',
+	'file-size'=>'图片大小<br>目前支持[60,120,160,180,200,240,360,480,640,720,960]<br/>不填返回原图',
+	'img-num'=>'最大图片个数,默认99',
+	'order-from'=>'来源：【1=>PC,2=>Android,3=>IOS,0=>未知】',
+	'pay-from'=>'来源：【1=>PC,2=>Android,3=>IOS,0=>未知】',
+	'order-status'=>'订单状态<br>【0=>全部,1=>待付款,2=>待发货,3=>待收货,4=>已收货,5=>退款/售后,6=>待评价】',
+	'parsed-data' =>'解析后的数据: ',
+	'reg-from'=>'注册方式<br>【0=>内部(默认),1=>QQ,2=>微信,3=>新浪,4=>百度,5=>淘宝,99=>其他】',
+	'reg-sex'=>'用户性别<br>【0=>未知(默认),1=>女,2=>男】',
+	'reg-type'=>'注册类型<br>【1=>用户名,3=>手机号(默认)】',
+	'reg-username'=>'<br>手机号注册时为手机号',
+	'reg-code'=>'<br>手机号注册时才必须',
+	'p2p-b-status'=>'项目状态,见<a href="http://doc.oschina.net/itboye_ihome_app_api?t=159604" target="_blank">文档</a>',
+	'p2p-dt-type'=>'项目类型,见<a href="http://doc.oschina.net/itboye_ihome_app_api?t=159604" target="_blank">文档</a>',
+	'p2p-list-order'=>'排序,0=>默认(时间大小),1=>年化大小,2=>年化小大,3=>周期大小,4=>周期小大',
+	'p2p-invest-status'=>'0:全部(默认);1: 尚未回款; 2：回款中; 3：回款完成',
+];

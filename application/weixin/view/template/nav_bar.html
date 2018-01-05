@@ -1,0 +1,32 @@
+<div class="footer">
+    <div class="footer-item footer-left selected">
+        <a href="{:url('index/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/shouye.png" /></div>
+            <span>首页</span>
+        </a>
+    </div>
+    <div class="footer-item footer-left selected">
+        <a href="{:url('shop/product_list')}">
+            <div class="footer-item-img"><img src="__IMG__/index/shangcheng.png" /></div>
+            <span>所有商品</span>
+        </a>
+    </div>
+    {if condition='$Default == 1'}
+    <div class="footer-item-head"><img src="{$my_upper['head']}" /></div>
+    <!--{$user_Info['head']}-->
+    {else /}
+    <div class="footer-item-head"><img src="{$my_upper['head']}" /></div>
+    {/if}
+    <div class="footer-item footer-right">
+        <a href="{:url('user/index')}">
+            <div class="footer-item-img"><img src="__IMG__/index/geren.png" /></div>
+            <span>个人中心</span>
+        </a>
+    </div>
+    <div class="footer-item footer-right">
+        <a href="{:url('shop/coding')}">
+            <div class="footer-item-img"><img src="__IMG__/index/cart.png" /></div>
+            <span>购物车</span>
+        </a>
+    </div>
+</div>

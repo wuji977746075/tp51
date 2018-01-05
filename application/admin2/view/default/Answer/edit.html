@@ -1,0 +1,170 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+<script src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<style type="text/css">
+.help-block{ display: inline !important; }
+.pt8{ width:2rem !important;padding-top: 8px; }
+input.error { border: 1px solid red; }
+label.checked { padding-left: 25px; }
+label.error { padding-left: 25px;padding-bottom: 2px;font-weight: bold;color: #EA5200; }
+.form-group-fix{
+    padding-left:15px !important;
+    padding-right:25px !important;
+}
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+  {include file="default/Widget/left" /}
+  <div class="admin-main-content">
+    {include file="default/Widget/breadcrumb" /}
+    <!-- 带验证 form -->
+    <form id="validateForm" class="form-horizontal well validateForm">
+      <fieldset>
+      <legend>答案 - 修改</legend>
+      <div class="form-group">
+          <label for="js-title" class="col-md-2 col-lg-2 control-label">答案</label>
+          <div class="col-md-8 col-lg-6 form-inline">
+              <input type="text" class="required form-control input-normal" name="title" id="js-title" value="{$info.title}">答案名,真假(T/F),对错(1/0)
+          </div>
+      </div>
+      <div class="form-group">
+        <label for="js-type" class="col-md-2 col-lg-2 control-label">答案类型</label>
+        <div class="col-md-10 col-lg-10 form-inline">
+          <div class="form-group form-group-fix">
+            <div class="input-group">
+              <select name="type" class="form-control" id="js-type">
+                <option value="">== 请选择答案类型 ==</option>
+                <option value="str">文字</option>
+                <option value="img">图片</option>
+                <option value="bool">真假/对错</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group js-content js-content-str hide">
+          <label for="js-content-str" class="col-md-2 col-lg-2 control-label">答案描述 - 文字</label>
+          <div class="col-md-6 col-lg-4">
+              <input type="text" class="form-control" name="content_str" id="js-content-str" value="">
+          </div>
+      </div>
+      <div class="form-group js-content js-content-bool hide">
+          <label for="js-content-bool" class="col-md-2 col-lg-2 control-label">答案描述 - 真假对错</label>
+          <div class="col-md-8 col-lg-6 form-inline">
+            <select name="content_bool" class="form-control" id="js-content-bool">
+              <option value="">== 真假/对错 ==</option>
+              <option value="0">假/错</option>
+              <option value="1">真/对</option>
+            </select>
+          </div>
+      </div>
+      <div class="form-group js-content js-content-img hide">
+          <input type="hidden" name="content_img" id="prizeIcon" value="{$info['content']}">
+          <label for="" class="col-md-2 col-lg-2 control-label">答案描述 - 图片</label>
+          <div class="col-lg-5 col-md-5">
+              <span class="text-muted">(注意:上传或选择尺寸为1:1的图片,推荐400像素*400像素，大小不超过500kb)<i data-toggle="tooltip" class="fa fa-question" title=""></i></span>
+              <!-- 图片选择DOM结构 -->
+                  <div class="wxuploaderimg clearfix main_img"  data-maxitems="1">
+                      <div class="img-preview clearfix" >
+                      </div>
+                      <div class="add">
+                          <i class="fa fa-plus"></i>
+                      </div>
+                  </div>
+          </div>
+           <div class="col-lg-5 col-md-5">
+              <span>(现图)</span>
+              <img class=" thumbnail js_img_click" data-imageid="{$info['content']}" src="{:getImgUrl($info['content'])}" height="100">
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="js-sort" class="col-md-2 col-lg-2 control-label">排序</label>
+          <div class="col-md-2 col-lg-2 form-inline">
+              <input type="number" class="form-control input-normal" name="sort" id="js-sort" value="{$info['sort']}">
+          </div>
+          <div class="col-md-6 col-lg-6">选填<div class="help-block">(整数,越大越靠前)</div></div>
+      </div>
+      <div class="form-group">
+          <label for="js-is-real" class="col-md-2 col-lg-2 control-label">是否正确答案</label>
+          <div class="col-md-2 col-lg-2 form-inline">
+            <select name="is_real" class="form-control" id="js-is-real">
+              <option value="">== 是否正确 ==</option>
+              <option value="0">不是</option>
+              <option value="1">是</option>
+            </select>
+          </div>
+          <div class="col-md-6 col-lg-6">选填<div class="help-block">(是否正确答案)</div></div>
+      </div>
+      <div class="form-group "> <!-- hide -->
+          <label for="js-real-sort" class="col-md-2 col-lg-2 control-label">正确排序</label>
+          <div class="col-md-2 col-lg-2 form-inline">
+              <input size="9" type="number" class="form-control input-number" name="real_sort" id="js-real-sort" value="{$info.real_sort}" >
+          </div>
+          <div class="col-md-6 col-lg-6">选填<div class="help-block">(整数,越大越靠前)</div></div>
+      </div>
+      <div class="form-group">
+        <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+        <div class="col-lg-10 col-md-10">
+          <a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url(CONTROLLER_NAME.'/edit',['id'=>$id])}" autofocus="autofocus"  data-loading-text="{:L('BTN_SAVE')}..." ><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+          <a class="btn btn-default" href="{:url('question/detail',['id'=>$q_id])}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+        </div>
+      </div>
+      </fieldset>
+    </form>
+    <!-- form -->
+  </div>
+  <!-- END admin-main-content -->
+</div>
+<!-- END admin-main-->
+{include file="default/template/prizepicture" /}
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+<script src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+<script type="text/javascript">
+  $(function() {
+    var stype = "{$info['type']|default=''}";
+    $("#js-type").val(stype);
+    $('#js-content-'+stype).val("{$info['content']|default=''}");
+    showType(stype);
+    $("#js-type").change(function(){
+      showType($(this).val());
+    });
+    $('#js-is-real').val({$info['is_real']});
+    function showType(s){
+      $('.js-content-'+s).removeClass('hide');
+      $('.js-content').not('.js-content-'+s).addClass('hide');
+    }
+    //图片上传
+    wxuploadimg.init({cont:".wxuploaderimg"});
+
+    // $(".inputspin").TouchSpin({initval: 0});
+    $(".validateForm").validate();
+    // $("#gameForm").validate({
+    //     errorPlacement: function(error, element) {
+    //         $(".checked", element.parent()).remove();
+    //         error.appendTo(element.parent());
+    //     },
+    //     success: function(label) {
+    //         label.removeClass("error").addClass("checked").text("验证成功!");
+    //     },
+    //     rules: {
+    //         name: {
+    //             required: true,
+    //             remote: {
+    //                 url: "{:url('Game/check_name')}"
+    //             }
+    //         }
+    //     }
+    // }) //end validate
+    //
+  }); //end ready
+</script>
+{/block}

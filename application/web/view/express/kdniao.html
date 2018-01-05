@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>快递鸟查询插件测试页面</title>
+    <script type="text/javascript" src="__PUBLIC__/kdniao/jquery.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/kdniao/kdniao.js"></script>
+</head>
+<body>
+<!--采用浮动的方式，可添加 class="flo"-->
+<div id="queryContext" class=""></div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        var path = "__PUBLIC__";
+        var url = "{:url()}";
+        kdniao.init(path,url);
+        //如果使用页面自动加载，需要在页面加载中调用以下函数
+        kdniao.query(url, "{$express_code}" , "{$express_name}");
+    });
+</script>
+</html>

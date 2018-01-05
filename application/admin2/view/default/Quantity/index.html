@@ -1,0 +1,284 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+    <link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css" />
+    <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+    <script type="text/javascript" src="__CDN__/jquery-qrcode/v1.0/jquery.qrcode.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="__CDN__/select2/3.5.2/select2.css" />
+    <script type="text/javascript" src="__CDN__/select2/3.5.2/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+    <script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <a class="btn btn-sm btn-warning" href="{:url('quantity/alert')}">库存预警</a>
+            <!-- 过滤\查询按钮 -->
+            <div class="filter-controls">
+                <!-- 日期查询 -->
+                <form action="{:url('Product/index')}" method="post" class="form-inline">
+                    <select name="select_product" id="select_product" style="width: 300px;" >
+                        {volist name="productList" id="vo"}
+                            <option  value="{$vo.id}">{$vo.name}</option>
+                            <option value="" disabled ><span class="divider"></span></option>
+                        {/volist}
+                    </select>
+                    <button type="submit" class="btn btn-default btn-sm hide" id="searchFormSubmit"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                </form>
+            </div>
+            <div class="sku-radio">
+                {volist name="sku" id="vo"}
+                    <label>{$vo.id.name_id}: </label>
+                    {volist name="vo.vid" id="voi"}
+                        <!--<label class="radio-inline">-->
+                            <input type="radio" name="sku_{$vo.id.id_id}" id="sku_{$vo.id.id_id}" value="{$voi.id_vid}"> {$voi.name_vid}
+                        <!--</label>-->
+                    {/volist}<br/>
+                {/volist}
+            </div>
+            <form class="form-inline">
+                <label>起始时间:</label>
+                <input type="text" class="startdatetime form-control input-short input-sm" value="{$startdatetime}"/>
+                <label>终止时间:</label>
+                <input type="text" class="enddatetime form-control input-short input-sm" value="{$enddatetime}"/>
+                <a class="btn btn-primary btn-sm btn-search">查询图表</a>
+                <a class="btn btn-primary btn-sm btn-quantity-detail" data-url="{:url('Quantity/detail')}">详细数据</a>
+                <a class="btn btn-primary btn-sm btn-quantity-add" data-url="{:url('Quantity/add')}">库存增减</a>
+            </form>
+
+            <div id="chart" style="height:400px;margin-top:50px;"></div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+    <script src="__CDN__/echarts/2.2.2/echarts-all.js"></script>
+    <script type="text/javascript">
+        //初始化select2 控件
+        function initSelect2(){
+            $('select').select2();
+        }
+
+        function getSku(){
+            var sku = [];
+            var sku_radio = $('input[type=radio]:checked');
+            var len = sku_radio.length;
+            for(var i = 0;i < len;i++){
+                sku.push({
+                    'id': sku_radio.eq(i).attr('name').substr(4),
+                    'vid': sku_radio.eq(i).attr('value')
+                });
+            }
+            //console.log(JSON.stringify(sku));
+            return JSON.stringify(sku);
+        }
+        //根据数据画折线图
+        function getChart(data){
+            var myChart = echarts.init(document.getElementById('chart'));
+            var option = {
+                title : {
+                    text: '库存与销售情况',
+                },
+                tooltip : {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data:['库存剩余量','销售量']
+                },
+                toolbox: {
+                    show : true,
+                    feature : {
+                        mark : {show: true},
+                        dataView : {show: true, readOnly: false},
+                        magicType : {show: true, type: ['line', 'bar']},
+                        restore : {show: true},
+                        saveAsImage : {show: true}
+                    }
+                },
+                calculable : true,
+                xAxis : [
+                    {
+                        type : 'category',
+                        boundaryGap : false,
+                        //data : ['周一','周二','周三','周四','周五','周六','周日']
+                        data : data.x
+                    }
+                ],
+                yAxis : [
+                    {
+                        type : 'value',
+                        axisLabel : {
+                            formatter: '{value}'
+                        }
+                    }
+                ],
+                series : [
+                    {
+                        name:'库存剩余量',
+                        type:'line',
+                        //data:[11, 11, 15, 13, 12, 13, 10],
+                        data:data.quantity,
+                        markPoint : {
+                            data : [
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name: '平均值'}
+                            ]
+                        }
+                    },
+                    {
+                        name:'销售量',
+                        type:'line',
+                        //data:[1, -2, 2, 5, 3, 2, 0],
+                        data:data.sale,
+                        markPoint : {
+                            data : [
+                                /*{name : '周最低', value : -2, xAxis: 1, yAxis: -1.5}*/
+                                {type : 'max', name: '最大值'},
+                                {type : 'min', name: '最小值'}
+                            ]
+                        },
+                        markLine : {
+                            data : [
+                                {type : 'average', name : '平均值'}
+                            ]
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        }
+        //ajax获取销售库存等数据
+        function getData(){
+            var sel_sku = getSku();
+            var select_product = $('#select_product').select2('val');
+            var startdatetime = $('.startdatetime').val();
+            var enddatetime = $('.enddatetime').val();
+            $.ajax({
+                url:"{:url('Quantity/getData')}",
+                data:{
+                    sel_sku:sel_sku,
+                    select_product:select_product,
+                    startdatetime:startdatetime,
+                    enddatetime:enddatetime
+                },
+                type:'post',
+                dataType:'json',
+                success:function(data){
+                    if(data.status){
+                        getChart(data.info);
+                    }else{
+                        alert(data.info);
+                        //console.log(data.info);
+                    }
+                },
+                error:function(){
+                    alert("数据异常");
+                }
+            });
+        }
+
+        //删除参数值
+        function delQueStr(url, ref) {
+            var str = "";
+            if (url.indexOf('?') != -1) {
+                str = url.substr(url.indexOf('?') + 1);
+            }
+            else {
+                return url;
+            }
+            var arr = "";
+            var returnurl = "";
+            var setparam = "";
+            if (str.indexOf('&') != -1) {
+                arr = str.split('&');
+                for (i in arr) {
+                    if (arr[i].split('=')[0] != ref) {
+                        returnurl = returnurl + arr[i].split('=')[0] + "=" + arr[i].split('=')[1] + "&";
+                    }
+                }
+                return url.substr(0, url.indexOf('?')) + "?" + returnurl.substr(0, returnurl.length - 1);
+            }
+            else {
+                arr = str.split('=');
+                if (arr[0] == ref) {
+                    return url.substr(0, url.indexOf('?'));
+                }
+                else {
+                    return url;
+                }
+            }
+        }
+
+
+        $(function(){
+            initSelect2();
+            //下拉框设置值
+            $('#select_product').select2('val',{$pid});
+            //下拉框点击事件选择商品
+            $("#select_product").on("select2-selected", function (e) {
+                var select_product = $('#select_product').select2('val');
+                var url = window.location.href;
+                url = delQueStr(url,"pid");
+                url = url+"?pid="+select_product;
+                window.location.href = url;
+            });
+
+            //单选框设置值
+            {volist name="sel_sku" id="vo"}
+                $("input[type=radio][name=sku_{$vo.id}][value={$vo.vid}]").attr("checked","checked");
+            {/volist}
+
+            //点击查询按钮，ajax得到数据并画图
+            $('.btn-search').click(function(){
+                getData();
+            });
+
+            //日期文本框
+            $('.startdatetime').datetimepicker({
+                lang: 'ch',
+                format:'Y-m-d H:i:s',
+                timepicker:true,
+            });
+            $('.enddatetime').datetimepicker({
+                lang: 'ch',
+                format:'Y-m-d H:i:s',
+                timepicker:true,
+            });
+
+            //库存增减跳转
+            $('.btn-quantity-add').click(function(){
+                //获取参数
+                var pid = $('#select_product').select2('val');
+                var sku = getSku();
+                var url = $(this).attr('data-url');
+                url = url+"?pid="+pid+"&sku="+sku;
+                window.location.href = url;
+            });
+            //详细数据查询跳转
+            $('.btn-quantity-detail').click(function(){
+                //获取参数
+                var pid = $('#select_product').select2('val');
+                var sku = getSku();
+                var startdatetime = $('.startdatetime').val();
+                var enddatetime = $('.enddatetime').val();
+                var url = $(this).attr('data-url');
+                url = url+"?pid="+pid+"&sku="+sku+"&startdatetime="+startdatetime+"&enddatetime="+enddatetime;
+                window.location.href = url;
+            });
+
+        })
+    </script>
+{/block}

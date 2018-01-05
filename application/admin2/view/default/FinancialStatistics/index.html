@@ -1,0 +1,216 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+<style type="text/css">
+    .vertical-align-middle>td{
+        vertical-align: middle!important;
+    }
+
+.p0{ padding: 0 !important; }
+.form-group{ margin-bottom: 5px !important; }
+.select2-selection{ border:none !important;height:34px !important; }
+.select2-selection .select2-selection__rendered{ height:35px !important; }
+.select2-dropdown{ border-color: #ddd !important; }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="h4"><b>财务统计</b>  - <a title="财务统计" data-toggle="tooltip" data-placement="right">说明</a></div>
+
+        <div class="filter-controls">
+            <form class="form-inline searchForm" method="post" action="{:url('FinancialStatistics/index')}">
+                <input type="hidden" name="down" class="" value="0">
+                <div class="form-group row col-lg-12 col-md-12">
+                    <div class="input-group" style="width:410px">
+                        <div class="input-group-addon"><i class="fa fa-user"></i>用户</div>
+                        <div class="form-control p0">
+                            <select id="user_select2" name="uid">
+                            {if condition="$uid gt 0"}<option value="{$uid}" selected="selected"> [id:{$uid}] {$nickname|default=''}</option>{/if}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group row col-lg-12 col-md-12">
+                    <div class="input-group" style="width:780px">
+                        <div class="input-group-addon input-sm">支付方式</div>
+                        <div class="form-control input-sm">
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="pay_type" {eq name="pay_type" value=""}checked{/eq} value=""> 不限
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="pay_type" {eq name="pay_type" value="1"}checked{/eq} value="1"> 支付宝
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="pay_type" {eq name="pay_type" value="3"}checked{/eq} value="3"> 微信
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="pay_type" {eq name="pay_type" value="4"}checked{/eq} value="4"> 余额
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <div class="input-group" style="width:780px">
+                        <div class="input-group-addon input-sm">订单类型</div>
+                        <div class="form-control input-sm">
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value=""}checked{/eq} value=""> 不限
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value="商城订单"}checked{/eq} value="商城订单"> 商城订单
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value="充值订单"}checked{/eq} value="充值订单"> 充值订单
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <div class="input-group">
+                        <div class="input-group-addon input-sm">时间<i class="fa fa-calendar"></i></div>
+                        <input type="text" name="start" id="js-start" class="form-control input-short input-sm" value="{$start ?? ''}" />
+                        <div class="input-group-addon input-sm">
+                            <i class="fa fa-long-arrow-right"></i>
+                        </div>
+                        <input type="text" name="end" id="js-end" class="form-control input-short input-sm" value="{$end ?? ''}" />
+                    </div>
+                    <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                    <button  type="submit" id="js-down">下载excel</button>
+                </div>
+            </form>
+        </div>
+        <div class="btn-controls clearfix">
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><span class="text-primary">该时间段交易总额:</span>{$sum.money|default=0}元</div>
+            <div class="panel-heading"><span class="text-primary">用户余额总额:</span>{$total_balance}元</div>
+            <table class="table table-striped table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>订单创建时间</th>
+                    <th>发起用户</th>
+                    <th>手机号</th>
+                    <th>订单编号</th>
+                    <th>订单金额</th>
+                    <th>订单类型</th>
+                    <th>支付方式</th>
+                </tr>
+                </thead>
+                <tbody>
+                {empty name="list"}
+                <tr>
+                    <td colspan="10" class="text-center">{:L('NO_DATA')}</td>
+                </tr>
+                {else/}
+                {volist name="list" id="vo" key='k'}
+                <tr class="vertical-align-middle">
+                    <td>{$k}</td>
+                    <td>{$vo.create_time|date="Y-m-d H:i:s",###}</td>
+                    {empty name="vo.user_info"}
+                    <td class="text-warning">
+                        <img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],60)}" />
+                        该用户已被删除</td>
+                    <td class="text-warning">该用户已被删除</td>
+                    {else/}
+                    <td>
+                        <a href="{:url('Member/view',array('id'=>$vo['uid']))}?ret_url=__SELF__">
+                            <img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],60)}" />
+                            <div style="width: 120px; display: inline-block"> {$vo.user_info.nickname}</div></a>
+
+                    </td>
+                    <td>{$vo.user_info.mobile}</td>
+                    {/empty}
+                    <td>
+                        {switch name="vo.order_type"}
+                        {case value="商城订单"}<a href="{:url('orders/view',['id'=>$vo.id])}">{$vo.order_code}</a> {/case}
+                        {case value="维修订单"}<a href="{:url('repair/order',array('order_code'=>$vo['order_code']))}">{$vo.order_code}</a> {/case}
+                        {case value="充值订单"}<a href="{:url('withdraw/order',array('order_code'=>$vo['order_code']))}">{$vo.order_code}</a> {/case}
+                        {/switch}
+                    </td>
+                    <td><div style="width: 125px;">{$vo.money|number_format=2}</div> </td>
+                    <td>{$vo.order_type}</td>
+                    <td><div style="width: 100px">{$vo.pay_type}</div> </td>
+                </tr>
+                {/volist}
+                {/empty}
+                </tbody>
+            </table>
+            <div>{$show}</div>
+        </div>
+    </div>
+    <!-- END admin-main-content -->
+    <!-- Modal -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+<script>
+    $(function() {
+        $('#js-down').click(function(){
+            $('input[name=down]').val(1);
+        });
+        $('#js-search').click(function(){
+            $('input[name=down]').val(0);
+        });
+        $('#js-start,#js-end').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+            allowBlank : true,
+        });
+        //选择用户 ajax start
+        $("#user_select2").select2({
+            width:280,
+            placeholder: "输入用户id或昵称查询",
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data, params) {
+                    if(!data.data){
+                        data.data = new Array();
+                        data.data['nodata']="无相关数据";
+                    }
+                    return {
+                        results: data.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                return repo.nickname ? '[id:'+repo.id+'] '+repo.nickname : repo.text;
+            },
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                if(repo.nodata)   return repo.nodata;
+                // var markup = '<div>'+repo.nickname+'</div>';
+                var markup = '<div><img src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+                return $(markup);
+            },
+        });
+        //选择用户 ajax end
+    });
+</script>
+
+{/block}

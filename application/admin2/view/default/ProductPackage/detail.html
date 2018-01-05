@@ -1,0 +1,161 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+	<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+	<style type="text/css">
+		.main-c{
+			width:900px;
+			margin: 50px auto;
+		}
+		.main-img{
+			width: 300px;
+			height: 85px;
+		}
+		.sp-img{
+			width: 60px;
+			height: 60px;
+		}
+	</style>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<div class="col-main">
+				<div class="main-hd">
+					<h2>套餐详情</h2>
+				</div>
+				<div class="main-bd clearfix" style="padding: 0 10px;margin-top: 0px;">
+					<div class="main-c">
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">套餐主图:</label>
+							<div class="col-lg-10 col-md-10">
+								<img class="main-img" src="{:getImgUrl($package_info['package_img'])}&size=400">
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">套餐名称:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>{$package_info.package_name}</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">创建时间:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>{$package_info.create_time|date="Y-m-d H:i:s",###}</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">结束时间:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>{$package_info.end_time|date="Y-m-d H:i:s",###}</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">套餐价格:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>{$package_info.package_price|default="0"}</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">套餐描述:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>{$package_info.package_desc|default="无"}</span>
+							</div>
+						</div>
+						<div class="form-group col-lg-12 col-md-12 clearfix">
+							<label class="control-label col-lg-2 col-md-2">套餐类型:</label>
+							<div class="col-lg-10 col-md-10">
+								<span>
+									<switch name="package_info.dt_type">
+										<case value="0">默认套餐</case>
+										<case value="1">搭配购套餐</case>
+										<default />
+									</switch>
+								</span>
+							</div>
+						</div>
+						<div class="item-list">
+							<table class="table table-striped table table-hover  table-condensed">
+								<thead>
+								<tr>
+									<th>
+										商品ID
+									</th>
+									<th>
+										商品主图
+									</th>
+									<th>
+										商品名称
+									</th>
+									<th>
+										规格图
+									</th>
+
+									<th>
+										商品规格
+									</th>
+									<th>
+										是否主商品
+									</th>
+									<th>
+										操作
+									</th>
+								</tr>
+								</thead>
+								<tbody>
+								<empty name="package_info.items">
+									<tr>
+										<td colspan="7" class="text-center">套餐中无任何商品</td>
+									</tr>
+									{else/}
+									<volist name="package_info.items" id="vo">
+										<tr>
+											<td>{$vo.p_id}</td>
+											<td><img class="sp-img" src="{:getImgUrl($vo['img_id'])}&size=60"></td>
+											<td>{$vo.product_name}</td>
+											<td><img class="sp-img" src="{:getImgUrl($vo['icon_url'])}&size=60"></td>
+											<td>
+												<if condition="$vo.sku_id eq 0">
+													*包含全部规格*
+													{else/}
+													{$vo.sku_desc}
+												</if>
+											</td>
+											<td>
+												<eq name="vo.is_main" value="1">
+													是
+													{else/}
+													否
+												{/eq}
+											</td>
+											<td>
+												无
+											</td>
+										</tr>
+
+									{/volist}
+								{/empty}
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="form-group col-lg-12 col-md-12 clearfix tool-bar text-center border">
+						<a href="{:url('productPackage/index')}" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+
+{/block}

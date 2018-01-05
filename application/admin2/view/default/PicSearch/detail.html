@@ -1,0 +1,50 @@
+{extend name="default/template/base_index"/}
+
+{block name="area_header"}
+    <link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+    <style>
+        .img{
+            float: left;
+            width:450px;
+            height:300px;
+            margin: 10px;
+        }
+        div.desc{
+            clear:both ;
+        }
+    </style>
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content col-lg-12 col-md-12">
+            {include file="default/Widget/breadcrumb" /}
+            <volist name="result" id="vvo">
+                <div class="wrapper">
+                    <h3>发布详情：<strong>{$store.name}</strong></h3>
+                    <p>发布人：{$username} 联系方式：{$vvo.contact_addr}</p>
+                    <volist name="imgs" id="vo">
+                        <a href="{:getImgUrl($vo)}" target="_blank" title="点击查看原图" >
+                            <img  class="img" src="{:getImgUrl($vo)}"/>
+                        </a>
+                    {/volist}
+                </div>
+                <div class="desc clearfix">
+                    <h3>要求说明：</h3>
+                    <p>
+                        {$vvo.desc}
+                    </p>
+                </div>
+            {/volist}
+        </div>
+        <div class="col-md-3 col-md-offset-8 ctl">
+            <a href="{:url('PicSearch/del',array('id'=>$id))}" class="btn btn-danger btn-sm ajax-get confirm" target="_self"><i class="fa fa-trash-o"></i> 删除</a>
+            <a href="{:url('PicSearch/index')}" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i> 返回</a>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}

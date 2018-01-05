@@ -1,0 +1,51 @@
+{extend name="template/base" /}
+
+{block name="body"}
+<div class="title">  <h1>BOYE测试 <span>{$type?:'NO_API...'}</span></h1>  </div>
+<div class="content am-panel">
+ <form enctype="multipart/form-data" action="{$post_url?:''}" method="post" class="am-form"  target="_blank">
+     <div class="am-form-group">
+      <label for="type">上传类型</label>
+      <select id="type" name="type">
+        <option value="avatar">avatar=头像</option>
+        <!-- <option value="photo_search">photo_search=图片搜索</option> -->
+        <option value="id_certs">id_certs=身份证</option>
+        <option value="driver_cert">driver_cert=行驶证</option>
+        <option value="other">other=其它</option>
+      </select>
+      <span class="am-form-caret"></span>
+    </div>
+    <div class="am-form-group">
+     	<label for="uid">用户ID</label>
+      <input type="text" name="uid" value="38" id="uid"/>
+    </div>
+    <div class="am-form-group">
+      <label for="image">文件选择</label>
+      <input type="file" name="image" id="image"/>
+    </div>
+    <button type="submit" class="am-btn">上传单文件</button>
+</form>
+<div class="am-margin-lg"></div>
+<div class="am-margin-lg"></div>
+ <form enctype="multipart/form-data" action="{$post_url?:''}" method="post" class="am-form"  target="_blank">
+     <div class="am-form-group">
+      <label for="type">上传类型</label>
+      <select id="type" name="type">
+        <option value="other">other=其它</option>
+        <option value="id_certs">id_certs=身份证</option>
+      </select>
+      <span class="am-form-caret"></span>
+    </div>
+    <div class="am-form-group">
+      <label for="uid">用户ID</label>
+      <input type="text" name="uid" value="38" id="uid"/>
+    </div>
+    <div class="am-form-group">
+      <label for="image">文件选择</label>
+      <input type="file" name="image[]" id="image"/>
+      <input type="file" name="image[]" id="image"/>
+    </div>
+    <button type="submit" class="am-btn">上传多文件</button>
+</form>
+</div>
+{/block}

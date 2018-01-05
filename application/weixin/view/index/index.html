@@ -1,0 +1,162 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/index/style.css">
+{/block}
+{block name="body"}
+<div class="index-box">
+    <!--<div class="index-bar">
+        <div class="index-search">
+            <div class="weui-search-bar" id="searchBar">
+                <form class="weui-search-bar__form">
+                    <div class="weui-search-bar__box">
+                        <i class="weui-icon-search"></i>
+                        <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+                        <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+                    </div>
+                    <label class="weui-search-bar__label" id="searchText">
+                        <i class="weui-icon-search"></i>
+                        <span>搜索</span>
+                    </label>
+                </form>
+                <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+            </div>
+        </div>
+        &lt;!&ndash;<div class="index-scan">
+            <img src="__IMG__/index/scan.png">
+        </div>&ndash;&gt;
+    </div>-->
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><div class="swiper-img-box"><img src="__IMG__/index/banner-1.png" alt=""></div></div>
+            <div class="swiper-slide"><div class="swiper-img-box"><img src="__IMG__/index/banner-2.png" alt=""></div></div>
+            <div class="swiper-slide"><div class="swiper-img-box"><img src="__IMG__/index/banner-3.png" alt=""></div></div>
+        </div>
+    </div>
+    <div class="index-btn">
+        <a href="{:url('shop/product_list',array('product_type'=>3))}">
+            <div class="index-btn-item">
+                <div class="index-btn-item-pic"><img src="__IMG__/index/icon1.png" alt=""></div>
+                <div class="index-btn-item-text">套餐</div>
+            </div>
+        </a>
+        <a href="{:url('shop/product_list',array('product_type'=>2))}">
+            <div class="index-btn-item">
+                <div class="index-btn-item-pic"><img src="__IMG__/index/icon2.png" alt=""></div>
+                <div class="index-btn-item-text">食养臻品</div>
+            </div>
+        </a>
+        <a href="{:url('shop/product_list',array('product_type'=>1))}">
+            <div class="index-btn-item">
+                <div class="index-btn-item-pic"><img src="__IMG__/index/icon3.png" alt=""></div>
+                <div class="index-btn-item-text">食养家居</div>
+            </div>
+        </a>
+        <!--<div class="index-btn-item">
+            <div class="index-btn-item-pic"><img src="__IMG__/index/icon2.png" alt=""></div>
+            <div class="index-btn-item-text">功能4</div>
+        </div>-->
+    </div>
+    <div class="index-type1">
+        <a href="{:url('shop/product_detail',array('pid'=>$meal.0.id))}">
+            <div class="index-type1-left">
+                <div class="index-type1-left-img">
+                    <img src="{:getImgUrl($meal.0.img_follow.img_id)}" alt="">
+                </div>
+                <div class="index-type1-left-title">{:mb_substr($meal[0]['name'],0,4)}|{$meal.0.name|mb_substr=###,4}</div>
+                <div class="index-type1-left-price">{$meal['0']['sku']['price']/100}积分</div>
+                <!--<div class="index-type1-left-buy">
+                    <img src="__IMG__/index/gouwuche.png" alt="">
+                </div>-->
+            </div>
+        </a>
+        <a href="{:url('shop/product_detail',array('pid'=>$meal.1.id))}">
+            <div class="index-type1-right">
+                <div class="index-type1-right-img">
+                    <img src="{:getImgUrl($meal.1.img_follow.img_id)}" alt="">
+                </div>
+                <div class="index-type1-right-right">
+                    <div class="index-type1-right-right-title">{:mb_substr($meal[1]['name'],0,4)}<br/>{$meal.1.name|mb_substr=###,4}</div>
+                    <div class="index-type1-right-right-price">{$meal['1']['sku']['price']/100}积分</div>
+                </div>
+            </div>
+        </a>
+        <a href="{:url('shop/product_detail',array('pid'=>$meal.2.id))}">
+            <div class="index-type1-right">
+                <div class="index-type1-right-img">
+                    <img src="{:getImgUrl($meal.2.img_follow.img_id)}" alt="">
+                </div>
+                <div class="index-type1-right-right">
+                    <div class="index-type1-right-right-title">{:mb_substr($meal[2]['name'],0,4)}<br/>{$meal.2.name|mb_substr=###,4}</div>
+                    <div class="index-type1-right-right-price">{$meal['2']['sku']['price']/100}积分</div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="index-type3">
+        <a href="{:url('shop/product_detail',array('pid'=>$goods.0.id))}">
+            <div class="index-type1-left">
+                <div class="index-type1-left-img">
+                    <img src="{:getImgUrl($goods.0.img_follow.img_id)}" alt="">
+                </div>
+                <div class="index-type1-left-title">{$goods.0.name}</div>
+                <div class="index-type1-left-price">{$goods['0']['sku']['price']/100}积分</div>
+                <!--<div class="index-type1-left-buy">
+                    <img src="__IMG__/index/gouwuche.png" alt="">
+                </div>-->
+            </div>
+        </a>
+        <a href="{:url('shop/product_detail',array('pid'=>$goods.1.id))}">
+            <div class="index-type1-left">
+                <div class="index-type1-left-img">
+                    <img src="{:getImgUrl($goods.1.img_follow.img_id)}" alt="">
+                </div>
+                <div class="index-type1-left-title">{$goods.1.name}</div>
+                <div class="index-type1-left-price">{$goods['1']['sku']['price']/100}积分</div>
+                <!--<div class="index-type1-left-buy">
+                    <img src="__IMG__/index/gouwuche.png" alt="">
+                </div>-->
+            </div>
+        </a>
+    </div>
+
+    {volist name='product' id='vo'}
+    <a href="{:url('shop/product_detail',array('pid'=>$vo.id))}">
+        <div class="index-product">
+            <div class="index-product-img">
+                <img src="{:getImgUrl($vo.img_main.img_id)}" alt="">
+            </div>
+            {if condition='($vo.type eq 1) OR ($vo.type eq 2)'}
+            <div class="index-product-title">{$vo.name}</div>
+            {else /}
+            <div class="index-product-title">{:mb_substr($vo.name,0,4)}|{$vo.name|mb_substr=###,4}</div>
+            {/if}
+            <div class="index-product-price">{$vo['sku']['price']/100}积分</div>
+            <!--<div class="index-product-buy">
+                <img src="__IMG__/index/gouwuche.png" alt="">
+            </div>-->
+        </div>
+    </a>
+    {/volist}
+
+</div>
+{include file="template/nav_bar"}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+    $(function () {
+        /*var aa = {:json_encode($product,1)};
+        console.log(aa);*/
+        //调用轮播图
+        var mySwiper = $('.swiper-container').swiper({
+            autoplay : 2000,
+            loop: true
+            //其他设置
+        });
+        /*$('.index-btn').touchstart(function(){
+
+        })*/
+    })
+</script>
+{/block}

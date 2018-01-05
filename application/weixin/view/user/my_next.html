@@ -1,0 +1,61 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_next/style.css">
+{/block}
+{block name="body"}
+<div class="weui-search-bar" id="searchBar">
+    <form class="weui-search-bar__form">
+        <div class="weui-search-bar__box">
+            <i class="weui-icon-search"></i>
+            <input type="search" class="weui-search-bar__input" id="searchInput" placeholder="搜索" required="">
+            <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+        </div>
+        <label class="weui-search-bar__label" id="searchText">
+            <i class="weui-icon-search"></i>
+            <span>搜索</span>
+        </label>
+    </form>
+    <a href="javascript:" class="weui-search-bar__cancel-btn" id="searchCancel">取消</a>
+</div>
+<div class="my-next-box">
+    {volist name='lower' id='vo'}
+    <div class="my-next-item">
+        <a href="{:url('user/my_next',array('uid'=>$vo.uid,'sign'=>$sign))}">
+            <div class="my-next-item-img"><img src="{$vo.head}" alt=""></div>
+            <div class="my-next-item-mid">
+                <div class="my-next-item-user">{$vo.name}</div>
+                <div class="my-next-item-time">tel:{$vo.mobile}</br>{$vo.create_time}</div>
+            </div>
+            <div class="my-next-item-right">
+                {if condition = '$vo.group_id == 1'}
+                <div class="my-next-item-right-img"><img src="__IMG__/user/tianshi.png" alt=""></div>
+                <div class="my-next-item-right-text">天使用户</div>
+                {elseif condition = '$vo.group_id == 2' /}
+                <div class="my-next-item-right-img"><img src="__IMG__/user/jingying.png" alt=""></div>
+                <div class="my-next-item-right-text">精英用户</div>
+                {elseif condition = '$vo.group_id == 3'/}
+                <div class="my-next-item-right-img"><img src="__IMG__/user/lingdao.png" alt=""></div>
+                <div class="my-next-item-right-text">领袖用户</div>
+                {elseif condition = '$vo.group_id == 5'/}
+                <div class="my-next-item-right-img"><img src="__IMG__/user/putong.png" alt=""></div>
+                <div class="my-next-item-right-text">普通用户</div>
+                {/if}
+            </div>
+        </a>
+    </div>
+    {/volist}
+    {if condition='$lower == "" AND $is_me == "1"'}
+    <a href="{:url('user/two_code')}">
+        <div class="weui-btn weui-btn_primary my-next-btn">现在就去推广</div>
+    </a>
+    {/if}
+</div>
+{include file="template/nav_bar"}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+
+</script>
+{/block}

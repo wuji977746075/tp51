@@ -1,0 +1,50 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<style>
+.customer-phone{
+    text-align: center;
+    padding:10px;
+    font-size:20px;
+}
+.customer-phone a{
+    text-decoration: underline;
+}
+.customer-background{
+    width:100%;
+    height:100%;
+    position: absolute;
+    left: 0;
+    top:0;
+    z-index: -1;
+}
+.customer-background img{
+    width:100%;
+    height: 100%;
+}
+.customer-box{
+    padding-top: 40%;
+}
+</style>
+{/block}
+{block name="body"}
+<div class="customer-background">
+    <img src="__IMG__/webview/background.png" alt="">
+</div>
+<div class="customer-box">
+    <div class="customer-phone">
+        <span>产品售后电话：</span><br/>
+        <a href="tel:4001785566">4001785566</a>
+    </div>
+    <div class="customer-phone">
+        <span>服务电话：</span><br/>
+        <a href="tel:0519-85888888">0519-85888888</a><br/>
+        <a href="tel:0519-85888888">0519-83333333</a>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript">
+
+</script>
+{/block}

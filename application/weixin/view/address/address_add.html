@@ -1,0 +1,122 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/address/add_address.css">
+
+{/block}
+{block name="body"}
+<div class="form">
+    <div class="weui-cells weui-cells_form" style="margin-top: 0">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">收货人</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" id="name" placeholder="收货人姓名" >
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" id="phone" placeholder="11位手机号码">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label for="name" class="weui-label">选择省市区</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="select" type="text" placeholder="请选择所在省市区" value="北京 北京 东城">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">详细地址</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="detail" type="text" placeholder="使用百度地图选择经纬度">
+            </div>
+            <div class="weui-cell__ft" style="font-size: 20px">
+                <i class="anticon anticon-environment" id="reset"></i>
+            </div>
+        </div>
+
+        <div class="weui-cell weui-cell_switch">
+            <div class="weui-cell__bd">设为默认</div>
+            <div class="weui-cell__ft">
+                <label for="switchCP" class="weui-switch-cp">
+                    <input id="switchCP" class="weui-switch-cp__input" type="checkbox" checked="checked">
+                    <div class="weui-switch-cp__box"></div>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-btn">
+        <button id="submit" class="weui-btn weui-btn_primary">保存</button>
+    </div>
+</div>
+{include file="address/map"/}
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+
+    $.toast.prototype.defaults.duration = 1500;
+    $("#select").cityPicker({
+        title: "请选择所在省市区",
+        onChange: function (picker, values, displayValues) {
+            /*console.log(values, displayValues);*/
+        },
+        onClose: function(){
+            var keyword =  $("#select").val();
+            console.log(keyword);
+            local.search(keyword);
+            setTimeout(function(){
+                map.setZoom(12);
+            }, 1000);
+        }
+    });
+    $("#select").click(function(){
+        $("input").blur();
+    });
+    $("#allmap").click(function(){
+        $("input").blur();
+    });
+    $('#submit').click(function () {
+        var $phone = $('#phone');
+        if(!$phone.val()||isNaN($phone.val())||$phone.val().length != 11){
+            $.toast("输入11位手机号", "cancel");
+        }else if(!$('#name').val()||!$('#select').val()||!$('#detail').val()){
+            $.toast("请完成表单", "cancel");
+        }else{
+            var $select = $('#select');
+            var address = $select.val();
+            address = address.split(' ');
+            var codes = $select.attr('data-codes');
+            codes = codes.split(',');
+
+            var body  ={
+                contactname:$('#name').val(),
+                mobile:$phone.val(),
+                detailinfo:$('#detail').val(),
+                default: $('#switchCP').is(':checked') ? 1 : 0,
+                province:address[0],
+                city:address[1],
+                area:address[2],
+                provinceid:codes[0],
+                cityid:codes[1],
+                areaid:codes[2],
+                lng:sessionStorage.lng,
+                lat:sessionStorage.lat,
+            };
+            var $this = $(this);
+            $this.addClass('weui-btn_disabled').attr('disabled','disabled');
+            ajax_post(getBaseUrl()+'/weixin/address/address_add',jQuery.param(body),{
+                success:function(data){
+                    $.toptip(data.msg, 'success');
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                },
+                error:function(data){
+                    $.toptip(data.msg, 'error');
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                }
+            })
+        }
+
+    })
+</script>
+{/block}

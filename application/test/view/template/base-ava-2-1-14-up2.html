@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+{block name="meta"}
+<title>test</title>
+<link rel="stylesheet" href="__CSS__ava-test.css">
+{/block}
+    <style>
+    .am-g{ padding-bottom: 40px; }
+    .am-g>div{ overflow-x:scroll; }
+    .am-dropdown-content{margin-top:0 !important;top:30px;}
+    footer.am-footer{ width: 100%;text-align: center;position: fixed;bottom: 0;background-color: rgba(255,255,255,0);z-index: -1; }
+    </style>
+    <!-- amazeui css body:relative : bug -->
+  <link rel="stylesheet" href="__CDN__amazeui/2.6.2/css/amazeui.css">
+  <script src="__CDN__amazeui/2.6.2/js/jquery.min.js"></script>
+  <script src="__CDN__amazeui/2.6.2/js/amazeui.min.js"></script>
+  <script src="__CDN__avalon.js/2.1.14/avalon.modern.js"></script>
+{block name="head"}
+{/block}
+
+</head>
+<body id="style-5">
+{include file="template/header"}
+
+{block name="body"}
+<div class="title"><h1>BOYE测试<span>{$type?:'NO_API'}</span></h1></div>
+<div class="am-g"  ms-controller="test">
+
+    <div class="am-u-sm-5">
+        <label>操作参数 【无key添加；有key修改,无value删除】</label>
+        <div class="am-form-inline">
+          <div class="am-form-group">
+            <input type="text" class="am-form-field" id="key"  ms-duplex="@inp[0] | change" placeholder="参数名">
+          </div>
+          <div class="am-form-group">
+            <input type="text" class="am-form-field" id="val" ms-on-keydown="@add | enter" ms-duplex="@inp[1]" placeholder="参数值">
+          </div>
+          <button class="am-btn am-btn-primary" ms-click="@add">确定</button>
+          <div class="am-form-group am-padding">[[@msg]]</div>
+        </div>
+        <button class="am-btn am-btn-primary" ms-click="@sub">启动</button>
+        <button class="am-btn" ms-click="@ret">重置</button>
+        <p></p>
+        <table class="am-table am-table-hover am-table-bordered am-table-radius">
+            <thead><tr><th>参数名</th><th>参数值</th><th>参数说明[**为必选]</th></tr></thead>
+            <tbody>
+            <tr ms-for="(k,v) in @param" ms-click="@cha($event,k)">
+                <td ms-for="e in v" ms-html="e | sanitize"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="am-u-sm-7">
+        <label>请求结果</label><br />
+        <button class="am-btn showType" data-type="json" ms-click="@show('json',$event)">json</button>
+        <button class="am-btn showType" data-type="xml"  ms-click="@show('xml',$event)">xml</button>
+        <button class="am-btn showType" data-type="array" ms-click="@show('array',$event)">array</button>
+        <!-- <p ms-html="@htm | sanitize">view bug</p> -->
+        <block id="htm"></block>
+    </div>
+</div>
+{/block}
+
+{include file="template/footer"}
+<script>
+   //格式化代码函数,已经用原生方式写好了不需要改动,直接引用就好
+    String.prototype.removeLineEnd = function () {
+        return this.replace(/(<.+?\s+?)(?:\n\s*?(.+?=".*?"))/g, '$1 $2')
+    }
+    function formatXml(text) {
+        //去掉多余的空格
+        text = '\n' + text.replace(/(<\w+)(\s.*?>)/g, function ($0, name, props) {
+                    return name + ' ' + props.replace(/\s+(\w+=)/g, " $1");
+                }).replace(/>\s*?</g, ">\n<");
+
+        //把注释编码
+        text = text.replace(/\n/g, '\r').replace(/<!--(.+?)-->/g, function ($0, text) {
+            var ret = '<!--' + escape(text) + '-->';
+            //alert(ret);
+            return ret;
+        }).replace(/\r/g, '\n');
+
+        //调整格式
+        var rgx = /\n(<(([^\?]).+?)(?:\s|\s*?>|\s*?(\/)>)(?:.*?(?:(?:(\/)>)|(?:<(\/)\2>)))?)/mg;
+        var nodeStack = [];
+        var output = text.replace(rgx, function ($0, all, name, isBegin, isCloseFull1, isCloseFull2, isFull1, isFull2) {
+            var isClosed = (isCloseFull1 == '/') || (isCloseFull2 == '/' ) || (isFull1 == '/') || (isFull2 == '/');
+            //alert([all,isClosed].join('='));
+            var prefix = '';
+            if (isBegin == '!') {
+                prefix = getPrefix(nodeStack.length);
+            }
+            else {
+                if (isBegin != '/') {
+                    prefix = getPrefix(nodeStack.length);
+                    if (!isClosed) {
+                        nodeStack.push(name);
+                    }
+                }
+                else {
+                    nodeStack.pop();
+                    prefix = getPrefix(nodeStack.length);
+                }
+
+            }
+            var ret = '\n' + prefix + all;
+            return ret;
+        });
+
+        var prefixSpace = -1;
+        var outputText = output.substring(1);
+        //alert(outputText);
+
+        //把注释还原并解码，调格式
+        outputText = outputText.replace(/\n/g, '\r').replace(/(\s*)<!--(.+?)-->/g, function ($0, prefix, text) {
+            //alert(['[',prefix,']=',prefix.length].join(''));
+            if (prefix.charAt(0) == '\r')
+                prefix = prefix.substring(1);
+            text = unescape(text).replace(/\r/g, '\n');
+            var ret = '\n' + prefix + '<!--' + text.replace(/^\s*/mg, prefix) + '-->';
+            //alert(ret);
+            return ret;
+        });
+
+        return outputText.replace(/\s+$/g, '').replace(/\r/g, '\r\n');
+    }
+    function getPrefix(prefixIndex) {
+        var span = '    ';
+        var output = [];
+        for (var i = 0; i < prefixIndex; ++i) {
+            output.push(span);
+        }
+
+        return output.join('');
+    }
+var s = {array:'<pre>先请求</pre>',json:'先请求',xml:'先请求'}; //global var ,test only
+var reg = /^\w+(\[(\w+)?\])?$/;
+var logs = {$logs?'true':'false'};//日志开关
+var progress = $.AMUI.progress;
+function log(){
+    if(logs){
+    if(arguments.length == 1) console.log(arguments[0]);
+    else if(arguments.length == 2) console.log(arguments[0],arguments[1]);
+    else if(arguments.length == 3) console.log(arguments[0],arguments[1],arguments[2]);
+    else console.log(arguments);
+    }
+};
+function outtime(t){
+  if(!t) t = 1000; //fix qq browser bug
+  // setTimeout(function(){
+  //     //超时
+  //     progress.done();
+  // },t);
+}
+function handlepost(data,type,$this){
+    s = data;
+    show(type,$this);
+    // var type;
+    // log('post-return-data:',data);
+    // type = data.toString();
+    // if(type == "[object Object]"){
+    //     //json
+    //     data = "<pre>" + JSON.stringify(data,null,"  ") + "</pre>";
+    // }else if(type == "[object XMLDocument]"){
+    //     //xml
+    //     data = "<pre>" + "xml-format-not-ready-yet" + "</pre>";
+    // }else{
+    //     //array string
+    //     data = data.replace(/=&amp;gt;/g,'=>');
+    //     data = data.replace(/&lt;pre&gt;/g,'\n&lt;pre&gt;\n');
+    //     if (data.indexOf("<!DOCTYPE html>")>0){
+    //         vm.msg = '系统错误';
+    //         // $('#err-modal .am-modal-bd').html(data);
+    //         // $('#err-modal').modal('open');
+    //     }else{
+    //         vm.msg = 'OK !';
+    //     }
+    // }
+    // // vm.htm = data; //view bug
+    // $('#htm').html(data);
+    progress.done();
+}
+function show(type,$this){
+    $this.addClass('am-btn-primary').siblings('button').removeClass('am-btn-primary');
+    if(type == 'array'){
+        $('#htm').html(s[type]);
+    }else if(type == 'json'){
+        $('#htm').html("<pre>"+JSON.stringify(JSON.parse(s[type]),null,"  ")+"</pre>");
+    }else if(type == 'xml'){
+        $('#htm').html("<pre></pre>").children('pre').text(formatXml(s[type]));
+    }
+}
+$(function(){  $('#key').focus(); })
+//avalon setting
+avalon.config({ interpolate:["[[","]]"],debug:logs });
+</script>
+{block name="foot"}
+
+<script>
+var format = "{$format ?: 'array'}";
+//set viewModel
+var vm = avalon.define({
+ $id: "test",
+ htm:'',
+ inp:['','',''],
+ showType:format,
+ state:'',
+ param: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ msg:"相安无事",
+ reparam: [
+    {foreach $field as $v}
+    ['{$v[0]}','{$v[1]}','{$v[2]}'],
+    {/foreach}
+ ],
+ ret:function(){
+    vm.param = vm.reparam;
+    vm.msg   = '勿忘初心，回归本源';
+ },
+ show: function(type,e){
+    show(type,$(e.target));
+ },
+ add:function(){
+    var len = vm.param.length;
+    var inp = vm.inp;
+    if(!inp[0]){ vm.msg = '无效操作';return; }else{
+        log('fun-add:',inp.$model);
+        $('#key').focus();
+        for (var i = 0; i < len; i++) {
+            if(vm.param[i][0]==inp[0]){
+                if(inp[1].length){
+                    if(inp[1]!=vm.param[i][1]){
+                        vm.msg = '修改参数:'+inp[0]+'='+inp[1];
+                        vm.param[i].set(1,inp[1],vm.param[i][2]);
+                    }else{ vm.msg = '无用操作'; }
+                    $('tbody>tr').stop().removeClass().eq(i).addClass('am-primary');
+                }else{
+                    vm.msg = '删除参数:'+inp[0];
+                    vm.param.splice(i,1);
+                }
+                vm.inp = ['','',''];
+                return;
+            }
+        };
+        if(!inp[1]){ vm.msg = '无效操作';return; }
+        vm.msg = '添加参数:'+inp[0]+'='+inp[1];
+        vm.param.push([inp[0],inp[1],'']);
+        vm.inp = ['','',''];
+        //等待vm-ready
+        setTimeout(function(){$('tbody>tr').stop().removeClass().last().addClass('am-primary');},200);
+        return;
+    }
+ },
+ sub:function(){
+    progress.start();
+    var param = vm.param.$model,dat={};
+    var len  = param.length;
+    var p,k,i1,i2,k1,k2;
+    for (var i = 0; i < len; i++) {
+        k = param[i][0];
+        if(k.search(reg)<0) alert('参数名格式错误');
+        // 暂时后端处理数组
+        i1 = k.search(/\[/);
+        if(i1>0){
+          //数组
+          i2=k.search(/\]/);
+          k1=k.slice(0,i1); //key
+          k2=k.slice(i1+1,i2); //value
+          if(k2 == ''){
+            if(dat[k1] instanceof Array){ }else{
+              dat[k1] = [];
+            }
+            dat[k1].push(param[i][1]);
+          }else{
+            if(dat[k1] instanceof Object){ }else{
+              dat[k1] = { };
+            }
+            dat[k1][k2] = param[i][1];
+          }
+        }else{
+          //字符串
+          dat[k] = param[i][1];
+        }
+    };
+    for(i in dat){
+        p = dat[i];
+        if(p instanceof Object){
+            dat[i] = JSON.stringify(p);
+        }
+    }
+    log('vm-sub===',dat);
+    vm.msg = '提交请求';
+    $.post('',dat,function(data) { //{ data:JSON.stringify(dat) }
+        // s = data;
+        handlepost(data,vm.showType,$('.showType[data-type='+vm.showType+']'));
+    });
+    outtime();
+ },
+ cha:function(e,k){
+    log('vm-cha',k,e);
+    var dat = vm.param[k];
+    vm.msg = '准备操作: '+dat[0];
+    vm.inp = [];
+    $('tbody>tr').stop().removeClass().eq(k).addClass('am-primary');
+    vm.inp.pushArray([dat[0],dat[1]]);
+    $('#val').focus();
+ },
+});
+// avalon.scan();
+$(function(){
+    var timer,delay=200;
+    $('.am-dropdown').hover(function(){
+        clearTimeout(timer);
+        $this = $(this);
+        timer = setTimeout(function(){
+            $this.dropdown('open'); // 延时打开单个
+        },delay);
+
+    },function(){
+        clearTimeout(timer);
+        $('.am-dropdown').dropdown('close'); // 关闭所有
+    })
+})
+
+</script>
+{/block}
+</body>
+</html>

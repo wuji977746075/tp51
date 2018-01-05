@@ -1,0 +1,149 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/submit_order/index.css">
+{/block}
+{block name="body"}
+<div class="submit-order">
+    <div class="submit-order-img"><img src="__IMG__/shop/submit-order.png"></div>
+    <div class="submit-order-address" data-id="{$default}">
+        {notempty name="address_default"}
+        <div class="submit-order-address-left">
+            <div><span class="submit-order-address-name">{$address_default.contactname}</span><span class="submit-order-address-phone">{$address_default.mobile}</span></div>
+            <div class="submit-order-address-detail">{$address_default.province}{$address_default.city}{$address_default.area}{$address_default.detailinfo}</div>
+        </div>
+        <div class="submit-order-address-right anticon anticon-right"></div>
+        {/notempty}
+    </div>
+    {assign name="total_price" value="0" /}
+    <input type="hidden" id="cart_ids" value="{$cart_ids}">
+    {volist name="cart_info" id="vo"}
+    <div class="submit-order-product" data-id="{$vo.id}">
+        <div class="submit-order-product-left">{$vo.name}</div>
+        <div class="submit-order-product-right">
+            <div class="submit-order-product-money">￥{$vo.price|number_format=2}</div><br/>
+            <div class="submit-order-product-num">x{$vo.count}</div>
+        </div>
+    </div>
+    {assign name="total_price" value="$vo.price * $vo.count + $total_price" /}
+    {/volist}
+
+    <div class="submit-order-item">
+        <div class="submit-order-item-left">运费</div>
+        <div class="submit-order-item-right">包邮</div>
+    </div>
+    <div class="submit-order-item">
+        <div class="submit-order-item-left">总计</div>
+        <div class="submit-order-item-right">￥{$total_price}</div>
+    </div>
+</div>
+<div class="submit-order-btn">
+    <div class="submit-order-btn-left">总计： <span>￥{$total_price}</span></div>
+    <button class="submit-order-btn-right">去支付</button>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+    var pay_order = function(address_id,cart_ids){
+        if(address_id==''){
+            $.toast('请选择收货地址', "cancel");
+            return;
+        }
+
+        var form = $('<form></form>');
+        var action =getBaseUrl() + '/shop/pay';
+        form.attr({action:action,method:'post',target:'_self'});
+        var address_input = $('<input type="text" name="address_id" />');
+        address_input.attr('value',address_id);
+        var ids_input = $('<input type="text" name="cart_ids" />');
+        ids_input.attr('value',cart_ids);
+        form.append(address_input);
+        form.append(ids_input);
+        $('body').append(form);
+        form.submit().remove();
+    };
+    $('.submit-order-btn-right').click(function(){
+        var address_id = $('.submit-order-address').attr('data-id');
+        var cart_ids = $('#cart_ids').val();
+        pay_order(address_id,cart_ids)
+    });
+    //选择地址
+    var addresss = {$address};
+    /*var addresss = [
+        {
+            id:1,
+            is_default:true,
+            name:'yy',
+            phone:'18969020145',
+            detail:'杭州江干区金沙天街5566号'
+        },
+        {
+            id:2,
+            is_default:false,
+            name:'hh',
+            phone:'18969020145',
+            detail:'都是法国的返回给任何人也特'
+        },
+        {
+            id:3,
+            is_default:false,
+            name:'nn',
+            phone:'18969020145',
+            detail:'规划是否为二位儿童体验日举办过'
+        }
+    ];*/
+    var ACTIONS = addresss.map(function(val){
+        if(val.is_default){
+            return(
+                    {
+                        text: '默认：'+val.name+','+val.phone+','+val.detail,
+                        className: "color-primary",
+                        onClick: function() {
+                            $(".submit-order-address-name").text(val.name);
+                            $(".submit-order-address-phone").text(val.phone);
+                            $(".submit-order-address-detail").text(val.detail);
+                            $('.submit-order-address').attr('data-id',val.id)
+                        }
+                    }
+            )
+        }else{
+            return(
+            {
+                text: val.name+','+val.phone+','+val.detail,
+                onClick: function() {
+                    $(".submit-order-address-name").text(val.name);
+                    $(".submit-order-address-phone").text(val.phone);
+                    $(".submit-order-address-detail").text(val.detail);
+                    $('.submit-order-address').attr('data-id',val.id)
+                }
+            }
+            )
+        }
+    });
+    ACTIONS.unshift(
+            {
+                text: "新增收货地址",
+                className: "bg-primary",
+                onClick: function() {
+                    window.location.href = 'https://api.ryzcgf.com/public/mobile.php/user/address_add.html';
+                }
+            }
+    );
+    $(".submit-order-address").click(function() {
+        $.actions({
+            title: "选择地址",
+            onClose: function() {
+
+            },
+            actions: ACTIONS
+        });
+        if(ACTIONS.length>5){
+            $('.weui-actionsheet').css('position','relative');
+        }
+        //更改主题色
+        $('.bg-primary').css('background','deepskyblue');
+        $('.color-primary').css('color','deepskyblue');
+    });
+</script>
+{/block}

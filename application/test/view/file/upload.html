@@ -1,0 +1,91 @@
+{extend name="template/base-ava-2-1-14" /}
+
+{block name="body"}
+<div class="title">
+  <h1>BOYE测试 <span>{$type?:'NO_API...'}</span></h1>
+</div>
+<style>
+  .am-panel{
+    margin: 20px auto;
+    width:1000px;
+  }
+</style>
+<div class="am-panel am-panel-default">
+  <div class="am-panel-hd"><label for="">单图片上传</label></div>
+  <div class="am-panel-bd">
+
+ <form enctype="multipart/form-data" action="{$post_url?:''}" method="post" class="am-form" target="_blank">
+     <div class="am-form-group">
+      **上传类型
+      <select id="type" name="type">
+        <option value="other">other=其它</option>
+        <option value="avatar">avatar=头像</option>
+        <option value="gallery">gallery=相册</option>
+        <option value="house">house=房源</option>
+        <option value="id">id=身份证</option>
+        <option value="broker">broker=经纪人名片</option>
+        <option value="alliance">alliance=联盟店水印</option>
+        <option value="property">property=房产证</option>
+        <option value="agent">agent=委托书</option>
+        <option value="shoufang">shoufang=收房合同</option>
+        <option value="worker">worker=维修师傅头像</option>
+        <option value="repair">repair=维修现场图片</option>
+        <option value="signature">signature=签名</option>
+
+      </select>
+      <span class="am-form-caret"></span>
+    </div>
+    <div class="am-form-group">
+      **用户ID
+      <input type="text" name="uid" value="{$field[0][1]?:''}" id="uid"/>
+    </div>
+    <div class="am-form-group">
+     	house_no (property/agent类型时需要)
+      <input type="text" name="house_no" value="{$field[2][1]?:''}" id="house_no"/>
+    </div>
+    <div class="am-form-group">
+      文件选择
+      <input type="file" name="image" id="image"/>
+    </div>
+    <button type="submit" class="am-btn">上传单文件</button>
+</form>
+</div>
+</div>
+
+<div class="am-panel am-panel-default">
+  <div class="am-panel-hd"><label for="">多图片上传</label></div>
+  <div class="am-panel-bd">
+ <form enctype="multipart/form-data" action="{$post_url?:''}" method="post" class="am-form"  target="_blank">
+     <div class="am-form-group">
+      **上传类型
+      <select id="type" name="type">
+        <option value="other">other=其它</option>
+        <option value="gallery">gallery=相册</option>
+        <option value="house">house=房源</option>
+        <option value="id">id=身份证</option>
+        <option value="broker">broker=经纪人名片</option>
+        <option value="repair">repair=维修现场图片</option>
+        <option value="property">property=房产证</option>
+        <option value="agent">agent=委托书</option>
+        <option value="shoufang">shoufang=收房合同</option>
+      </select>
+      <span class="am-form-caret"></span>
+    </div>
+    <div class="am-form-group">
+      **用户ID
+      <input type="text" name="uid" value="{$field[0][1]?:''}" id="uid"/>
+    </div>
+    <div class="am-form-group">
+      house_no (property/agent类型时需要)
+      <input type="text" name="house_no" value="{$field[2][1]?:''}" id="house_no"/>
+    </div>
+    <div class="am-form-group">
+      文件选择
+      <input type="file" name="image[]" id="image"/>
+      <input type="file" name="image[]" id="image"/>
+    </div>
+    <button type="submit" class="am-btn">上传多文件</button>
+</form>
+</div>
+</div>
+{/block}

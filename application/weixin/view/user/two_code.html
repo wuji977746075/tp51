@@ -1,0 +1,119 @@
+{extend name="template/base_default"}
+{block name="header"}
+<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/two_code/style.css">
+{/block}
+{block name="body"}
+<div class="two-code">
+    <div class="two-code-head">
+        <div class="two-code-head-img"><img src="{$user_Info.head}" alt=""></div>
+    </div>
+    <div class="two-code-name">{$user_Info.nickname}</div>
+    <div class="two-code-level">
+        <span>
+            {if condition = '$level == "健康天使"'}
+                <div class="two-code-level-pic"><img src="__IMG__/user/tianshi.png" alt=""></div>
+                {elseif condition = '$level == "健康精英"' /}
+                <div class="two-code-level-pic"><img src="__IMG__/user/jingying.png" alt=""></div>
+                {elseif condition = '$level == "健康领袖"'/}
+                <div class="two-code-level-pic"><img src="__IMG__/user/lingdao.png" alt=""></div>
+                {elseif condition = '$level == "注册会员"'/}
+                <div class="two-code-level-pic"><img src="__IMG__/user/putong.png" alt=""></div>
+            {/if}
+            {$level}
+        </span>
+    </div>
+    {if condition = '$level == "注册会员" OR $level == "非注册会员"'}
+        <div style="text-align: center;padding:0 5px">您不是代理商，目前无法推荐，请先购买套餐</div>
+    {else /}
+    <div class="two-code-erweima">
+        <div id="qrDiv" style="display: none"></div>
+        <div id="qrcodeid" class="two-code-erweima-img"></div>
+    </div>
+    <!--<div class="two-code-money">我已经有了5555.55元的成交额</div>-->
+    <div class="two-code-scan">微信扫码，加入德弘</div>
+    <!--<div id="two-code-btn">
+        <button class="weui-btn weui-btn_primary" >分享给朋友</button>
+    </div>-->
+    {/if}
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script>
+    {$config}
+    wx.ready(function () {
+        // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
+        var co = {:json_encode($spread_code)};
+        var head_url = {:json_encode($user_Info.head)};
+        wx.onMenuShareAppMessage({
+            title: '德弘大健康推荐',
+            link: co,
+            imgUrl: head_url,
+            trigger: function (res) {
+
+            },
+
+            success: function (res) {
+
+            },
+            cancel: function (res) {
+
+            },
+            fail: function (res) {
+                alert(JSON.stringify(res));
+            }
+        });
+    });
+    wx.error(function(res){
+        console.log(res);
+    });
+
+    function utf16to8(str) { //解决中文乱码
+        var out, i, len, c;
+        out = "";
+        len = str.length;
+        for(i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+                out += str.charAt(i);
+            } else if (c > 0x07FF) {
+                out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+            } else {
+                out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+            }
+        }
+        return out;
+    }
+    //此处生成名片二维码（如要生成普通链接二维码 则 “text”参数值 直接替换成普通链接即可）
+    var the_text = '{$code}';
+
+    the_text = utf16to8(the_text);
+    jQuery('#qrDiv').qrcode({
+        width:150,
+        height:150,
+        render:"canvas", //设置渲染方式 table canvas
+        typeNumber : -1,  //计算模式
+        correctLevel  : 0,//纠错等级
+        background   : "#ffffff",//背景颜色
+        foreground   : "#000000",//前景颜色
+        text:the_text
+    });
+    function convertCanvasToImage(canvas) {
+        //新Image对象，可以理解为DOM
+        var image = new Image();
+        // canvas.toDataURL 返回的是一串Base64编码的URL，当然,浏览器自己肯定支持
+        // 指定格式 PNG
+        image.src = canvas.toDataURL("image/png");
+        return image;
+    }
+    var mycanvas1=document.getElementsByTagName('canvas')[0];
+    var img=convertCanvasToImage(mycanvas1);
+    $('#qrcodeid').append(img);
+
+</script>
+{/block}

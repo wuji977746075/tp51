@@ -1,0 +1,113 @@
+{extend name="new/template/base" /}
+
+{block name="area_header"}
+  {include file="new/template/base_bootstrap" /}
+<style>#areaid,.inline{ display: inline-block; }</style>
+{/block}
+
+{block name="area_body"}
+  <div class="admin-main container-fluid">
+    <div class="admin-main-content">
+        <div class="filter-controls">
+      	<form method="get" class="searchForm row" action="{:url('school/index')}">
+          <div class="form-group">
+            <div class="col-lg-2 col-md-2">
+              <input class="form-control" name="kword" id="kword" value="{$kword|default=''}" placeholder="搜索关键词"/>
+            </div>
+            <div class="col-lg-10 col-md-10 ">
+              <select name="province" id="province"  class="form-control inline input-number input-sm" data-type="province">
+                <option value="">==省份==</option>
+                {volist name="provinces" id="v"}
+                  <option value="{$v.provinceID}">{$v.province}</option>
+                {/volist}
+              </select> -
+              <select name="city" id="city" class="form-control inline input-number input-sm" data-type="city">
+                <option value="">==城市==</option>
+              </select> -
+              <select name="area" class="form-control input-number inline input-sm" id="area">
+                <option value="">==市区==</option>
+              </select>
+
+              <button type="submit" class="btn btn-sm btn-primary">查询</button>
+            </div>
+          </div>
+        </form>
+        </div>
+        <!-- 操作按钮 -->
+        <div class="btn-controls">
+            <a class="btn btn-sm btn-primary" href="{:url(CONTROLLER_NAME.'/add')}"><i class="fa fa-plus"></i>{:L('BTN_ADD')}</a>
+        </div>
+        <div class="table-responsive well">
+        <table class="table table-striped table table-hover table-condensed">
+            <thead>
+            <tr>
+                <th>学校ID</th>
+                <th>名称</th>
+                <th>所属区域</th>
+                <th>经度/纬度</th>
+                <th>{:L('OPERATOR')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {empty name="list"}
+              <tr>
+                  <td colspan="3" class="text-center">{:L('NO_DATA')}</td>
+              </tr>
+            {else/}
+{volist name="list" id="v"}
+<tr>
+<td data-id="{$v.id}">{$v.id}</td>
+<td>{$v.zone_name}</td>
+<td>{$v.area_code}</td>
+<td>{$v.lng}/{$v.lat}</td>
+<td>
+<a class="btn btn-sm btn-default" href="{:url(CONTROLLER_NAME.'/edit',['id'=>$v['id']])}"><i class="fa fa-edit"  data-loading-text="{:L('BTN_EDIT')}..." ></i>{:L('BTN_EDIT')}</a>
+<a href="{:url(CONTROLLER_NAME .'/del',['id'=>$v['id']])}" class="btn btn-danger btn-sm ajax-get confirm" ><i class="fa fa-trash-o"></i> {:L('BTN_DELETE')} </a>
+</td>
+</tr>
+{/volist}
+            {/empty}
+            </tbody>
+        </table>
+        <div>{$show|raw}</div>
+    	</div>
+
+    </div>
+  </div>
+{/block}
+{block name="area_footer"}
+<script type="text/javascript">
+$(function(){
+  $('#province').val('{$province|default=""}');
+	// $("select[name='areaid']").change(function(){
+	// 	$('.searchForm').submit();
+	// });
+  var aid,cid,flag;
+  $(document).on('change','#province,#city',function(event) {
+    var $this = $(this),aid = $this.val(),type = $this.data('type');
+    $.getJSON("{:url('school/getArea')}",{ aid:aid,type:type },function(data){
+      //
+      var info = data.info;
+      flag = (type == 'city' ? true:false);
+      var str = "<option value=''>==选择==</option>";
+      if(data.status){
+        if(flag && !info) alert('请先选择省份dd');
+        for (var i = 0;i < info.length ; i++) {
+          if(flag){ //areas
+            str += "<option value='"+info[i].areaID+"'>"+info[i].area+"</option>";
+          }else{ //citys
+            str += "<option value='"+info[i].cityID+"'>"+info[i].city+"</option>";
+          }
+        }
+        if(str){
+          if(type == 'province') $('#city').html(str);
+          else if (type == 'city') $('#area').html(str);
+        }
+      }else{
+        alert(info);
+      }
+    })
+  });
+});
+</script>
+{/block}

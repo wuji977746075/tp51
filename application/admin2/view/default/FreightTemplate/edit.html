@@ -1,0 +1,681 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+    <link type="text/css" rel="stylesheet" href="__CDN__/bootstrap-treeview/bootstrap-treeview.css" />
+    <script type="text/javascript" src="__CDN__/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+    <style type="text/css">
+        .freight-templates{
+            padding: 20px 0;
+        }
+        .add-template{
+            display: inline-block;
+            padding: 10px;
+        }
+
+        .glyphicon {
+            display: inline-block;
+            font-family: "微软雅黑";
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            position: relative;
+            top: 1px;
+        }
+        .glyphicon-plus::before {
+            content: "+";
+        }
+
+        .glyphicon-minus::before {
+            content: "−";
+        }
+        #list-address li{
+            list-style-type: none;
+            display: block;
+            width: 200px;
+            position: relative;
+        }
+        #list-address li a{
+            display: inline-block;
+            position: absolute;
+            right: 0;
+            text-decoration: none;
+
+        }
+        span.addresses{
+            display: inline-block;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+
+    </style>
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+                <legend>
+                    运费模版</legend>
+                <div class="freight-templates">
+                    <form id="freight_templates" class="form-horizontal well validateForm" onsubmit="return false">
+                        <fieldset>
+                            <div class="form-group">
+                                <label for="templates_name" class="col-md-1 col-lg-1 control-label">模版名称</label>
+                                <div class="col-md-10 col-lg-10">
+                                    <input type="hidden" id="template_id" value="{$template_id}">
+                                    <input type="text" class="required form-control input-short input-sm" name="templates_name" id="templates_name" placeholder="运费模版名称">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="templates_name" class="col-md-1 col-lg-1 control-label">配送方式</label>
+                                <div class="col-md-3 col-lg-3">
+                                    <select class="form-control input-sm" id="freight_type">
+                                        <option value="0">请选择配送方式</option>
+                                        {volist name="freight_type" id="vo"}
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                                <div class="col-md-2 col-lg-2">
+                                    <a class="add-template" href="javascript:void(0);">添加</a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="templates_name" class="col-md-1 col-lg-1 control-label">运费设置</label>
+                                <div id="templates-groups" class="col-md-10 col-lg-10">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-3 col-md-offset-3"><a class="btn btn-primary input-sm" id="submit">提交</a></div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+
+    </div>
+
+    <!-- END admin-main-->
+    <!-- Modal -->
+
+{/block}
+
+{block name="area_footer"}
+    <script>
+        $('#submit').click(function(){
+            var $btn = $(this).button('loading');
+            var FreightTemplate = buildFreightTemplate();
+            if(FreightTemplate === false){
+                $btn.button('reset');
+                return false;
+            }
+            $.ajax({
+                url: "{:config('Admin/FreightTemplate/edit')}",
+                data: {freightTemplate:JSON.stringify(FreightTemplate)},
+                dataType: "json",
+                type: "POST",
+                success: function(data){
+
+                    if(data.status){
+                        msgAlert("保存成功!返回运费模版管理.....");
+                        setTimeout(function(){
+                           window.location.href = "{:url('FreightTemplate/index')}";
+                        },100);
+
+                    }else{
+                        msgAlert(data.info);
+                        $btn.button('reset');
+                    }
+
+                }
+            });
+
+        });
+    </script>
+    <script>
+
+        //var json = {$address_json};
+
+        function checkAddress(){
+
+            var ele = $('#check_address');
+
+            if(ele.length == 0){
+
+                $html = $('<div class="modal fade" id="check_address" style="margin-top: 150px;"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title">选择地区</h4> </div> <div class="modal-body row" style="font-size: 13px"> <div class="col-sm-6" style="height:300px; overflow-y: scroll; "> <div id="treeview-address" class=""></div> </div> <div class="col-sm-6" style="height:300px; overflow-y: scroll; "> <div id="list-address"> <ul> </ul> </div> </div> </div> <div class="modal-footer row"> <button type="button" class="btn btn-default" data-dismiss="modal">取消</button> <button id="save_addressOne" type="button" class="btn btn-primary">确定</button> </div> </div> </div> </div>');
+
+                $("body").append($html);
+            }
+
+            ele = $('#check_address');
+
+            ele.modal({backdrop:false,show:true});
+
+            ele.on('hidden.bs.modal', function (e) {
+
+                $('.templates-group').find('.edit').removeClass('edit');
+                $(this).remove();
+            });
+
+            $('#save_addressOne').click(function(){
+                buildAddressOne();
+                ele.modal('hide');
+            });
+
+            var treeview_json = buildTreeViewJson();
+
+            $('#treeview-address').treeview({
+                levels: 1,
+                showBorder: false,
+                multiSelect:true,
+                data: treeview_json,
+                onNodeSelected: function(event, node){
+
+                    //console.log(node);
+                    addToAddress(node);
+
+
+                },
+                onNodeUnselected: function(event, node){
+
+                    deleteFromAddress(node.text);
+
+                }
+            });
+
+            disabledAddressOne();
+
+            decodeAddressOne();
+
+
+        }
+
+
+        var findSelectableNodes = function(address) {
+            var nodes;
+            nodes =  $('.treeview-address').treeview('search', [ address, { ignoreCase: false, exactMatch: false, revealResults: false } ]);
+            $('.treeview-address').treeview('clearSearch');
+            return nodes;
+        };
+
+        //添加地址列表
+        function addToAddress(address){
+
+            $html = $('<li><span>' + address.text + '</span><em class="hide">' + address.nodeId  + '</em><a href="javascript:void(0);">删除</a></li>');
+
+            $('#list-address').find('ul').append($html);
+
+            //点击删除
+            $html.find('a').click(function(){
+
+                $(this).parents('li').remove();
+
+                //取消tree中的选中
+                var Nodes = address.nodeId;
+                //console.log(Nodes);
+                $('#treeview-address').treeview('unselectNode',[Nodes,{ silent: true }]);
+
+            });
+
+        }
+
+        //从地址列表删除
+        function deleteFromAddress(address){
+
+            $('#list-address').find('li').each(function(){
+
+                if($(this).find('span').text() == address){
+
+                    $(this).remove();
+                }
+
+            });
+
+        }
+        //生成单维地址
+        function buildAddressOne(){
+
+            var list = [];
+            var list_id = [];
+
+            $('#list-address').find('li').each(function(){
+                list.push($(this).find('span').text());
+                list_id.push($(this).find('em').text());
+            });
+            list = list.join(',');
+            list_id = list_id.join(',');
+
+            //console.log(list_id);
+
+            var e = $('td.edit');
+            e.find('span.addresses').text(list);
+            e.find('em.addresses-ids').text(list_id);
+            e.removeClass('edit');
+        }
+        //设置不能重复选择地址
+        function disabledAddressOne(){
+
+            var selected_id = "";
+
+            $('td.edit').parents('table').find('em.addresses-ids').each(function(){
+
+                if(!$(this).parents('td').hasClass('edit')){
+                    selected_id = selected_id + $(this).text()+',';
+                }
+            });
+            if(selected_id != ''){
+
+                var arr = selected_id.split(",");
+                arr.pop();
+
+                for(var i= 0;i<arr.length;i++){
+                    if(arr[i]!=''){
+                        var Nodes = parseInt(arr[i]);
+                        $('#treeview-address').treeview('disableNode',[Nodes,{ silent: true }]);
+                    }
+
+                }
+
+            }
+
+        }
+
+        //解析单维地址
+        function decodeAddressOne(){
+
+            var list_id = $('td.edit').find('em.addresses-ids').text();
+
+            if(list_id != ''){
+
+                var arr = list_id.split(",");
+
+                for(var i= 0;i<arr.length;i++){
+                    if(arr[i]!=''){
+                        var Nodes = parseInt(arr[i]);
+                        $('#treeview-address').treeview('selectNode',[Nodes,{ silent: false }]);
+                    }
+
+                }
+
+            }
+
+        }
+
+        //生成运费模版提交数组
+        function buildFreightTemplate(){
+
+            var templates = [];
+
+            var template_id = $('#template_id').val();
+
+            var templates_group = $('.templates-group');
+            if(templates_group.length==0){
+                msgAlert('请先添加模版');
+                return false;
+            }
+
+            var type = templates_group.find('#type').val();
+
+            var name = $('#templates_name').val();
+            if(name==''){
+                msgAlert('模版名称不能为空');
+                return false;
+            }
+
+            var company = templates_group.attr('freight-type');
+
+
+
+            $address = templates_group.find('span.addresses');
+
+            for(var i=0; i<$address.length; i++){
+
+                if($address.eq(i).text()=="" && !$address.eq(i).hasClass('default')){
+                    msgAlert("必须选择指定地区");
+                    return false;
+                }
+
+                var $val = $address.eq(i).parents('tr').find('input');
+                if(isNaN($val.eq(0).val()) || $val.eq(0).val()<0){
+                    msgAlert("首N必须为大于等于0的数字");
+                    return false;
+                }
+                if(isNaN($val.eq(1).val()) || $val.eq(1).val()<0){
+                    msgAlert("首费必须为大于等于0的数字");
+                    return false;
+                }
+                if(isNaN($val.eq(2).val()) || $val.eq(2).val()<0){
+                    msgAlert("续M必须为大于等于0的数字");
+                    return false;
+                }
+                if(isNaN($val.eq(3).val()) || $val.eq(3).val()<0){
+                    msgAlert("续费必须为大于等于0的数字");
+                    return false;
+                }
+                templates.push({
+                    addresses:$address.eq(i).text(),
+                    type:type,
+                    firstpiece:$val.eq(0).val(),
+                    firstmoney:$val.eq(1).val(),
+                    replenishpiece:$val.eq(2).val(),
+                    replenishmoney:$val.eq(3).val()
+                });
+
+            }
+
+
+            var FreightTemplate = {
+                name:name,
+                company:company,
+                template_id:template_id,
+                templates:templates
+            };
+
+            return FreightTemplate;
+
+            //console.log(JSON.stringify(FreightTemplate));
+
+        }
+
+        //var FreightTemp = {"name":"我的运费模版1","company_name":"顺丰快递","company":"6018","template_id":0,"templates":[{"addresses":"","type":"1","firstpiece":"1","firstmoney":"2","replenishpiece":"3","replenishmoney":"4"},{"addresses":"秦皇岛市,石家庄市","type":"1","firstpiece":"4","firstmoney":"3","replenishpiece":"2","replenishmoney":"1"},{"addresses":"天津市","type":"1","firstpiece":"2","firstmoney":"2","replenishpiece":"2","replenishmoney":"2"},{"addresses":"成都市","type":"1","firstpiece":"3","firstmoney":"3","replenishpiece":"3","replenishmoney":"3"}]} ;
+
+        var FreightTemp = '{present name="Template_data"}{$Template_data}{/present}';
+
+        window.onload = function(){
+            loadFreightTemplate();
+
+//            if(FreightTemp !='')msgAlert('运费模版加载中……',true);
+//            setTimeout(loadFreightTemplate,100);
+        };
+
+        //生成treeview  json
+        function buildTreeViewJson(){
+
+            var disabled_id = [];
+            var selected_id = "";
+            $('td.edit').parents('table').find('span.addresses').each(function(){
+
+                if(!$(this).parents('td').hasClass('edit')){
+                    var text = $(this).text();
+                    if(text!='') disabled_id.push(text);
+                }else{
+                    selected_id = $(this).text();
+                }
+
+            });
+
+
+            disabled_id = disabled_id.join(',');
+            disabled_id = disabled_id.split(',');
+
+            if(selected_id!=""){
+                selected_id = selected_id.split(',');
+            }
+
+            var temp_json = {$address_json};
+            var k = 0;
+            for(var i=0; i< temp_json.length; i++){
+
+                k++;
+                for(var m=0; m<temp_json[i].nodes.length; m++){
+
+                    //设置禁止
+                    for(var j=0; j<disabled_id.length; j++){
+                        if(temp_json[i].nodes[m].text == disabled_id[j]){
+                            temp_json[i].nodes[m].state = {disabled:true};
+                        }
+                    }
+                    //设置选中
+                    for(j=0; j<selected_id.length; j++){
+                        if(temp_json[i].nodes[m].text == selected_id[j]){
+                            temp_json[i].nodes[m].state = {selected:true};
+
+                            var node = temp_json[i].nodes[m];
+                            node.nodeId = k;
+                            addToAddress(node);
+
+                        }
+                    }
+                    k++;
+                }
+
+            }
+
+            return temp_json;
+        }
+
+        //读取运费模版，根据运费模版生成页面
+        function loadFreightTemplate(){
+
+            if(FreightTemp == ''){
+                return false;
+            }
+            FreightTemp = JSON.parse(FreightTemp);
+
+            //设置模版名称
+            $("#templates_name").val(FreightTemp['name']);
+
+            //设置运费模版
+            if(FreightTemp['templates']!=""){
+
+                if(FreightTemp['name']!= "undefined" && FreightTemp['company']!="undefined"){
+
+                    var templates = FreightTemp['templates'];
+
+                    var html;
+
+                    for(var i=0;i< templates.length;i++){
+
+                        if(i==0){
+                            html = addTemplate(FreightTemp['company_name'],FreightTemp['company'],templates[0]);
+                        }else{
+                            //console.log(templates[i]);
+                            addAddress(html.find('.add-address'),templates[i]);
+                        }
+
+
+                    }
+                }
+
+            }
+            msgClose();
+
+        }
+
+        function msgAlert(msg,cannot_close){
+
+            $ele = $('#alert_modal');
+
+            if($ele.length == 0){
+
+                if(!cannot_close){
+                    $alert = $('<div id="alert_modal" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"><div class="modal-dialog" role="document" style="margin-top: 250px"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> <h4 class="modal-title" id="myModalLabel">提示</h4> </div> <div class="modal-body"> </div> <div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">确定</button> </div> </div> </div> </div>');
+
+                }else{
+                    $alert= $('<div id="alert_modal" class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"><div class="modal-dialog" role="document" style="margin-top: 250px"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button> <h4 class="modal-title" id="myModalLabel">提示</h4> </div> <div class="modal-body"> </div> <div class="modal-footer"> </div> </div> </div> </div>');
+
+                }
+
+                $("body").append($alert);
+
+                if(msg){
+                    $alert.find(".modal-body").text(msg);
+                }
+
+                $alert.on('hidden.bs.modal', function (e) {
+                    $(this).remove();
+                });;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+                $ele = $('#alert_modal');
+            }
+
+
+            $ele.modal({backdrop:false,show:true});
+        }
+
+        function msgClose(){
+            $ele = $('#alert_modal');
+            $ele.modal('hide');
+
+        }
+
+        //添加模版
+        function addTemplate(template_caption,freight_type,template){
+
+            var firstpiece=firstmoney=replenishpiece=replenishmoney=0;
+
+            var select_option = '<option value="1">件数</option><option value="2">重量</option><option value="3">体积</option>';
+
+            if(template!="undefined"){
+
+                firstpiece = template['firstpiece'];
+                firstmoney = template['firstmoney'];
+                replenishpiece = template['replenishpiece'];
+                replenishmoney = template['replenishmoney'];
+                type = template['type'];
+
+                if(type==2){
+                    select_option = '<option value="1">件数</option><option value="2" selected>重量</option><option value="3">体积</option>';
+                }else if(type==3){
+                    select_option = '<option value="1">件数</option><option value="2">重量</option><option value="3" selected>体积</option>';
+                }
+
+            }
+
+            var html = $('<div id="templates_' + freight_type + '" class="templates-group" freight-type="' + freight_type + '"><table class="able table-bordered table table-hover  table-condensed"> <caption>' + template_caption + '<a class="delete-template" href="javascript:void(0);">删除</a> </caption><thead><th style="width: 300px ; word-wrap: break-word;">配送区域</th> <th>计费类型</th> <th>首重（克）</th> <th>首费（元）</th> <th>续重（每？克）</th> <th>续费（元）</th> </thead> <tbody> <tr> <td>全国 [默认运费]<br> <span class="addresses default"></span></td> <td><select id="type">' + select_option + '</select></td> <td><input type="text" value="' + firstpiece + '"></td> <td><input type="text" value="' + firstmoney + '"></td> <td><input type="text" value="' + replenishpiece + '"></td> <td><input type="text" value="' + replenishmoney + '"></td> </tr> <tr> <td colspan="6"><a class="add-address" href="javascript:void(0);"> 为指定地区设置运费</a></td> </tr> </tbody> </table></div>');
+
+            //console.log(html);
+
+
+            $('#templates-groups').append(html);
+
+
+            html.find('.delete-template').click(function(){
+
+                $(this).parents('.templates-group').remove();
+
+            });
+
+
+            //添加指定地区
+            html.find('.add-address').click(function(){
+
+                addAddress($(this),"undefined");
+
+            });
+
+            return html;
+        }
+
+
+        //添加指定地区
+        function addAddress($this,template){
+
+            var firstpiece=firstmoney=replenishpiece=replenishmoney=0;
+            var addresses="";
+
+            if(template!="undefined"){
+
+                firstpiece = template['firstpiece'];
+                firstmoney = template['firstmoney'];
+                replenishpiece = template['replenishpiece'];
+                replenishmoney = template['replenishmoney'];
+                addresses = template['addresses'];
+
+            }
+
+
+            var html = $('<tr> <td>指定地区 <a class="edit-address" href="javascript:void(0);">编辑</a>  <a class="delete-address" href="javascript:void(0);">删除</a><br> <span class="addresses">'+ addresses +'</span> <em class="addresses-ids hide"></em> </td> <td>同上</td> <td><input type="text" value="' + firstpiece + '"></td> <td><input type="text" value="' + firstmoney + '"></td> <td><input type="text" value="' + replenishpiece + '"></td> <td><input type="text" value="' + replenishmoney + '"></td> </tr>');
+
+            var $address = $(html);
+
+            $this.parents('tr').before($address);
+
+//            console.log(addresses);
+            //addAddressIds($address,addresses);
+
+            //删除
+            html.find('.delete-address').click(function(){
+                $(this).parents('tr').remove();
+            });
+
+
+            //编辑
+            html.find('.edit-address').click(function(){
+
+                $(this).parent().addClass('edit');
+
+                checkAddress();
+
+            });
+        }
+
+        //添加指定地区ID组
+        function addAddressIds($address,addresses){
+
+            //生成临时treeview
+            var $ele = $('<div class="treeview-address"></div>');
+            $('body').append($ele);
+            $('.treeview-address').treeview({
+                levels: 1,
+                showBorder: false,
+                multiSelect:true,
+                data: json
+            });
+
+            var arr = addresses.split(',');
+            var Node_ids = [];
+            //查询ID
+            for(var i=0; i<arr.length; i++){
+                if(arr[i]!=''){
+                    var Nodes = findSelectableNodes(arr[i]);
+                    if(Nodes.length>0){
+                        Nodes = Nodes[0];
+                    }
+                    Node_ids.push(Nodes.nodeId);
+                }
+            }
+            $ele.remove();
+            Node_ids = Node_ids.join(',');
+            $address.find('em.addresses-ids').text(Node_ids);
+
+        }
+
+        //添加模版
+        $(".add-template").click(function(){
+
+            var t = $("#freight_type");
+
+            var freight_type = t.val();
+
+            if(freight_type == 0){
+
+                msgAlert('请选择配送类型');
+
+                return false;
+
+            }
+            var template_caption = t.find("option:selected").text();
+
+            t.val('0');
+
+            if(($('.templates-group').length > 0)){
+                msgAlert("只能添加一种模版");
+                return false;
+            }
+
+            addTemplate(template_caption,freight_type,"undefined");
+
+
+        });
+
+    </script>
+
+{/block}

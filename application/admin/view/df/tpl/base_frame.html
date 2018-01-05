@@ -1,0 +1,198 @@
+{include file="df/tpl/base_head" /}
+<!--script async src="< ?=$js?>stat.js">统计代码 anync / 放在最后 </script-->
+<!--[if lt IE 9]>
+<script type="text/javascript" src="__CDN__/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+{block name="area_head"}
+  <!--顶部区域 -->
+{/block}
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <!-- 头部区域 -->
+  <div class="layui-header">
+    <div class="layui-logo hvr-pop">LOGO / SITENAME</div>
+    <a href="javascript:;" id="js-hide-menu" class="switch-menu-wrap" title="转换侧边栏"><i class="fa fa-bars"></i></a>
+    <ul class="layui-nav layui-layout-left">
+      <!--?php foreach ($menu_all as $v) { ?>
+      <li class="hvr-pulse layui-nav-item < ?php if($top_menu_id== $v['id']) echo 'layui-this';?>" data-id="< ?=$v['id']?>"><a href="javascript:;">< ?=$v['name']?></a></li>
+      < ?php }?-->
+    </ul>
+    <ul class="layui-nav layui-layout-right" style="right:110px">
+      <li class="layui-nav-item">
+        <a href="javascript:;">
+          <img src="{:getAvatar($uinfo.id,60)}" class="layui-nav-img">
+          {$uinfo.nick}
+        </a>
+        <dl class="layui-nav-child">
+          <dd><a href="">基本资料</a></dd>
+          <dd><a href="">安全设置</a></dd>
+        </dl>
+      </li>
+      <li class="layui-nav-item hvr-push"><a href="javascript:;" class=""> <i class="fa fa-bell" style="position: relative;top:3px;font-size: 22px;"></i><i class="layui-badge">5</i> </a></li>
+    </ul>
+    <ul class="layui-nav layui-layout-right" style="padding-right:0px;overflow:hidden;padding-left:0px;">
+      <li class="layui-nav-item"><a href="{:url('manager/logout')}" class="ajax-get pr10" title="退出"> <i class="fa fa-sign-out"></i></a></li>
+      <li class="layui-nav-item"><a href="javascript:;" class="pl10 pr10 js-refresh" title="刷新"> <i class="fa fa-refresh layui-anim layui-anim-rotate layui-anim-loop"></i></a></li>
+      <li class="layui-nav-item">
+        <a href="javascript:;" class="pl10 pr10" id="admin-fullscreen" title="全屏"><i class="fa fa-arrows-alt"></i> <span class="admin-fullText"></span> </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 左侧导航区域 -->
+  <div class="layui-side side-menu">
+    <div class="layui-side-scroll">
+      <ul class="layui-nav layui-nav-tree layui-nav-side" lay-filter="side-menu">
+        <!--?php foreach ($left_menu as $v) { ?>
+        <li class="layui-nav-item layui-nav-itemed">
+          <a class="" href="javascript:;"><i class="layui-icon">&#xe620;</i> < ?=$v['name']?></a>
+          < ?php if (isset($v['child'])){ ?>
+          <dl class="layui-nav-child">
+            < ?php foreach ($v['child'] as $v2) { ?>
+            <dd class="hvr-shrink  < ?php if($v2['id'] == $menu_id) echo 'layui-this'; ?>"><a href="< ?=$v2['url']?>" data-id="< ?=$v2['id']?>">&nbsp;&nbsp;&nbsp;&nbsp;< ?=$v2['name']?></a></dd>
+            < ?php } ?>
+          </dl>
+          < ?php } ?>
+        </li>
+        < ?php } ?-->
+      </ul>
+    </div>
+  </div>
+  <!-- 内容主体 -->
+  <div class="layui-body layui-tab" lay-filter="mainTab">  <!-- lay-allowClose="true"  -->
+    <ul class="layui-tab-title">
+  <li lay-id="iframe0"><i class="fa fa-desktop"></i>网站首页</li>
+</ul>
+<div class="layui-tab-content">
+  <div class="layui-tab-item">
+    <iframe id="iframe0" src="{:url('manager/welcome')}" frameborder="0" style="width:100%;height:100%;"></iframe>
+  </div>
+</div>
+  <!-- 底部固定区域 -->
+  <div class="layui-footer  layui-anim layui-anim-up">
+    © layui.com - 底部固定区域
+  </div>
+</div>
+<!-- script -->
+<script>
+
+// var winWidth = $(window).width();
+// var heiHeght = $(window).height();
+// page init
+layui.use(['rb','element'], function(){
+  var layer = layui.layer,
+  rb = layui.rb,
+  el = layui.element,
+  $ = layui.$;
+
+  rb.log('frame','init');
+
+  var menus = JSON.parse('{$menu_json|raw}')
+  ,site = "{:config('site_url')}";
+
+  // addWelcome();
+  // function addWelcome(){
+  //   el.tabDelete('mainTab','iframe0').tabAdd('mainTab',{
+  //     title:'<i class="fa fa-desktop"></i>网站首页'
+  //     ,content:'<iframe id="iframe0" src="welcome.php" frameborder="0" style="width:100%;height:100%;"></iframe>'
+  //     ,id:'iframe0'
+  //   }).tabChange('mainTab','iframe0');
+  // }
+  $('.layui-logo').click(function(e) {
+    var src = "{:url('manager/welcome')}";
+    $('#iframe0').attr('src',src);
+    el.tabChange('mainTab', 'iframe0');
+    // $('.js-refresh').trigger('click');
+  });
+
+  // console.log(menus);
+  if(!$.isEmptyObject(menus)){
+    var html = '',k,item,menu,id;
+    // 组装顶部菜单
+
+    $.each(menus, function(k, item) {
+    // for (k in menus) {
+      // item = menus[k];
+      html = html
+      +'<li class="hvr-pulse layui-nav-item" data-id="'+item.id+'">'
+      +' <a href="javascript:;">'+item.name+'</a>'
+      +'</li>';
+    // };
+    });
+    if(html){
+      $('.layui-layout-left').html(html).children('.layui-nav-item').on('click',function(e){
+        e.preventDefault();
+        id = $(this).index();
+        // 保存上次点击的顶部菜单id
+        _top_menu_id = parseInt($(this).data('id'));
+        rb.local('last_top_menu',_top_menu_id);
+        // _menu_ids[mid] = 0;
+        // rb.local('menu_ids',_menu_ids);
+        //组装左边菜单
+        html = '';
+        // for (k in menus[id]['child']){
+        $.each(menus[id]['child'], function(k, item) {
+          // item = menus[id]['child'][k];
+          html = html
+          +'<li class="layui-nav-item layui-nav-itemed">'
+          +'  <a class="" href="javascript:;"><i class="'+item.icon+'"></i> '+item.name +'</a>';
+          if(item.child){
+            html = html
+            +'   <dl class="layui-nav-child">';
+            $.each(item.child,function(k2,item2) {
+            // for(k2 in item.child){
+              // item2 = item.child[k2];
+            html = html
+            +'    <dd class="hvr-shrink '+ (item2.id == _menu_id ? 'layui-this' : '') +'"><a href="'+item2.url+'" data-id="'+item2.id+'">&nbsp;&nbsp;&nbsp;&nbsp;'+item2.name+'</a></dd>';
+            // }
+            });
+            html = html
+            +'  </dl>';
+          }
+          html = html
+          +'</li>';
+        // }
+        });
+        // if(html){
+          $('.layui-nav-tree.layui-nav-side').html(html);
+          el.init();
+          $('.layui-nav-tree.layui-nav-side').on('click','dd', function(e) {
+            e.preventDefault();
+            $this = $(this);
+            var $a = $this.children('a');
+            var id = $a.data('id');
+            // 保存上次点击的左边菜单id
+            _menu_ids[_top_menu_id] = id;
+            rb.local('menu_ids',_menu_ids);
+            var icon = $this.parent().prev('a').children('i').prop("outerHTML");
+            var html = $a.html();
+            var href = $a.attr('href');
+            el.tabDelete('mainTab', 'iframe'+id).tabAdd('mainTab', {
+              title : icon+html.replace(/&nbsp;/g, "")+'<i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
+              ,content: '<iframe id="iframe'+id+'" src="' + href + '?menu_id='+id + '" frameborder="0" style="width:100%;height:100%;"></iframe>'
+              ,id : 'iframe'+id
+            }).tabChange('mainTab', 'iframe'+id);
+          });
+        // }
+      }).filter('[data-id='+_top_menu_id+']').addClass('layui-this').trigger('click');
+    }
+  }
+  $('.layui-tab').on('click','.layui-tab-close',function(){
+    el.tabDelete('mainTab', $(this).parent().attr('lay-id'));
+  })
+
+  // 自动记忆上次的每个大菜单的小菜单
+  var menu_id = _menu_id || 0;
+  if(!menu_id && rb.local('menu_ids')){
+    menu_id = (rb.local('menu_ids'))[_top_menu_id] || 0;
+  }
+  if(menu_id){
+    $('.layui-nav-tree dd a[data-id='+menu_id+']').click();
+  }else{
+    el.tabChange('mainTab', 'iframe0');
+  }
+});
+</script>
+</body>
+</html>

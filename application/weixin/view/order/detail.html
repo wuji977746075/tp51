@@ -1,0 +1,63 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/oder_detail/index.css">
+{/block}
+{block name="body"}
+<div class="order-detail">
+    <div class="order-detail-1">
+        <span class="order-code">订单号：{$detail.order_code}</span>
+        <span class="order-time">创建时间：{$detail.createtime|date="Y-m-d H:i:s",###}</span>
+    </div>
+    <div class="order-detail-item">
+        <span class="order-detail-item-left">订单状态：</span>
+        <span class="order-detail-item-right">
+            {switch name="detail.query_status"}
+            {case value="1"}<span>待付款</span>{/case}
+            {case value="2"}<span>待发货</span>{/case}
+            {case value="3"}<span>待收货</span>{/case}
+            {case value="4"}<span>已收货</span>{/case}
+            {case value="7"}<span>已完成</span>{/case}
+            {case value="8"}<span>已关闭</span>{/case}
+            {/switch}
+
+        </span>
+    </div>
+    {volist name="detail.items" id="vo"}
+    <div class="order-detail-main">
+        <div class="order-detail-main-img"><img src="{$vo.img}"></div>
+        <div class="order-detail-main-msg">
+            <div class="order-detail-main-msg-text">{$vo.name}</div>
+            <div>
+                <span class="order-detail-main-price">￥{$vo.price}</span>
+                <span class="order-detail-main-num">x{$vo.count}</span>
+            </div>
+        </div>
+    </div>
+    {/volist}
+    <div class="order-detail-item">
+        <span class="order-detail-item-left">商品总额：</span>
+        <span class="order-detail-item-right">￥{$detail.price}</span>
+    </div>
+    <div class="order-detail-item">
+        <span class="order-detail-item-left">运费：</span>
+        <span class="order-detail-item-right">包邮</span>
+    </div>
+    <div class="order-detail-item">
+        <span class="order-detail-item-left">总计：</span>
+        <span class="order-detail-item-right">￥{$detail.goods_amount}</span>
+    </div>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript">
+    //动态设置order-detail-main-msg的宽度
+    var width = $('.order-detail-main').width()-$('.order-detail-main-img').width()-10;
+    $('.order-detail-main-msg').css('width',width);
+
+    $(window).resize(function(){
+        var width = $('.order-detail-main').width()-$('.order-detail-main-img').width()-10;
+        $('.order-detail-main-msg').css('width',width);
+    });
+</script>
+{/block}

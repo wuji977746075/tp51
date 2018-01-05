@@ -1,0 +1,133 @@
+	<!-- zhouzhou 2017-03-15 : $city_name -->
+	<!-- BEGIN BAIDUMAP -->
+	<div id="allmap" style="position:absolute;width:600px;height:600px;top:80px;left:48%;"></div>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=bV4eyokvXF2Z36PeTbww7fHQ"></script>
+  <script type="text/javascript">
+	// 创建Map实例 构造底图时，关闭底图可点功能
+	var map = new BMap.Map("allmap",{ enableMapClick:false });
+	// var point = new BMap.Point(116.404, 39.915);
+	// mp.centerAndZoom(point, 14);
+	// 根据城市名设置地图中心点
+	map.centerAndZoom(city,11);
+	//启用滚轮放大缩小，默认禁用
+	map.enableScrollWheelZoom();
+	//开启惯性拖拽
+	map.enableInertialDragging();
+	//启用地图惯性拖拽，默认禁用
+	map.enableContinuousZoom();
+	//设置地图默认的鼠标指针样式
+	// map.setDefaultCursor("url('__IMG__/mark.png')");
+	//单击获取点击的经纬度
+	map.addEventListener("click",function(e){
+		// alert(e.point.lng + "," + e.point.lat);
+		markMap(e.point.lng,e.point.lat);
+	});
+	//比例尺
+	/*anchor
+	  BMAP_ANCHOR_TOP_LEFT 表示控件定位于地图的左上角。
+		BMAP_ANCHOR_TOP_RIGHT 表示控件定位于地图的右上角。
+		BMAP_ANCHOR_BOTTOM_LEFT 表示控件定位于地图的左下角。
+		BMAP_ANCHOR_BOTTOM_RIGHT 表示控件定位于地图的右下角。
+	 */
+	map.addControl(new BMap.ScaleControl({ anchor: BMAP_ANCHOR_BOTTOM_RIGHT }));
+	//添加放缩控件
+	map.addControl(new BMap.NavigationControl({ anchor: BMAP_ANCHOR_TOP_RIGHT }));
+	/*缩放控件type有四种类型:
+	BMAP_NAVIGATION_CONTROL_SMALL：仅包含平移和缩放按钮；
+	BMAP_NAVIGATION_CONTROL_PAN:仅包含平移按钮；
+	BMAP_NAVIGATION_CONTROL_ZOOM：仅包含缩放按钮
+	*/
+	// CopyrightControl
+	// var icon = new BMap.Icon('__IMG__/mark50x60.png', new BMap.Size(50, 60), {
+	//    anchor: new BMap.Size(25, 60),
+	//    // infoWindowAnchor: new BMap.Size(10, 0)
+	// });
+	var mak = null;var infoWindow=null;
+	function markMap(lng,lat){
+		map.clearOverlays();//清空原来的标注
+		// var opts = {
+		//   width : 200,     // 信息窗口宽度
+		//   height: 100,     // 信息窗口高度
+		//   title : "海底捞王府井店" , // 信息窗口标题
+		//   enableMessage:false,//设置允许信息窗发送短息
+		//   message:"亲耐滴，晚上一起吃个饭吧？戳下面的链接看下地址喔~"
+		// }
+		// 创建信息窗口对象
+		// var infoWindow = new BMap.InfoWindow("地址：北京市东城区王府井大街88号乐天银泰百货八层", opts);
+		infoWindow = new BMap.InfoWindow(lng+','+lat);
+		mkr = new BMap.Marker(new BMap.Point(lng,lat), {
+		    // icon: icon
+		});
+		map.addOverlay(mkr);
+		map.openInfoWindow(infoWindow,new BMap.Point(lng,lat)); //开启信息窗口
+	}
+	function searchMap(key,flag){
+		var local = new BMap.LocalSearch(map);
+		local.enableAutoViewport(); //允许自动调节窗体大小
+		local.setSearchCompleteCallback(function (data) {
+
+		// console.log(data);
+
+		var poi = data.getPoi(0);
+
+		// console.log(poi);
+		if(flag){
+			$('#lat').val(poi.point.lat);
+			$('#lng').val(poi.point.lng);
+		}
+		map.centerAndZoom(poi.point, 13);
+		var marker = new BMap.Marker(new BMap.Point(poi.point.lng, poi.point.lat));  // 创建标注，为要查询的地方对应的经纬度
+		map.clearOverlays();//清空原来的标注
+		map.addOverlay(marker);
+
+		var content = city + '<br/>' + key + "<br/><br/>经度：" + poi.point.lng + "<br/>纬度：" + poi.point.lat;
+		var infoWindow = new BMap.InfoWindow("<p style='font-size:14px;'>" + content + "</p>");
+		marker.openInfoWindow(infoWindow);
+		// marker.addEventListener("click", function () { this.openInfoWindow(infoWindow); });
+		marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+		});
+		local.search(key);
+	}
+
+	//地址解析
+	function markAddress(address){
+		var myGeo = new BMap.Geocoder();
+		// 将地址解析结果显示在地图上,并调整地图视野
+		myGeo.getPoint(address, function(point){
+			if (point) {
+				map.centerAndZoom(point, 16);
+				map.addOverlay(new BMap.Marker(point));
+			}else{
+				alert("您选择地址没有解析到结果!");
+			}
+		}, city);
+	}
+	//添加城市列表
+	// map.addControl(new BMap.CityListControl({
+	//     anchor: BMAP_ANCHOR_TOP_LEFT,
+	//     offset: new BMap.Size(10, 20),
+	//     // 切换城市之间事件
+	//     // onChangeBefore: function(){
+	//     //    alert('before');
+	//     // },
+	//     // 切换城市之后事件
+	//     // onChangeAfter:function(){
+	//     //   alert('after');
+	//     // }
+	// }));
+	$(function(){
+		var address;
+		// var key;
+		// $('#areacode').change(function(){
+		// 	key = $(this).find('option:selected').text();
+		// 	map.centerAndZoom(city+" "+key,15);
+		// }).bind(this);
+		$('#address').blur(function(){
+			// alert($(this).val());
+			searchMap($(this).val(),true);
+		}).bind(this);
+		address = $('#address').val();
+		if(address){ searchMap(address,false);	}
+	})
+  </script>
+  <!-- END BAIDUMAP -->

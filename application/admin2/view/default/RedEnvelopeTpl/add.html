@@ -1,0 +1,201 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+
+            <!-- 带验证 form -->
+            <form class="form-horizontal well validateForm" >
+                <fieldset>
+                    <legend>
+                        创建红包模版</legend>
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 col-lg-2 control-label">红包类别：</label>
+                        <div class="col-md-10 col-lg-10">
+                            <select name="dtree_type" class="form-control">
+
+                                {:w_datatree($red_envolope_type,true)}
+                            </select>
+                            <div class="help-block">(红包获得场景)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 col-lg-2 control-label">红包金额：</label>
+                        <div class="col-md-10 col-lg-10">
+                            <input type="text" class="form-control input-short" name="money"  placeholder="红包可抵扣的金额">
+                            <div class="help-block">(红包可抵扣的金额：元)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 col-lg-2 control-label">红包条件：</label>
+                        <div class="col-md-10 col-lg-10">
+                            <input type="text" class="form-control input-short" value="0" name="use_condition"  placeholder="单次订单满多少才可使用">
+                            <div class="help-block">(订单支付金额大于多少时可使用)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 col-lg-2 control-label">红包过期天数：</label>
+                        <div class="col-md-10 col-lg-10">
+                            <input type="text" class="form-control input-short" name="expire_time"  VALUE="0" placeholder="">
+                            <div class="help-block">(用户获得红包之后几天过期，0:为不过期)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type" class="col-md-2 col-lg-2 control-label">备注：</label>
+                        <div class="col-md-10 col-lg-10">
+                            <textarea class="form-control" name="notes" rows="5"></textarea>
+                            <div class="help-block">()</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+                        <div class="col-lg-10 col-md-10">
+                            <a target-form="validateForm" class="ajax-post btn btn-primary" onclick="return getData();" href="{:url('RedEnvelopeTpl/add')}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+                            <a class="btn btn-default" href="{:url('RedEnvelopeTpl/index')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+                        </div>
+                    </div>
+            </fieldset>
+
+            </form>
+
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+
+    <script type="text/javascript">
+
+        //实例化编辑器
+        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+        //  var ue = UE.getEditor('ueditor',{
+        //  	toolbars:[
+        //      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
+        //     , 'fontsize', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map','print', 'preview',  'drafts'
+        //      ]
+        //  ]});
+
+        function getData(){
+            var logo = $(".wxuploaderimg.logo img").attr("data-imageid");
+            var banner = $(".wxuploaderimg.banner img").attr("data-imageid");
+
+            $("#inputlogo").val(logo);
+            $("#inputbanner").val(banner);
+
+            $("#inputweixin_number_name").val("");
+            $(".js_weixin_number_list .wxnumber-item").each(function(index,item){
+                var text = "";
+                $("#inputweixin_number_name").val($("#inputweixin_number_name").val()+$(item).text()+",");
+
+            });
+
+            return true;
+
+        }
+
+        function appendWeixinNumber(weixin,openid){
+            var len = $("#inputweixin_number").val().split(",").length - 1;
+
+            if(len > 5){
+                $.scojs_message("不能超过5个！",$.scojs_message.TYPE_ERROR);
+                return ;
+            }
+
+            $("#inputweixin_number").val($("#inputweixin_number").val()+openid+",");
+
+//		console.log(weixin);
+            $cont = $(".js_weixin_number_list");
+            $item = $("<div class='wxnumber-item'>"+weixin+"<i class='fa fa-times js_removed'></i></div>");
+            $cont.append($item);
+            $item.attr("data-id",openid);
+        }
+
+        function removeWeixinNumber(ele){
+//		console.log(ele);
+            var str = $("#inputweixin_number").val();
+            var openid = ele.attr("data-id");
+            $("#inputweixin_number").val(str.replace(openid+",",""));
+            ele.remove();
+            $cont = $(".js_weixin_number_list");
+
+        }
+
+        $(function(){
+            $(".js_weixin_number_list").click(function(ev){
+                $ele = $(ev.target);
+                if($ele.hasClass("js_removed")){
+                    removeWeixinNumber($ele.parent());
+                }
+            });
+
+            wxuploadimg.init({cont:".wxuploaderimg"});
+
+            $(".baidumap_position").baidumap();
+
+
+            $("#user_select2").select2({
+                placeholder: "输入用户id或昵称查询"	,
+                language: "zh-CN",
+                ajax: {
+                    url: "{:url('Wxuser/select')}",
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        var queryParameters = {
+                            q: params.term
+                        }
+                        return queryParameters;
+
+                    },
+                    processResults: function (data, page) {
+                        if(!data.info){
+                            data.info = new Array();
+                            data.info['nodata']="无相关数据";
+                        }
+                        // parse the results into the format expected by Select2.
+                        // since we are using custom formatting functions we do not need to
+                        // alter the remote JSON data
+                        return {
+                            results: data.info
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0,
+                templateSelection: function (repo) {
+                    var selection = repo.nickname || repo.text;
+                    if(repo.nickname){
+                        var openid = repo.openid;
+                        console.log(repo);
+                        if($("#inputweixin_number").val().indexOf(openid) === -1){
+                            appendWeixinNumber(selection,openid);
+                        }
+
+                    }
+                    return selection;
+                },
+                templateResult: function (repo) {
+
+                    if (repo.loading) return repo.text;
+                    if(repo.nodata) return repo.nodata;
+//    				var markup = '<div>'+repo.nickname+'</div>';
+                    var markup = '<div><img src="'+repo.avatar+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+                    return markup;
+                },
+            });
+
+        })
+    </script>
+{/block}

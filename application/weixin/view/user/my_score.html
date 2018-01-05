@@ -1,0 +1,37 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/my_score/style.css">
+{/block}
+{block name="body"}
+<div class="my-score-box">
+    <div class="my-score-head">
+        <div class="my-score-img"><img src="__IMG__/user/wallet.png" alt=""></div>
+    </div>
+    <div class="my-score-store">提现积分 <span>{$user_Info['wallet']['cash_points']/100}</span></div>
+    <div class="my-score-store">库存积分 <span>{$user_Info['wallet']['stock_points']/100}</span></div>
+    <span>库存信息：</span>
+    {if condition="$stock == ''"}
+    <span>暂无库存</span>
+    {else/}
+    {volist name='stock' id='vo'}
+    <div>
+        <span>{$vo.product_name}</span>:
+        <span>{$vo.count}</span>件
+    </div>
+    {/volist}
+    {/if}
+    <a href="{:url('user/wallet_in')}">
+        <button class="weui-btn weui-btn_primary">充值库存积分</button>
+    </a>
+    <a href="{:url('user/withdraw_cash')}">
+        <button style="margin:30px 10%;width:80%;" class="weui-btn weui-btn_plain-default">提现积分</button>
+    </a>
+    <!--<a href="{:url('shop/product_stock')}">
+        <button class="weui-btn weui-btn_plain-default">充值库存积分</button>
+    </a>-->
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+{/block}

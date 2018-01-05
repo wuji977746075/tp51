@@ -1,0 +1,211 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+<style type="text/css">
+    .vertical-align-middle>td{
+        vertical-align: middle!important;
+    }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="h4"><b>提现审核</b>  - <a title="请线下完成打款后,再点击通过;通过后用户账户余额将减少;如驳回成功将删除申请记录" data-toggle="tooltip" data-placement="right">说明</a></div>
+
+        <div class="filter-controls">
+            <form class="form-inline searchForm" method="post" action="{:url('Withdraw/verify')}">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-user"></i>提现用户</div>
+                        <select id="user_select2" name="uid" style="width: 360px;">
+                            {if condition="$uid gt 0"}<option value='{$uid}' selected="selected">[id:{$uid}] {$nickname}</option>{/if}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="input-group">
+                        <div class="input-group-addon">时间<i class="fa fa-calendar"></i></div>
+                        <input type="text" name="startdatetime" id="startdatetime" class="form-control input-short" value="{:date('Y-m-d H:i:s',$startdatetime)}" />
+                        <div class="input-group-addon">
+                            <i class="fa fa-long-arrow-right"></i>
+                        </div>
+                        <input type="text" name="enddatetime" id="enddatetime" class="form-control input-short" value="{:date('Y-m-d H:i:s',$enddatetime)}" />
+                    </div>
+                    <button type="submit" class="btn btn-default"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-condensed table-hover table-condensed">
+                <thead>
+                <th>申请记录ID</th>
+                <th>提现用户头像/昵称(id)</th>
+                <th>提现用户手机号</th>
+                <th>提现类型<br/>账号(真实姓名)</th>
+                <th>开户行</th>
+                <th>提现金额</th>
+                <th>提现信息</th>
+                <th>申请提现时间</th>
+                <th>操作</th>
+                </thead>
+                <tbody>
+                {empty name="list"}
+                <tr>
+                    <td colspan="9" class="text-center">{:L('NO_DATA')}</td>
+                </tr>
+                {else/}
+                {volist name="list" id="vo"}
+                <tr class="vertical-align-middle">
+                    <td>{$vo.id}</td>
+                    <td>
+                        <a href="{:url('Member/view',array('id'=>$vo['uid']))}">
+                            <img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],60)}" />
+                            {$vo.nickname|default='--'}({$vo.uid})
+                        </a>
+                    </td>
+                    <td>{$vo.mobile}</td>
+                    <td>{$vo.wa_extra}<br/>
+                        <span class="text-warning">{$vo.account}
+                            ({notempty name="vo.real_name"}{$vo.real_name}
+                            {else}<span class="label-danger" style="color: #ffffff;">【缺失】</span>
+                            {/notempty})
+                        </span></td>
+                    <td>
+                        {notempty name="vo.open_bank"}
+                        {$vo.open_bank}
+                        {else /}
+                        <span class="label-danger" style="color: #ffffff;">【缺失】</span>
+                        {/notempty}</td>
+                    <td>{:number_format($vo.money/100.0,2,".","")}</td>
+                    <td>{$vo.reason}</td>
+                    <td>{:date("Y-m-d H:i:s",$vo['create_time'])}</td>
+                    <td>
+                        <a class="ajax-get btn btn-xs btn-primary confirm" href="{:url('Withdraw/pass',array('id'=>$vo['id']))}"><i class="fa fa-check"></i>通过</a>
+                        {eq name="vo.account_type" value="银行卡"}
+                        <a class="ajax-get btn btn-xs btn-primary confirm hide" href="{:url('Withdraw/passAndPay',array('id'=>$vo['id']))}"><i class="fa fa-check"></i>通过并打款</a>
+                        {/eq}
+                        <a data-id="{$vo.id}" class="j_deny btn btn-xs btn-danger" href="javascript:void(0)"><i class="fa fa-reply"></i>驳回</a>
+                    </td>
+                </tr>
+                {/volist}
+                {/empty}
+                </tbody>
+            </table>
+            <div>{$show}</div>
+        </div>
+
+    </div>
+    <!-- END admin-main-content -->
+    <!-- Modal -->
+    <div class="modal fade" id="denyModal" tabindex="-1"  role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="z-index: 100000000">
+            <div class="modal-content">
+                <form class="deny_form">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">驳回表单</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="" class="j_id" />
+                    <textarea name="deny_reason" class="form-control" placeholder="请输入驳回理由"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary ajax-post" target-form="deny_form" href="{:url('Admin/Withdraw/deny')}">保存</button>
+                </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+<script type="text/javascript">
+    $(function(){
+
+        $(".j_deny").each(function(index,item){
+
+            $(item).click(function(ele){
+                console.log($(ele));
+                var id = $(ele.target).data("id");
+                $("#denyModal .j_id").val(id);
+                $("#denyModal").modal().show();
+            });
+
+        });
+
+        $('#startdatetime').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d',
+            timepicker:false,
+        });
+        $('#enddatetime').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d',
+            timepicker:false,
+        });
+        $(".status").click(function(){
+            $(".searchForm").submit();
+        })
+        $("#user_select2").select2({
+            placeholder: "输入用户id或昵称查询"	,
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+
+                },
+                processResults: function (result, page) {
+                    if(!result.data){
+                        result.data = new Array();
+                        result.data['nodata']="无相关数据";
+                    }
+                    // parse the results into the format expected by Select2.
+                    // since we are using custom formatting functions we do not need to
+                    // alter the remote JSON data
+                    return {
+                        results: result.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                return repo.nickname ? '[id:'+repo.id+'] '+repo.nickname: repo.text;
+            },
+            templateResult: function (repo) {
+
+                if (repo.loading) return repo.text;
+                if(repo.nodata) return repo.nodata;
+//    				var markup = '<div>'+repo.nickname+'</div>';
+                var markup = '<div><img class="m-avatar" src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+                return $(markup);
+            },
+        });
+    });
+</script>
+{/block}

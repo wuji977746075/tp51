@@ -1,0 +1,79 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/jquery.validate.min.js"></script>
+	<script type="text/javascript" src="__CDN__/jquery-validation/1.13.1/localization/messages_zh.min.js"></script>
+
+	<style type="text/css">
+		input.error {
+			border: 1px solid red;
+		}
+		
+		label.checked {
+			
+			padding-left: 25px;
+		}
+		
+		label.error {
+			padding-left: 25px;
+			padding-bottom: 2px;
+			font-weight: bold;
+			color: #EA5200;
+		}
+	</style>
+
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+			<!-- 带验证 form -->
+			<form id="registerForm" class="form-horizontal well validateForm">
+				<fieldset>
+					<legend>
+						余额增加</legend>
+
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">当前余额</label>
+						<div class="col-md-10 col-lg-10">
+							<h3>{:number_format($wallet['account_balance']/100.0,2,".","")}</h3>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 col-lg-2 control-label">增加余额</label>
+						<div class="col-md-10 col-lg-10">
+							<input type="text" class="required form-control input-short" name="money" value="100.0"  placeholder="请输入增加的钱（正数）">
+							<div class="help-block">(余额单位：元)</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="btns" class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+						<div class="col-lg-10 col-md-10">
+							<a target-form="validateForm" class="ajax-post btn btn-primary" href="{:url('Member/addMoney',['id'=>$wallet['uid']])}" autofocus="autofocus"><i class="fa fa-save"></i> {:L('BTN_SAVE')}</a>
+							<a class="btn btn-default" href="{:url(''.CONTROLLER_NAME.'/index')}"><i class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+			<!-- form -->
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+	<script type="text/javascript">
+		$(function() {
+
+		}); //end ready
+	</script>
+
+{/block}

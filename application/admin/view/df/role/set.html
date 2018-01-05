@@ -1,0 +1,53 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+{/block}
+
+{block name="area_body"}
+<div class="page-header">
+  <div class="page-title"><i></i>
+    角色{$op ?: ''}
+  </div>
+</div>
+<form class="layui-form layui-form-pane post-form">
+  <div class="layui-form-item">
+    <label for="js-name" class="layui-form-label">{$jsf.name}</label>
+    <div class="layui-input-inline">
+      <input type="text" name="name" id="js-name" value="{$id ?= $info.name}" class="layui-input" placeholder="请输入角色名"  autocomplete="off" required  lay-verify="required" >
+    </div>
+    <div class="layui-form-mid layui-word-aux">32字以内</div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-desc" class="layui-form-label">{$jsf.desc}</label>
+    <div class="layui-input-inline  input-long">
+      <textarea name="desc" id="jsf-desc" value="{$id ?= $info.desc}" placeholder="角色描述" class="layui-textarea"></textarea>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-status" class="layui-form-label">{$jsf.status}</label>
+    <div class="layui-input-inline">
+      <input type="number" min="0" name="status" id="jsf-status" value="{$id ?= $info.status}" placeholder="" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux"> ...</div>
+  </div>
+
+  <div class="layui-form-item layui-input-block">
+      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" >{$op ?: ''}</button>
+      {$html_return|raw}
+  </div>
+</form>
+{/block}
+
+{block name="area_foot"}
+<script>
+// page init
+layui.use(['rb','form'], function(){
+  var layer = layui.layer,
+  form = layui.form,
+  rb = layui.rb,
+  $ = layui.$;
+
+  rb.log('page','init');
+});
+</script>
+{/block}

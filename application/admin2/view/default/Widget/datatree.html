@@ -1,0 +1,7 @@
+{volist name="list" id="vo"}
+    {eq name="showCode" value="1"}
+        <option value="{$vo['code']}"  {eq name="vo['code']" value="$checkedID"}selected="selected"{/eq} >{$vo.title_show}</option>
+        {else/}
+        <option value="{$vo['id']}"  {eq name="vo['id']" value="$checkedID"}selected="selected"{/eq} >{$vo.title_show}</option>
+    {/eq}
+{/volist}

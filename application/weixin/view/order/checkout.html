@@ -1,0 +1,189 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/checkout/index.css">
+{/block}
+{block name="body"}
+<div class="submit-order">
+    <div class="submit-order-img"><img src="__IMG__/shop/submit-order.png"></div>
+    <div class="submit-order-address" data-id="{$default_id}">
+        <div class="submit-order-address-left">
+            <div><span class="submit-order-address-name">{$default_info.contactname}</span><span class="submit-order-address-phone">{$default_info.mobile}</span></div>
+            <div class="submit-order-address-detail">{$default_info.province.$default_info.city.$default_info.area.$default_info.detailinfo}</div>
+        </div>
+        <div class="submit-order-address-right anticon anticon-right"></div>
+    </div>
+    <div class="submit-order-product" data-id="{$info['id']}">
+        <div class="submit-order-product-left">{$info['name']}</div>
+        <div class="submit-order-product-right">
+            <div class="submit-order-product-money">{$price['real_price']/100}积分</div><br/>
+            <!--<div class="submit-order-product-num">x1</div>-->
+        </div>
+    </div>
+    <div class="submit-order-item-num">
+        <div class="submit-order-product-left"><span>数量：</span></div>
+        <div class="submit-order-product-right">
+            <span class="product-detail-plus">+</span>
+            <input class="product-detail-num" type="number" value="1" />
+            <span class="product-detail-minus">-</span>
+        </div>
+    </div>
+    <div class="submit-order-item">
+        <div class="submit-order-item-left">运费</div>
+        <div class="submit-order-item-right">包邮</div>
+    </div>
+    <div class="submit-order-item">
+        <div class="submit-order-item-left">总计</div>
+        <div class="submit-order-item-right"><span class="total-price">{$price['totalprice']/100}</span>积分</div>
+    </div>
+</div>
+<div class="submit-order-btn">
+    <div class="submit-order-btn-left">总计： <span><span class="total-price">{$price['totalprice']/100}</span>积分</span></div>
+    <button class="submit-order-btn-right">确定</button>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+    var buy_status = {$buy_status};
+    var pay_order = function(address_id,pid,count,type){
+        if(address_id==''){
+            $.toast('请选择收货地址', "cancel");
+            return;
+        }
+
+        var form = $('<form></form>');
+        var action = '';
+        if(buy_status == 2){
+            action =getBaseUrl() + '/weixin/order/up_level';
+        }else if(buy_status == 1){
+            action =getBaseUrl() + '/weixin/order/product_order';
+        }else if(buy_status == 3){
+            action =getBaseUrl() + '/weixin/order/product_stock';
+        }
+        form.attr({action:action,method:'post',target:'_self'});
+        var address_input = $('<input type="text" name="addressid" />');
+        address_input.attr('value',address_id);
+        var pid_input = $('<input type="text" name="pid" />');
+        pid_input.attr('value',pid);
+        var count_input = $('<input type="num" name="count" />');
+        count_input.attr('value',count);
+        var type_input = $('<input type="text" name="type" />');
+        type_input.attr('value',type);
+        form.append(address_input);
+        form.append(pid_input);
+        form.append(count_input);
+        form.append(type_input);
+        $('body').append(form);
+        form.submit().remove();
+    };
+    $('.submit-order-btn-right').click(function(){
+        var address_id = $('.submit-order-address').attr('data-id');
+        address_id=address_id!=0?address_id:'';
+        var pid = $('.submit-order-product').attr('data-id');
+        var count = $('.product-detail-num').val();
+        var type = {$type};
+        pay_order(address_id,pid,count,type);
+    });
+    //选择地址
+
+    var address = {$address};
+    var default_id = {$default_id};
+    var ACTIONS = [];
+    if(address.length != 0 ){
+        ACTIONS = address.map(function(val){
+            if(val.id == default_id){
+                return(
+                    {
+                        text: '默认：'+val.contactname+','+val.mobile+','+val.province+val.city+val.area+val.detailinfo,
+                        className: "color-primary",
+                        onClick: function() {
+                            $(".submit-order-address-name").text(val.contactname);
+                            $(".submit-order-address-phone").text(val.mobile);
+                            $(".submit-order-address-detail").text(val.province+val.city+val.area+val.detailinfo);
+                            $('.submit-order-address').attr('data-id',val.id)
+                        }
+                    }
+                )
+            }else{
+                return(
+                    {
+                        text: val.contactname+','+val.mobile+','+val.province+val.city+val.area+val.detailinfo,
+                        onClick: function() {
+                            $(".submit-order-address-name").text(val.contactname);
+                            $(".submit-order-address-phone").text(val.mobile);
+                            $(".submit-order-address-detail").text(val.province+val.city+val.area+val.detailinfo);
+                            $('.submit-order-address').attr('data-id',val.id)
+                        }
+                    }
+                )
+            }
+        });
+    }
+    ACTIONS.unshift(
+            {
+                text: "新增收货地址",
+                className: "bg-primary",
+                onClick: function() {
+                    window.location.href = 'http://dehong.8raw.com/weixin.php/weixin/address/address_add.html';
+                }
+            }
+    );
+    $(".submit-order-address").click(function() {
+        $.actions({
+            title: "选择地址",
+            onClose: function() {
+
+            },
+            actions: ACTIONS
+        });
+        if(ACTIONS.length>5){
+            $('.weui-actionsheet').css('position','relative');
+        }
+        //更改主题色
+        $('.bg-primary').css('background','#f5aa75');
+        $('.color-primary').css('color','#f5aa75');
+    });
+    //数量在1-9999之间
+    $('.product-detail-num').blur(function(){
+        var $product_detail_num = parseInt($(this).val());
+        $product_detail_num = isNaN($product_detail_num) ? 1 : $product_detail_num;
+        $product_detail_num = $product_detail_num>9999?9999:$product_detail_num;
+        $product_detail_num = $product_detail_num<1?1:$product_detail_num;
+        $(this).val($product_detail_num);
+        //设置各个地方的总价
+        var price = {$price['real_price']};
+        var pro_num = $('.product-detail-num').val();
+        var total_price = price*pro_num/100;
+        $('.total-price').text(total_price);
+    });
+    //数量加减
+    $('.product-detail-plus').click(function(){
+        var $num = parseInt($(this).parent().children('.product-detail-num').val());
+        var num = $num?$num:1;
+        if(num>=9999){
+            $(this).parent().children('.product-detail-num').val(9999);
+        }else{
+            $(this).parent().children('.product-detail-num').val(num + 1);
+        }
+        //设置各个地方的总价
+        var price = {$price['real_price']};
+        var pro_num = $('.product-detail-num').val();
+        var total_price = price*pro_num/100;
+        $('.total-price').text(total_price);
+    });
+    $('.product-detail-minus').click(function(){
+        var $num = parseInt($(this).parent().children('.product-detail-num').val());
+        var num = $num?$num:1;
+        $(this).parent().children('.product-detail-num').val(num - 1);
+        if(num<2){
+            $(this).parent().children('.product-detail-num').val(1);
+        }
+        //设置各个地方的总价
+        var price = {$price['real_price']};
+        var pro_num = $('.product-detail-num').val();
+        var total_price = price*pro_num/100;
+        $('.total-price').text(total_price);
+    });
+</script>
+{/block}

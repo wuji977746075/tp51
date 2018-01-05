@@ -1,0 +1,95 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+{/block}
+
+{block name="area_body"}
+    {include file="default/Widget/topbar" /}
+    <div class="admin-main container-fluid">
+        {include file="default/Widget/left" /}
+        <div class="admin-main-content">
+            {include file="default/Widget/breadcrumb" /}
+            <div class="table-responsive well">
+                <!-- 过滤\查询按钮 -->
+                <div class="filter-controls">
+                    <form action="{:url(CONTROLLER_NAME.'/search',array('status'=>$status))}" class="memberForm form-inline" method="post" >
+
+                        <div class="form-group">
+                            <label class="control-label">积分商品名或兑换ID</label>
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="kword" placeholder="积分商品名或兑换ID" value="{$kword}"/>
+                                <input type="hidden" name="status" value="{$status|default=99}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="input-group">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-search"></i>查询</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <!-- 操作按钮 -->
+                <div class="btn-controls">
+                    <a class="btn btn-sm <if condition='$status eq 99'>btn-default{else /}btn-primary</if>" href="{:url(CONTROLLER_NAME.'/search',array('status'=>99,'kword'=>$kword))}">所有</a>
+                    <a class="btn btn-sm <if condition='$status eq 0'>btn-default{else /}btn-primary</if>" href="{:url(CONTROLLER_NAME.'/search',array('status'=>0,'kword'=>$kword))}">待发货</a>
+                    <a class="btn btn-sm <if condition='$status eq -1'>btn-default{else /}btn-primary</if>" href="{:url(CONTROLLER_NAME.'/search',array('status'=>-1,'kword'=>$kword))}">待付款</a>
+                    <a class="btn btn-sm <if condition='$status eq -2'>btn-default{else /}btn-primary</if>" href="{:url(CONTROLLER_NAME.'/search',array('status'=>-2,'kword'=>$kword))}">回收站</a>
+                </div>
+
+                <table class="table table-striped table table-hover  table-condensed">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名称</th>
+                        <th>兑换用户</th>
+                        <th>状态</th>
+                        <th>兑换时间</th>
+                        <th>积分</th>
+                        <th>金额</th>
+                        <th>{:L('OPERATOR')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {empty name="list"}
+                        <tr>
+                            <td colspan="6" class="text-center">{:L('NO_DATA')}</td>
+                        </tr>
+                        {else/}
+{volist name="list" id="vo"}
+<tr>
+    <td>{$vo.id}</td>
+    <td data-id="{$vo.id}">
+        <a href="{:url(CONTROLLER_NAME.'/edit',array('id'=>$vo['id']))}">{$vo['pname']|default='未知商品'}</a></td>
+    <td><a href="{:url('CustomerInfo/index',array('id'=>$vo['uid']))}"><empty name='vo.nickname'>用户{$vo.uid}{else /}{$vo.nickname}{/empty}</a></td>
+    <td>
+<switch name="vo.exchange_status">
+    <case value="1">已发货</case>
+    <case value="0">待发货 &nbsp;<a href="{:url('ScoreExLog/express',array('id'=>$vo['id']))}">去发货</a></case>
+    <case value="-1">待付款</case>
+    <case value="-2">回收站</case>
+    <default />未知
+</switch></td>
+		<td>{$vo['exchange_time']|date='Y-m-d h:i',###}</td>
+    <td>{$vo.score}积分</td>
+    <td>{$vo.price}RMB</td>
+    <td>
+        <a class="btn btn-sm btn-default" href="{:url(CONTROLLER_NAME.'/edit',array('id'=>$vo['id']))}"><i class="fa fa-edit"  data-loading-text="{:L('BTN_EDIT')}..." ></i>{:L('BTN_EDIT')}</a>
+        <a href="{:url(CONTROLLER_NAME .'/delete',array('id'=>$vo['id']))}" class="btn btn-danger btn-sm ajax-get confirm" ><i class="fa fa-trash-o"></i>回收</a>
+    </td>
+</tr>
+{/volist}
+                    {/empty}
+                    </tbody>
+                </table>
+                <div>{$show}</div>
+            </div>
+        </div>
+        <!-- END admin-main-content -->
+    </div>
+    <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

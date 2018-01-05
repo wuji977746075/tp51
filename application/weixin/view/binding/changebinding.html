@@ -1,0 +1,120 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/address/add_address.css">
+{/block}
+{block name="body"}
+<div class="form">
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">手机号</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" id="phone" name="phone" placeholder="11位手机号码" value="{$memberconfig.mobile}">
+            </div>
+        </div>
+
+        <div class="weui-cell ">
+            <div class="weui-cell__bd"><label class="weui-label">获取验证码</label></div>
+            <div class="weui-cell__bd">
+                <input id="code" class="weui-input" type="text" name="code" placeholder="验证码">
+            </div>
+            <div class="weui-cell__ft">
+                <button id="getcode" class="weui-vcode-btn">获取验证码</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-btn">
+        <button id="submit" class="weui-btn weui-btn_primary">提交</button>
+    </div>
+    <div  style="display: inline-block;width: 80%;margin-left: 10%  " id="content" >
+        <h4>用户须知:</h4>
+        <p>&nbsp &nbsp &nbsp 未绑定手机会导致本平台绝大多数功能无法使用,请用户务必绑定手机号,谢谢合作！</p>
+    </div>
+</div>
+
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+<script type="text/javascript">
+    $('#submit').click(function () {
+        var $phone = $('#phone');
+        var $code = $('#code');
+        if(!$phone.val()||isNaN($phone.val())||$phone.val().length != 11){
+            $.toast("输入11位手机号", "cancel");
+        }else{
+
+
+
+            var body  ={
+               // code:$code.val(),
+                mobile:$phone.val(),
+                code:$code.val()
+
+        };
+            var $this = $(this);
+            $this.addClass('weui-btn_disabled').attr('disabled','disabled');
+            ajax_post(getBaseUrl()+'/weixin/binding/changebinding',jQuery.param(body),{
+                success:function(data){
+                    $.toast("更新成功", function() {
+                        console.log('close');
+                    });
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                    setTimeout(
+                        function(){
+
+                            location.href="http://dehong.8raw.com/weixin.php/weixin/index/index.html"
+                        }
+                    ,1500);
+
+                },
+                error:function(data){
+                    $.toptip(data.msg, 'error');
+                    $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+                }
+            })
+        }
+
+    });
+
+    var wait=60;
+    function time(o) {
+        if (wait == 0) {
+            o.removeAttribute("disabled");
+            o.innerHTML="免费获取验证码";
+            wait = 60;
+        } else {
+            o.setAttribute("disabled", true);
+            o.innerHTML="重新发送(" + wait + ")";
+            wait--;
+            setTimeout(function() {
+                        time(o)
+                    },
+                    1000)
+        }
+    }
+    //document.getElementById("btn").onclick=function(){time(this);}
+    $('#getcode').click(function(){
+        time(this);
+        var $phone=$('#phone');
+        var body  ={
+            // code:$code.val(),
+            mobile:$phone.val()
+
+        };
+        var $this = $(this);
+
+        ajax_post(getBaseUrl()+'/weixin/binding/send_sms',jQuery.param(body),{
+            success:function(data){
+                $.toptip(data.msg, 'success');
+                $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+            },
+            error:function(data){
+                $.toptip(data.msg, 'error');
+                $this.removeClass('weui-btn_disabled').removeAttr("disabled");
+            }
+        });
+    });
+
+
+</script>
+{/block}

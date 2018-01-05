@@ -1,0 +1,31 @@
+{extend name="template/base_default"}
+{block name="header"}
+<link rel="stylesheet" href="__CSS__/common.css">
+<link rel="stylesheet" href="__CSS__/buy_success/style.css">
+{/block}
+{block name="body"}
+<div class="buy-success-box">
+    <div class="buy-success-head">
+        <div class="buy-success-head1"><i class="weui-icon-success weui-icon_msg"></i><span>购买成功</span></div>
+        <div class="buy-success-head2">购买成功，您已成功购买<span>{$money}</span>积分</div>
+    </div>
+    <div class="buy-success-item">
+        <span class="buy-success-item-left">订单号码：</span>
+        <span class="buy-success-item-right">{$order_code}</span>
+    </div>
+    <div class="buy-success-item">
+        <span class="buy-success-item-left">购买积分：</span>
+        <span class="buy-success-item-right">{$money}</span>
+    </div>
+    <div class="buy-success-item">
+        <span class="buy-success-item-left">购买时间：</span>
+        <span class="buy-success-item-right">{$time|date='Y-m-d H:i:s',###}</span>
+    </div>
+    <a href="{:url('index/index')}">
+        <button class="weui-btn weui-btn_primary buy-success-btn">回到首页</button>
+    </a>
+</div>
+{/block}
+{block name="footer"}
+<script type="text/javascript" src="__JS__/public.js"></script>
+{/block}

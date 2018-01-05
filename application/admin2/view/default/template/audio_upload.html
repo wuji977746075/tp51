@@ -1,0 +1,463 @@
+<style>
+
+.imgs-container .imgs-list .img-item{ width:120px; }
+.imgs-container .imgs-list .img-item .thumbnail:hover { border: 1px solid #069; }
+.img-selected:after{ width: 110px;height: 110px;line-height: 110px; }
+.wxuploaderaudio{  width: 100%; }
+.wxuploaderaudio .add {
+  display: inline-block;
+  border: 1px dotted #d9dadc;
+  line-height: 60px;
+  font-size: 16px;
+  text-align: center;
+  width: 110px;
+  line-height: 110px;
+  color: #d9dadc;
+  cursor: pointer;
+  float: left;
+}
+.wxuploaderaudio .audio-preview{
+  display: none;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 30px;
+  color: #48576A;
+  float: left;
+}
+.wxuploaderaudio .img-item { border: none !important;width: 110px;height: 140px; }
+.wxuploaderaudio .audio-preview div{ position: relative;cursor: pointer; }
+.img-item .thumbnail{
+  height:110px;
+  width:110px;
+  margin-bottom: 0px !important;
+}
+.wxuploaderaudio .audio-preview div:hover .edit_pic_wrp{  display:block; }
+.wxuploaderaudio .audio-preview .edit_pic_wrp{
+  position:absolute;
+  color:#d9dadc;
+  width: 100%;
+  height: 25px;
+  background: rgba(229,229,229,0.9)!important;
+  filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#e6e5e5e5',endcolorstr = '#e6e5e5e5');
+  text-align: center;
+  display: none;
+  left: 0;
+  bottom: 0;
+}
+
+.wxuploaderaudio .audio-preview .edit_pic_wrp a{
+  position: absolute;bottom: 5px;left: 50%;margin-left: -10px; }
+.wxuploaderaudio .add:hover {  border-color: #b3b3b3;color: #b3b3b3; }
+.wxuploaderaudio.checked .add { display: none; }
+.wxuploaderaudio.checked .audio-preview{ display:block; }
+</style>
+<!-- 题目题面/录音/答案管理 ,心累,多选不行,需要改 -->
+<!-- Modal -->
+<div class="modal " id="wxuploadaudio" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">选择音频 (善用搜索,上传不了可尝试改名上传)</h4>
+      </div>
+      <div class="modal-body clearfix">
+
+        <div class="col-lg-12 col-md-12 form-inline">
+          <input type="date" name="time" class="time form-control" placeholder="默认全部">
+          <input type="text" name="q"  class="form-control" placeholder="输入文件名查找" />
+          <button class="btn btn-sm btn-primary js_search" type="button" ><i class="fa fa-search"></i>查找</button>
+          <button class="btn btn-sm btn-primary" type="button" onclick="removeAudio()"><i class=""></i>删除</button>
+        </div>
+        <!--<div class="col-lg-2 col-md-2">
+
+        </div>-->
+        <div class="col-lg-12 col-md-12">
+          <div class="btns pull-right"><a href="javascript:void(0);" id="upload_audio"><i class="fa fa-upload"></i>本地上传</a>
+          </div>
+          <div class="imgs-container pull-left">
+            <div class="loading">
+              <img src="__CDN__/common/loading.gif" />
+            </div>
+            <div class="imgs-list clearfix"></div>
+            <div class="pager"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="pull-left">已选<span class="js_checked"></span>段,可选<span class="js_total"></span>段</div>
+        <button type="button" class="btn btn-primary js_check_img"><i class="fa fa-check"></i>确定</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times-circle"></i>取消</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+//设置选择的音频id
+  var audioIds=new Array();
+  function getImg(d){
+    var id = $(d).data('id');
+    console.log('id',id);
+    if(!$(d).parent().hasClass("img-selected")){
+      if($.inArray(id,audioIds) == -1){
+          audioIds.push(id);
+      }
+    }else{
+      if($.inArray(id,audioIds) != -1) {
+          audioIds.remove(id);
+      }
+    }
+  }
+//音频播放/停止 - ok
+  var audio = document.createElement("audio");
+  function playControll(d){
+    var $i = $(d).find('i');
+    var path = $(d).data('path');
+    if($i.hasClass('fa-play')){
+      audio.src = path;
+      audio.play();
+      $i.removeClass('fa-play').addClass('fa-pause');
+    }else if($i.hasClass('fa-pause')){
+      audio.src = path;
+      audio.pause();
+      $i.removeClass('fa-pause').addClass('fa-play');
+    }
+  }
+//modal - 删除音频
+  function removeAudio(){
+    console.log(imgIds);
+
+    if(confirm("你真的要删除录音吗？如果有书籍正在使用将无法正常收听！！！")){
+      $.ajax({
+        type:"POST",
+        url:"{:url('File/delAudio')}",
+        data:{
+          imgIds:imgIds
+        },
+        context:window,
+        dataType: "json",
+
+        success:function(data){
+            console.log(data);
+            if(data.status == 1){
+                console.info(data);
+                imgIds.length = 0;
+
+                window.wxuploadaudio.setChecked(0);
+                window.wxuploadaudio.queryImgList();
+            }else{
+                alert(data.info);
+            }
+        }
+      })
+      return false;
+    }
+    return false;
+  }
+
+  function getTimeDesc(t){
+    var m = parseInt(t/60); //分钟
+    var s = t%60;
+    return m+':'+(s<10 ? '0'+s : s);
+  }
+
+  window.wxuploadaudio = (function() {
+    var pager = {
+      index: 0,
+      size: 10, //页面数
+    };
+    var checked = 0;
+    var hadBind = false;
+    /**
+     * 添加modal列表数据
+     */
+    function appendImgList(list) {
+      if (list) {
+        $cont = $("#wxuploadaudio .imgs-list").empty();
+        for (var i = 0; i < list.length; i++) {
+          var item = list[i];
+          var name = item.ori_name;
+          var path = item.path;
+          var desc = getTimeDesc(item.duration);
+          // imgsrc = '{:config("site_url")}'+list[i].path;
+          $item = $("<div class='img-item '><div onclick='getImg(this)' class='thumbnail js_img_click' data-id='"+ item.id+"' data-name='"+name+"' data-desc='"+desc+"' data-path='"+path+"'>"+name+"</div><p class='img-desc'  onclick='playControll(this)' data-path='"+path+"'><i class='fa fa-play'></i> " + desc + "</p></div>");
+          $cont.append($item);
+        }
+      }else{
+        $("#wxuploadaudio .imgs-list").html("");
+      }
+    }
+
+    /**
+     * 处理点击事件 - 分页/图片/播放/暂停
+     */
+    function pagerClick(){
+
+      $("#wxuploadaudio .imgs-container").click(function(ev){
+        // console.log(ev);
+        $target = $(ev.target);
+        if($target.hasClass("img-selected")){
+          $target.removeClass("img-selected");
+          checked--;
+          $("#wxuploadaudio .js_checked").text(parseInt($("#wxuploadaudio .js_checked").text())-1);
+        }
+        if($target.hasClass("js_img_click")){ //点选图片
+          console.log("*******************************************");
+          console.log(checked,window.wxuploadaudio.setting.MaxChecked);
+          console.log("*******************************************");
+          if(checked == window.wxuploadaudio.setting.MaxChecked){
+            var len = $(".audio-preview .thumbnail",window.wxuploadaudio.current).length;
+
+            $.scojs_message('最多可选'+(wxuploadaudio.setting.MaxChecked-len)+'张!', $.scojs_message.TYPE_OK);
+          }
+
+          if(checked < window.wxuploadaudio.setting.MaxChecked){
+            $target.parent().addClass("img-selected");
+            checked++;
+            $("#wxuploadaudio .js_checked").text(parseInt($("#wxuploadaudio .js_checked").text())+1);
+          }
+        }
+        // console.log($target);
+        ev.preventDefault();
+        if($target.hasClass("num")){
+          pager.index = parseInt($target.text());
+          queryImgList();
+          ev.preventDefault();
+        }else if($target.hasClass("next")){ //下一页
+          pager.index = pager.index+1;
+          queryImgList();
+          ev.preventDefault();
+        }else if($target.hasClass("prev")){ //上一页
+          pager.index = pager.index-1;
+          if(pager.index <0 ){
+            pager.index = 0;
+          }
+          queryImgList();
+          ev.preventDefault();
+        }
+
+      });
+    }
+/**
+ * 查询音频列表
+ */
+    function queryImgList() {
+
+      var q = $("#wxuploadaudio input[name='q']").val();
+      var time = $("#wxuploadaudio input[name='time']").val();
+      $.ajax({
+        type: "post",
+        url: "{:url('File/audiolist')}?p="+wxuploadaudio.pager.index,
+        data: {
+          time:time,
+          q:q,
+          size: wxuploadaudio.pager.size
+        },
+        dataType: "json",
+        beforeSend: function() {
+          $("#wxuploadaudio .imgs-container .loading").removeClass("hidden");
+        }
+      }).done(function(data) {
+        if (data.status) {
+          var info = data.info;
+          var list = info.list;
+          var show = info.show;
+          appendImgList(list);
+          $("#wxuploadaudio .imgs-container .pager").html(show);
+        }
+      }).always(function() {
+        $("#wxuploadaudio .imgs-container .loading").addClass("hidden");
+      });
+    }
+
+    function clearSelected(){
+      $("#wxuploadaudio .img-item.img-selected").removeClass("img-selected");
+    }
+
+    var i=0;
+    /**
+     * callback
+     * @param {Object} cont 触发模态框的选择器
+     * @param {Object} callback 选中图片后的触发器
+     */
+    function init(setting){
+      // console.log(hadBind);
+      console.log(i++);
+      if(setting.callback){
+        wxuploadaudio.callBack = setting.callback;
+      }
+      if(setting.reinit) {
+        wxuploadaudio.setting.reinit = false;
+      }
+      wxuploadaudio.setting = $.extend({},wxuploadaudio.setting, setting);
+      pager.size = setting.size || pager.size;
+//上传按钮点击处理
+      $(".add",wxuploadaudio.setting.cont).each(function(index,item){
+        $(item).click(function(ev){
+         // console.log(this);
+          $ele = $(this);
+         // if($ele.hasClass('add')){
+          window.wxuploadaudio.current =  $ele.parent();
+          open($(window.wxuploadaudio.current).data("maxitems"));
+          clearSelected();
+         // }
+        });
+      });
+      queryImgList();
+        //删除预览
+      $(".audio-preview",wxuploadaudio.setting.cont).click(function(ev){
+          // console.log("当前点击的是",$(ev.target));
+          window.wxuploadaudio.current = $(ev.target).parents(".wxuploadaudio");
+          if($(ev.target).hasClass("js_delete_audio")){
+              // console.log($(ev.target));
+              $('.img-item-show','.audio-preview').addClass('hide')
+              $('.img-item-add','.audio-preview').removeClass('hide');
+              $('#js-audio-id').val('');
+              // var len = $(".audio-preview img",window.wxuploadaudio.current).length;
+              // console.log($(".audio-preview img",window.wxuploadaudio.current));
+              // console.log(len);
+              //已全部选择
+              // if(len == 0){
+              //   $(".audio-preview",window.wxuploadaudio.current).hide();
+              //   $(window.wxuploadaudio.current).removeClass("checked");
+              //   $(".add",window.wxuploadaudio.current).show();
+              // }
+              //还剩余
+              // if(len < wxuploadaudio.setting.MaxChecked){
+              //   $(".add",window.wxuploadaudio.current).show();
+              // }
+          }
+          ev.preventDefault();
+          ev.stopPropagation();
+      });
+      // 预览图片
+      if(!hadBind){
+
+        //使用此标志来防止 当调用多次init方法来初始化时，#wxuploadaudio绑定了多次click监听器
+        pagerClick();
+//确认选中图片 - 事件
+        $("#wxuploadaudio .js_check_img").click(function(){
+
+          window.wxuploadaudio.setting.callback = wxuploadaudio.setting.callback || callback;
+          console.log(this);
+          window.wxuploadaudio.setting.callback.apply(this,$(".imgs-container .img-selected .js_img_click"));
+
+          if(checked == wxuploadaudio.setting.MaxChecked){
+            $(".add",window.wxuploadaudio.current).hide();
+          }
+          $('#wxuploadaudio').modal("hide");
+
+        });
+
+//查找
+        $(".js_search").click(function(){
+          queryImgList();
+        });//END 查找
+
+      }
+      hadBind = true;
+    }
+//选中图片 - 处理
+    function callback(){
+      console.log('this',this);
+      console.log('arguments',arguments);
+      var data = arguments;
+      var $data = $(data);
+      var id   = $data.data('id');
+      var name = $data.data('name');
+      var path = $data.data('path');
+      var desc = $data.data('desc');
+      $('#js-audio-id').val(id);
+      for(var i=0;i<data.length;i++){
+        var $ele = $('<div class="thumbnail"><p class="img-desc">'+name+'</p></div>'+
+            '<p class="img-desc" onclick="playControll(this)" data-path="' +path +'"><i class="fa fa-play"></i>'+ desc +'</p>'+
+            '<div class="clearfix" style="width: 100%;height: 20px;position: absolute;bottom:30px;left:0;">'+
+            '<div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete_audio"></a></div>'+
+            '</div>');
+        // $ele.prepend($(data[i]).clone());
+        $(".img-item-add",'.wxuploaderaudio').addClass('hide')
+        $(".img-item-show",'.wxuploaderaudio').removeClass('hide').html($ele);
+      }
+    }
+
+    function open(maxchecked){
+      checked = $("#wxuploadaudio .audio-preview img",wxuploadaudio.current).length ;
+      wxuploadaudio.setting.MaxChecked = maxchecked || wxuploadaudio.setting.MaxChecked;
+      $("#wxuploadaudio .js_checked").text(0);
+      $("#wxuploadaudio .js_total").text(wxuploadaudio.setting.MaxChecked - checked);
+      $('#wxuploadaudio').modal("show");
+    }
+//设置选中的数量
+    function setChecked(newchecked){
+        checked = newchecked;
+    }
+    return {
+      setting: {
+        MaxChecked:1,//最多可选图片数
+        size: 10, //每页图片数
+        callback:null //默认回调函数
+      },
+
+      setChecked:setChecked,
+      current:null,
+      pager: pager,
+      appendImgList:appendImgList,
+      pagerClick:pagerClick,
+      queryImgList:queryImgList,
+      init:init,
+    };
+
+  })();
+
+//上传图片
+/* 初始化上传插件  */
+  $("#wxuploadaudio #upload_audio").uploadify({
+    'buttonClass': 'btn btn-primary btn-sm',
+    "height": "30px",
+    "swf": "__UPLOAD__/jquery-uploadify/3.2.1/uploadify.swf",
+    "fileObjName": "audio", //wxshop
+    "buttonText": "<i class='fa fa-upload'></i>本地上传",
+    "uploader": "{:url('File/uploadUserAudio',array('session_id'=>session_id()))}",
+    "width": 120,
+    'removeTimeout': 1,
+    'fileTypeExts': '*.mp3',
+    "onUploadSuccess": uploadPicture
+  });
+
+  function uploadPicture(file, data) {
+    // console.log(data);
+    var data = $.parseJSON(data);
+    console.log(data);
+    var src = '';
+    if (data.status) {
+      $("#wxuploadaudio .js_search").click();
+      // var item = data.info;
+      // var name = item.ori_name;
+      // var path = item.path;
+      // // var desc = getTimeDesc(item.duration); // 未返回
+      // // console.log(path);
+      // $item = $("<div class='img-item '><div onclick='getImg(this)' class='thumbnail js_img_click' data-id='"+ item.id+"' data-name='"+name+"' data-desc='"+desc+"' data-path='"+path+"'>"+name+"</div><p class='img-desc'  onclick='playControll(this)' data-path='"+path+"'><i class='fa fa-play'></i> " + desc + "</p></div>");
+      // $(".imgs-list").prepend($item);
+    } else {
+      $.scojs_message(data.info, $.scojs_message.TYPE_OK);
+    }
+  }
+  $(function(){
+    // var init = '[autoinit]';
+    // if(init == 'true'){
+    //    wxuploadaudio.init({cont:".wxuploaderaudio"});
+    // }
+    if($.fn.datetimepicker){
+      $("#wxuploadaudio input.time").datetimepicker({
+        lang: 'ch',
+        timepicker:false,
+        format:'Y-m-d',
+        formatDate:'Y-m-d'
+      });
+      console.log("日期初始化成功！");
+    }
+  })
+</script>

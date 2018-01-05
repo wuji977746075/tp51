@@ -1,0 +1,249 @@
+{extend name="default/template/base_index" /}
+
+{block name="area_header"}
+
+	<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+	<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+
+	<style type="text/css">
+		.jindu{background: url(__IMG__/jdt1.png) no-repeat;}
+		.jindus{background: url(__IMG__/jdt.png) no-repeat;}
+
+		.stepCarNew{width: 1000px; height: 30px; text-align: center;  margin: 0 auto;}
+		.stepCarNew ul li{width: 142px;  list-style: none; float: left;height: 30px; }
+		.stepCarNew ul li p{padding-top: 5px; padding-left: 8px;color: white;}
+		.t_tp{float: left; display: none; width: 70px; margin-left: -10px; z-index: 9999; background-color: #000000;text-align: center; position: fixed;}
+		.t_tp ul li{ list-style: none; margin-left: -25px; margin-top: 10px;  }
+		.t_tp ul li a{color: white;}
+		.t_tp ul li a:hover{color: #B02751; }
+		.jht:hover{color:#B02751 ;}
+	</style>
+{/block}
+
+{block name="area_body"}
+	{include file="default/Widget/topbar" /}
+	<div class="admin-main container-fluid">
+		{include file="default/Widget/left" /}
+		<div class="admin-main-content">
+			{include file="default/Widget/breadcrumb" /}
+
+			<div class="h4">订单基本信息</div>
+			<form>
+
+				<a href="javascript:history.back(-1);" class="btn btn-default btn-sm"><i class="fa fa-reply"></i>返回</a>
+				<br>
+				<table width="100%" style="background-color: #FFFDF3; margin-top: 10px; font-size: 14px; border: 2px solid #EED97C; ">
+					<tr style="height: 50px;">
+						<td style="padding-left: 50px;">订单：<font color="red">{$order.order_code}</font>
+							&nbsp;&nbsp;&nbsp;下单时间：{$order.createtime|date='Y-m-d H:m:s',###}
+							&nbsp;&nbsp;&nbsp;下单用户：<a href="{:url('Member/view',array('id'=>$order['uid']))}?ret_url=__SELF__">{$order.username|default='--'}</a>
+							&nbsp;&nbsp;&nbsp;当前状态：<font color="green">[{$order.pay_status|getPayStatus}][{$order.order_status|getOrderStatus}]</font>
+							<!-- &nbsp;&nbsp;&nbsp;寄送至：<font color="orangered">{ $order.country},{ $order.province},{ $order.city},{ $order.area},{ $order.detailinfo}</font> -->
+							&nbsp;&nbsp;&nbsp;真实姓名/手机：{$order.realname|default='--'}/{$order.mobile}
+						</td>
+					</tr>
+					<tr style="height: 50px; border-top: 1px solid white;">
+						<td style="padding-left: 50px;">
+							订单总额(包含邮费,未结算优惠): <span class="text-danger">{$order.price/100}</span> RMB（邮费: <span class="text-danger">{$order.post_price/100}</span> RMB） - 优惠: <span class="text-danger">{$order.discount_money/100}</span> RMB
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;订单状态:{$order.order_status|getOrderStatus}
+							&nbsp;&nbsp;&nbsp;<a href="{:url('Webview/Express/viewOrder',array('order_code'=>$order['order_code'],'tpl'=>0))}" target="_blank">查看物流</a>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;备注: {$order.note}
+
+						</td>
+					</tr>
+					<tr style="height: 50px; border-top: 1px solid white;">
+						<td style="padding-left: 50px;">余额支付: <span class="text-danger">{$order.pay_balance/100} </span> RMB
+							<if condition="($order.pay_type eq 1) or ($order.pay_type eq 2)">  +  {$order.pay_type|getPayType}: <span class="text-danger">{$order.pay_three/100}</span> RMB</if>
+							</td>
+					</tr>
+				</table>
+				<div class="stepCarNew">
+					<ul>
+						{if condition="$order['pay_status'] eq 0"}
+							<li id="stepCar_1" class="jindu"><p>1</p><span>提交订单</span></li>
+							<li id="stepCar_2" class="jindu"><p>2</p><span>待付款</span></li>
+							<li id="stepCar_3" class="jindus"><p>3</p><span>待确认</span></li>
+							<li id="stepCar_4" class="jindus"><p>4</p><span>待发货</span></li>
+							<li id="stepCar_5" class="jindus"><p>5</p><span>待收货</span></li>
+							<li id="stepCar_6" class="jindus"><p>6</p><span>完成</span></li>
+						{/if}
+						{if condition="($order['pay_status'] eq 1) and ($order['order_status'] eq 2)"}
+							<li id="stepCar_1" class="jindu"><p>1</p><span>提交订单</span></li>
+							<li id="stepCar_2" class="jindu"><p>2</p><span>待付款</span></li>
+							<li id="stepCar_3" class="jindu"><p>3</p><span>待确认</span></li>
+							<li id="stepCar_4" class="jindus"><p>4</p><span>待发货</span></li>
+							<li id="stepCar_5" class="jindus"><p>5</p><span>待收货</span></li>
+							<li id="stepCar_6" class="jindus"><p>6</p><span>完成</span></li>
+						{/if}
+						{if condition="($order['pay_status'] eq 1) and ($order['order_status'] eq 3)"}
+							<li id="stepCar_1" class="jindu"><p>1</p><span>提交订单</span></li>
+							<li id="stepCar_2" class="jindu"><p>2</p><span>待付款</span></li>
+							<li id="stepCar_3" class="jindu"><p>3</p><span>待确认</span></li>
+							<li id="stepCar_4" class="jindu"><p>4</p><span>待发货</span></li>
+							<li id="stepCar_5" class="jindus"><p>5</p><span>待收货</span></li>
+							<li id="stepCar_6" class="jindus"><p>6</p><span>完成</span></li>
+						{/if}
+						{if condition="($order['pay_status'] eq 1) and ($order['order_status'] eq 4)"}
+							<li id="stepCar_1" class="jindu"><p>1</p><span>提交订单</span></li>
+							<li id="stepCar_2" class="jindu"><p>2</p><span>待付款</span></li>
+							<li id="stepCar_3" class="jindu"><p>3</p><span>待确认</span></li>
+							<li id="stepCar_4" class="jindu"><p>4</p><span>待发货</span></li>
+							<li id="stepCar_5" class="jindu"><p>5</p><span>待收货</span></li>
+							<li id="stepCar_6" class="jindus"><p>6</p><span>完成</span></li>
+						{/if}
+						{if condition="($order['pay_status'] eq 1) and ($order['order_status'] eq 7)"}
+							<li id="stepCar_1" class="jindu"><p>1</p><span>提交订单</span></li>
+							<li id="stepCar_2" class="jindu"><p>2</p><span>待付款</span></li>
+							<li id="stepCar_3" class="jindu"><p>3</p><span>待确认</span></li>
+							<li id="stepCar_4" class="jindu"><p>4</p><span>待发货</span></li>
+							<li id="stepCar_5" class="jindu"><p>5</p><span>待收货</span></li>
+							<li id="stepCar_6" class="jindu"><p>6</p><span>完成</span></li>
+						{/if}
+
+					</ul>
+				</div>
+				<br><br><br>
+				<table style="width: 800px; margin: 0 auto;">
+
+					<tr>
+						<!--<td>-->
+						<!--<div class="form-group">-->
+						<!--<label class="control-label">订单状态</label>-->
+						<!--<div class="control-label ">{$order.order_status|getOrderStatus}</div>-->
+						<!--</div>-->
+						<!--</td>-->
+						<!--<td>-->
+						<!--<div class="form-group">-->
+						<!--<label class="control-label">联系地址</label>-->
+						<!--<div class="control-label ">{ $order.country},{ $order.province},{ $order.city},{ $order.area},{ $order.detailinfo}</div>-->
+						<!--</div>-->
+						<!--</td>-->
+					</tr>
+					<!--<tr>-->
+
+					<!--<td>-->
+					<!--<div class="form-group">-->
+					<!--<label class="control-label">下单时间</label>-->
+					<!--<div class="control-label ">{$order.createtime|date='Y-m-d H:i:s',###}</div>-->
+					<!--</div>-->
+					<!--</td>-->
+					<!--<td><div class="form-group">-->
+					<!--<label class="control-label">备注</label>-->
+					<!---->
+					<!--</td>-->
+					<!--</tr>-->
+
+				</table>
+			</form>
+
+			<hr />
+
+			<div class="h4">购买商品列表<!--  - ({$order['comment_status']|getCommentStatus}) --></div>
+			<table class="table">
+				<tr>
+					<th>序号</th>
+					<th>商品名称</th>
+					<th>商品规格</th>
+					<th>购买价格</th>
+					<th>购买数量</th>
+					<th>标注</th>
+				</tr>
+				{empty name="items"}
+					<tr>
+						<td colspan="5" class="text-center">没有相关信息</td>
+					</tr>
+					{else/}
+					{volist name="items" id="vo"}
+					<tr>
+						<td>{$vo.id}</td>
+						<td>{$vo.name}</td>
+						<td>
+							{if condition="$vo['sku_desc'] eq ''"}暂无{else/}{$vo.sku_desc}{/if}
+						</td>
+						<td>{$vo['price']/100}元</td>
+						<td>{$vo.count}</td>
+						<td>{if condition="isset($vo['package_id']) && $vo['package_id'] neq 0"}套餐({$vo.package_id}) {/if}</td>
+					</tr>
+					{notempty name="vo.comment_info"}
+					<tr>
+						<td></td>
+						<td colspan="5">
+	<table class="table">
+		<thead>
+			<tr>
+				<th>操作</th>
+				<th>评价图片</th>
+				<th>评价内容</th>
+				<th>评分</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+			<td><a href="{:url('Orders/commentEdit',array('id'=>$vo['id']))}" title="">修改</a></td>
+			<td>
+			{volist name="vo.comment_info.img" id="img"><img src="{$img|getImgUrl=###,60}" alt="" width="60">&nbsp;{/volist}
+			</td>
+			<td>{$vo['comment_info']['comment']}</td>
+			<td>
+				综合评分：{$vo['comment_info']['score']}<br/>
+				物流评分：{$vo['comment_info']['logistics_service']}<br/>
+				发货速度：{$vo['comment_info']['delivery_speed']}<br/>
+				服务态度：{$vo['comment_info']['service_attitude']}
+			</td>
+			</tr>
+		</tbody>
+	</table>
+						</td>
+					</tr>
+					{/notempty}
+					{/volist}
+				{/empty}
+			</table>
+
+			<hr />
+			<div class="h4">订单状态变更历史</div>
+			<table class="table">
+				<tbody>
+				<tr>
+					<th>时间</th>
+					<th>状态变更</th>
+					<th>原因</th>
+					<th>是否自动</th>
+				</tr>
+				</tbody>
+				{empty name="statushistory"}
+					<tr>
+						<td colspan="4" class="text-center">
+							没有相关信息
+						</td>
+					</tr>
+					{else/}
+					{volist name="statushistory" id="vo"}
+						<tr>
+							<td>{$vo.create_time|date='Y-m-d H:i:s',###}</td>
+							<td>
+								{if condition="$vo['status_type'] eq 'PAY'"}
+									{:getPayStatus($vo['cur_status'])}->{:getPayStatus($vo['next_status'])}
+									{elseif condition="$vo['status_type'] eq 'ADD'" /}
+									生成订单
+									{else /}
+									{:getOrderStatus($vo['cur_status'])}->{:getOrderStatus($vo['next_status'])}
+
+								{/if}
+							</td>
+							<td>{$vo.reason}</td>
+							<td>{$vo.isauto == "0"?"否":"是"}</td>
+						</tr>
+					{/volist}
+
+				{/empty}
+			</table>
+		</div>
+		<!-- END admin-main-content -->
+	</div>
+	<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+
+{/block}

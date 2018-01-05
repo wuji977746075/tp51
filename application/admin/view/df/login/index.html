@@ -1,0 +1,82 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-table-cell{height: auto !important;}
+</style>
+{/block}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>用户管理</legend>
+  <div class="layui-field-box">
+
+    <blockquote class="layui-elem-quote">注意: 用户基础数据,点击单元格编辑</blockquote>
+    <div class="layui-btn-group">
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i>添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="fa fa-trash"></i> 批量删除</a>
+    </div>
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','form'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  rb.log('page','init');
+  //执行渲染
+  table.render({ elem: '#demo'
+    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: { sort : 'asc',role : {$role ?: 0} }
+    ,method: 'get'
+    ,request: { pageName: 'page',limitName: 'size', }
+    ,limits: [10,30]
+    ,limit: 10
+    ,loading: true
+    ,page: true
+    ,cols:  [[
+      {checkbox: true}, //,fixed: 'left',LAY_CHECKED: true
+      {field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
+      ,{field: 'name', title: '角色名 .', width: 100,edit: 'text'}
+      ,{field: 'desc', title: '描述 .', width: 300,edit: 'text'}
+      ,{field: 'status', title: '状态', width: 80}
+      ,{align:'left',title: '操作',width:400,toolbar: '#barDemo'} //,fixed: 'right'
+    ]]
+    ,done: function(res, page, count){
+      // 转换数据
+      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
+      // console.log(res);
+      // res.data[0].username = 'done-edit';
+      // console.log(page,count);
+      // res.count = 100;
+    }
+  });
+
+  // 单元格编辑
+  table.on('edit(fDemo)', function(obj){
+    // console.log(obj); // value , field ,data
+    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
+      rb.ajaxTip(data);
+    });
+  });
+
+});
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+  <a href="{:url('user/index',[],'')}?role={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 用户列表</a>
+  <a href="{:url(CONTROLLER_NAME.'/auth',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-chevron-right"></i> 权限管理</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+</div>
+</script>
+{/block}
+
+{block name="area_foot"}
+{/block}

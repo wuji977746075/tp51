@@ -1,0 +1,219 @@
+{extend name="default/template/base_index" /}
+
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__/jquery-datetimepicker/jquery.datetimepicker.css">
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+<script type="text/javascript" src="__CDN__/jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/cosmo-skin.css" />
+<style type="text/css">
+    .vertical-align-middle>td{
+        vertical-align: middle!important;
+    }
+
+    .p0{ padding: 0 !important; }
+    .form-group{ margin-bottom: 5px !important; }
+    .select2-selection{ border:none !important;height:34px !important; }
+    .select2-selection .select2-selection__rendered{ height:35px !important; }
+    .select2-dropdown{ border-color: #ddd !important; }
+</style>
+{/block}
+
+{block name="area_body"}
+{include file="default/Widget/topbar" /}
+<div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+        {include file="default/Widget/breadcrumb" /}
+        <div class="h4"><b>用户钱包列表</b>  - <a title="用户钱包列表" data-toggle="tooltip" data-placement="right">说明</a></div>
+        <div class="filter-controls">
+            <form class="form-inline searchForm" method="post" action="{:url('FinancialStatistics/walletList')}">
+                <div class="form-group row col-lg-12 col-md-12">
+                    <div class="input-group" style="width:410px">
+                        <div class="input-group-addon"><i class="fa fa-user"></i>用户</div>
+                        <div class="form-control p0">
+                            <select id="user_select2" name="uid">
+                        {if condition="$uid gt 0"}<option value="{$uid}" selected="selected"> [id:{$uid}] {$nickname|default=''}</option>{/if}
+                        </select>
+                        </div>
+                    </div>
+                    <div class="input-group"> <a href="javascript:clearSelectUser();">清除所选</a></div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <div class="input-group" style="width: 410px">
+                        <div class="input-group-addon input-sm">手机号码</div>
+                        <input type="text" name="mobile" class="form-control input-short input-sm" value="{$mobile}">
+                    </div>
+                    <div class="input-group"> <a href="javascript:clearMobileInput();">清除</a></div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <div class="input-group" style="width:480px">
+                        <div class="input-group-addon input-sm">排序方式</div>
+                        <div class="form-control input-sm">
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value="0"}checked{/eq} value="0"> 默认
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value="1"}checked{/eq} value="1"> 余额倒序
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" class="j_radio_status" name="order_type" {eq name="order_type" value="2"}checked{/eq} value="2"> 余额正序
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-lg-12 col-md-12">
+                    <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+                </div>
+            </form>
+        </div>
+        <div class="btn-controls clearfix">
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading"><span class="text-primary">用户余额总额:</span>{$total_balance}元</div>
+            <table class="table table-striped table-hover table-condensed">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>用户</th>
+                    <th>手机号</th>
+                    <th>钱包余额(元)</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {empty name="list"}
+                <tr>
+                    <td colspan="5" class="text-center">{:L('NO_DATA')}</td>
+                </tr>
+                {else/}
+                {volist name="list" id="vo" key='k'}
+                <tr class="vertical-align-middle">
+                    <td>{$k}</td>
+                    <td>
+                        <a href="{:url('Member/view',array('id'=>$vo['uid']))}?ret_url=__SELF__">
+                            <img class="m-avatar" src="{:app\\src\\base\\helper\\ConfigHelper::getAvatarUrl($vo['uid'],60)}" />
+                            <div style="width: 120px; display: inline-block"> {$vo.nickname}</div></a>
+
+                    </td>
+                    <td>{$vo.mobile}</td>
+                    <td><div style="width: 125px;">{$vo.balance|number_format=2}</div></td>
+                    <td>
+                        <a href="{:url('Admin/financialStatistics/walletHis',array('id'=>$vo['uid']))}">查看钱包历史</a>
+                        <a class="oper-balance" href="javascript:void(0);">余额调整</a>
+                        <div class="input-group balance-oper" style="display: none">
+                            <div class="input-group" style="width:500px">
+                                <div class="input-group-addon">余额调整/元</div>
+                                <input type="number" class="balance-input form-control" style="max-width: 120px" value="{$vo.balance}">
+                                <div class="form-group" style="margin-top: 2px">
+                                    <a href="javascript:void(0);" style="margin-left: 5px" data-id="{$vo.uid}" class="submit-oper-balance btn btn-primary btn-sm">确定修改</a>
+                                    <a href="javascript:void(0);" class="cancel-oper-balance btn btn-primary btn-sm">取消</a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {/volist}
+                {/empty}
+                </tbody>
+            </table>
+            <div>{$show}</div>
+        </div>
+    </div>
+    <!-- END admin-main-content -->
+    <!-- Modal -->
+</div>
+<!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+<script src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+<script>
+    $('.oper-balance').click(function () {
+        $(this).siblings('.balance-oper').show();
+    });
+    $('.cancel-oper-balance').click(function () {
+        $(this).parents('.balance-oper').hide();
+    });
+    $('.submit-oper-balance').click(function () {
+        var $balance_input = $(this).parent().siblings('.balance-input');
+        var balance = $balance_input.val();
+        if(balance === ''){
+            $.scojs_message('请输入新的余额', $.scojs_message.TYPE_ERROR);
+            $balance_input.focus();
+            return;
+        }
+        if(balance<0){
+            $.scojs_message('余额不能小于0', $.scojs_message.TYPE_ERROR);
+            $balance_input.select();
+            return;
+        }
+        var data = {
+            id: $(this).attr('data-id'),
+            oper: balance
+        };
+        myUtils.ajaxpost($(this), '{:url('Admin/FinancialStatistics/walletOper')}',jQuery.param(data));
+    });
+    function clearSelectUser() {
+        $("#user_select2").val(null).trigger("change");
+    }
+    function clearMobileInput() {
+        $("input[name='mobile']").val('');
+    }
+</script>
+<script>
+    $(function() {
+        $('#startdatetime').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+            // format:'Y-m-d',
+            // timepicker:false,
+        });
+        $('#enddatetime').datetimepicker({
+            lang: 'ch',
+            format:'Y-m-d H:i:s',
+        });
+        //选择用户 ajax start
+        $("#user_select2").select2({
+            width:280,
+            placeholder: "输入用户id或昵称查询",
+            language: "zh-CN",
+            ajax: {
+                url: "{:url('Member/select')}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+                processResults: function (data, params) {
+                    if(!data.data){
+                        data.data = new Array();
+                        data.data['nodata']="无相关数据";
+                    }
+                    return {
+                        results: data.data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            templateSelection: function (repo) {
+                return repo.nickname ? '[id:'+repo.id+'] '+repo.nickname : repo.text;
+            },
+            templateResult: function (repo) {
+                if (repo.loading) return repo.text;
+                if(repo.nodata)   return repo.nodata;
+                // var markup = '<div>'+repo.nickname+'</div>';
+                var markup = '<div><img src="'+repo.head+'" style="width:30px;height:30px;"/>[id:'+repo.id+'] '+repo.nickname+'</div>';
+                return $(markup);
+            },
+        });
+        //选择用户 ajax end
+    });
+</script>
+
+{/block}

@@ -1,0 +1,39 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-table-cell{height: auto !important;}
+</style>
+{/block}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>API权限配置 - {$info['client_name']}[{$info['client_id']}]</legend>
+  <div class="layui-field-box">
+    <form class="layui-form apiForm">
+      {volist name="auths" id="v"}
+      <div class="block">
+        <div class="block-header auth-node-top">
+          <input type="checkbox" name="api_auth[]" data-parent="0" value="{$v.id}" title="{$v.title} : {$v.name}" lay-skin="primary" data-icon="fa fa-fw fa-home" lay-filter="lv1" {eq name="v.sel" value="1"}checked{/eq}>
+        </div>
+      </div>
+      {/volist}
+      <div class="mb20"></div>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id])}" class="layui-btn ajax-post" target-form="apiForm">确定</button>
+      {$html_return|raw}
+    </form>
+  </div>
+</fieldset>
+{/block}
+
+{block name="area_foot"}
+<script>
+layui.use(['rb','form','element'], function(){
+  var form = layui.form
+  ,$ = layui.$
+  ,rb = layui.rb
+  ,el = layui.element
+  ;
+});
+</script>
+{/block}

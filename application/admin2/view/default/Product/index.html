@@ -1,0 +1,170 @@
+{extend name="default/template/base_index"/}
+
+{block name="area_header"}
+<link rel="stylesheet" type="text/css" media="all" href="__CSS__/wxshop.css">
+<link type="text/css" rel="stylesheet" src="__CDN__/jquery-uploadify/3.2.1/uploadify.css"/>
+<link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css" />
+
+<script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<script type="text/javascript" src="__CDN__/jquery-qrcode/v1.0/jquery.qrcode.min.js"></script>
+<script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.full.js"></script>
+<script type="text/javascript" src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+{/block}
+
+{block name="area_body"}
+  {include file="default/Widget/topbar" /}
+  <div class="admin-main container-fluid">
+    {include file="default/Widget/left" /}
+    <div class="admin-main-content">
+      {include file="default/Widget/breadcrumb" /}
+      <div class="filter-controls">
+
+      <form  action="{:url('Product/index')}" id="fm" method="post" role="form" class="form-inline">
+        <input type="hidden" name="store_id" value="{$store_id}"/>
+        <input type="hidden" name="status" class="selectitem" value="{$onshelf}">
+        <h4>当前店铺 >><strong>{$store.name}</strong></h4>
+        <div class="form-group">
+          <div class="input-group ">
+            <div class="input-group-addon  input-sm">商品状态</div>
+            <div class="form-control  input-sm">
+              <label class="radio-inline">
+                <input type="radio" name="onshelf" value="1" class="onshelf"
+                  {eq name="onshelf" value="1"}checked="checked"{/eq}
+                  />已上架
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="onshelf" value="0" class="onshelf"
+                  {eq name="onshelf" value="0"}checked="checked"{/eq}
+                  />未上架
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon input-sm">所属类目</div>
+            <select name="cate" id="cate_select2">
+              <option value="0">== 请选择 ==</option>
+              {volist name="cate_list" id="vo"}
+                <option value="{$vo.id}">{$vo.name}</option>
+              {/volist}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon input-sm">商品名称</div>
+            <input type="text" name="name" placeholder="请输入商品名称!" class="form-control input-sm" value="{$name}" />
+          </div>
+
+          <button type="submit" class="btn btn-default btn-sm" id="searchFormSubmit"><i class="fa fa-search"></i>{:L('BTN_SEARCH')}</button>
+        </div>
+      </form>
+      </div>
+    </div>
+    <!-- 操作按钮 -->
+    <div class="btn-controls">
+      <a class="btn btn-primary btn-sm" href="{:url('Product/precreate',array('store_id'=>$store_id))}"><i
+              class="fa fa-plus"></i>添加商品</a>
+      {eq name="onshelf" value="0"}
+          <a class="confirm ajax-post btn btn-primary btn-sm" href="{:url('Product/shelfAll')}"
+             target-form="selectitem"><i class="fa fa-plus"></i>批量上架</a>
+      {/eq}
+      {eq name="onshelf" value="1"}
+          <a class="confirm ajax-post btn btn-primary btn-sm" href="{:url('Product/shelfAll')}"
+             target-form="selectitem"><i class="fa fa-plus"></i>批量下架</a>
+      {/eq}
+      <a class="btn btn-danger btn-sm ajax-post confirm" href="{:url('Product/bulkDelete')}"
+           target-form="selectitem"><i class="fa fa-trash-o"></i>删除选中商品</a>
+    </div>
+    <table class="table table-striped table table-hover  table-condensed">
+      <thead>
+      <tr>
+        <th width="80px;">
+            <input type="checkbox" class="selectall" onclick="myUtils.selectall(this,'.selectitem');"/>ID</th>
+        <th width="120px;">
+            所属子类目</th>
+        <th width="260px;">
+            商品名称(主图)</th>
+        <th width="200px;">
+            商品下架时间</th>
+        <th>
+            管理</th>
+        <th>
+            操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      {empty name="list"}
+      <tr>
+          <td colspan="5" class="text-center">{:L('NO_DATA')}</td>
+      </tr>
+      {else/}
+      {volist name="list" id="vo"}
+      <tr>
+          <td>
+              <input type="checkbox" value="{$vo.id}" name="ids[]" class="selectitem"/>{$vo.id}</td>
+          <td class="text-ellipsis">
+              {$vo.cate_name}</td>
+          <td class="text-ellipsis">
+              {$vo.name}
+              <a href="{:getImgUrl($vo['img_id'])}" target="_blank" title="点击查看原图" data-toggle="tooltip">
+                  <img  class="thumbnail" src="{:getImgUrl($vo['img_id'],60)}" width="60"/></a></td>
+          <td class="text-ellipsis">
+              {if condition="$vo['expire_time'] > time()+10*3600*24*365"}
+              永不下架
+              {else/}
+              {:date("Y-m-d H:i:s",$vo['expire_time'])}
+              {/if}</td>
+          <td>
+              <a href="{:url('Product/sku',['id'=>$vo['id']])}" class="btn btn-primary btn-sm">规格管理</a>
+              <a href="{:url('Product/detail',['id'=>$vo['id']])}" class="btn btn-primary btn-sm">详情设置</a>
+              <a href="{:url('Bookunit/index',['pid'=>$vo['id']])}" class="btn btn-primary btn-sm">单元管理</a></td>
+          <td>
+              {if condition="$vo['onshelf'] == 0"}
+                  <a href="{:url('Product/shelf',['id'=>$vo['id'],'on'=>1])}" class="ajax-get btn btn-primary btn-sm"><i class="fa fa-arrow-up"></i>上架</a>
+              {else/}
+                  <a href="{:url('Product/shelf',['id'=>$vo['id'],'on'=>0])}" class="ajax-get confirm btn btn-primary btn-sm"><i class="fa fa-arrow-down"></i>下架</a>
+              {/if}
+              <a href="{:url('Product/edit',['id'=>$vo['id'],'onshelf'=>$onshelf,'p'=>$p,'cate_id'=>$vo['cate_id']])}"
+                 class="btn btn-primary btn-sm"><i class="fa fa-edit"></i>{:L('BTN_EDIT')}</a>
+              <a href="{:url('Product/delete',['id'=>$vo['id'],'store_id'=>$vo['store_id']])}"
+                 class="btn btn-primary btn-sm ajax-get confirm"><i class="fa fa-trash-o"></i>{:L('BTN_DELETE')}</a></td>
+      </tr>
+
+      {/volist}
+      {/empty}
+      </tbody>
+    </table>
+    <div>{$show}</div>
+
+  </div>
+  <!-- END admin-main-content -->
+  </div>
+  <!-- END admin-main-->
+{/block}
+
+{block name="area_footer"}
+<script type="text/javascript">
+$(function () {
+
+  $("#cate_select2").select2({
+      width:250,
+      placeholder: "请选择类目", language: "zh-CN"}).val({$cate});
+  $(".onshelf").click(function () {
+      $("#searchFormSubmit").click();
+  });
+
+  $("a[data-toggle='popover']").click(function (ele) {
+      var id = $(ele).data('id');
+      var link = "{:config('SITE_URL')}/index.php/Shop/Index/spxq?id="+id;
+
+      $('#qrcode').qrcode({width: 125, height: 125, text: link});
+  });
+  $("#sel").change(function () {
+      $('#fm').submit();
+  })
+
+})
+</script>
+{/block}
