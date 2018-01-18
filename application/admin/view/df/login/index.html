@@ -3,12 +3,131 @@
 <head>
   <meta charset="UTF-8">
   <title> 登陆页面 </title>
+  <link rel="stylesheet" href="__CDN__layui/2.2.4/css/layui.css" media="all">
+  {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css"}
+  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.2.4/layui.all.js,__CDN__nprogress/nprogress.js"}
+  <style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  height:100%;width:100%;min-height: 100%;overflow: hidden;
+}
+body{
+  font:14px Helvetica Neue,Helvetica,PingFang SC,\5FAE\8F6F\96C5\9ED1,Tahoma,Arial,sans-serif;line-height: 24px;
+  /*background: transparent url('../img/pre_bg.jpg') no-repeat center top;*/
+  /*background-size: cover;*/
+  background-color: #008ead;color: #666;
+  position:relative;
+}
+a{ color:#fff;text-decoration: none; }
+a:hover{text-decoration: none;}
+#js-p{
+  width:100%;height:80%;position:absolute;left: 0;top:20%;
+  background-color: #f2f2f2;
+}
+.center{
+  background-color: #f2f2f2;
+  position:absolute;left:50%;top:50%;
+  width : 400px;height:auto;padding: 20px;
+  border:1px solid rgba(100,100,100,.4);
+  margin-left: -200px;margin-top: -200px;
+}
+.header{  text-align: center;padding: 20px; }
+.header h2{
+  margin-bottom: 10px;color: #000;
+  font-weight: 300;font-size: 30px;
+}
+.header p{  font-weight: 300;color: #999; }
+.jsf-icon{
+  position: absolute;
+  left: 1px;top: 1px;
+  width: 38px;color: #d2d2d2;
+  line-height: 36px;text-align: center;
+}
+.w-full{ width:100% !important; }
+input{ text-indent: 2em; }
+.relative{ position: relative !important; }
+#jsf-remember{
+  display: inline-block !important;
+}
+  </style>
 </head>
 <body>
-<form action="{:url('login/index')}" method="post">
-  <input type="text" name="uname" > 用户名
-  <input type="text" name="upass" > 密码
-  <button type="submit">登陆</button>
+<div id="js-p">
+</div>
+
+<form class="center layui-form" action="{:url('login/index')}" method="post">
+  <div class="header">
+    <h2>rainbowAdmin</h2>
+    <p>layui+tp5后台管理模板系统</p>
+  </div>
+  <div class="layui-form-item relative">
+    <i class="fa fa-user jsf-icon"></i>
+    <input type="text" name="uname" class="layui-input" placeholder="用户名">
+  </div>
+  <div class="layui-form-item relative">
+    <i class="fa fa-lock jsf-icon"></i>
+    <input type="text" name="upass" class="layui-input" placeholder="密码">
+  </div>
+  <div class="layui-form-item">
+    <input type="checkbox" name="remember" id="jsf-remember"> 记住密码
+  </div>
+  <div class="layui-form-item">
+    <button type="submit" class="layui-btn w-full" lay-submit lay-filter="formDemo">登陆</button>
+  </div>
 </form>
+<script src="http://test.my/tiandan/js/particles.js"></script>
+<script>
+$(function(){
+  var mw = $(window).width(),num=50,dis=100;
+  if(mw < 960){   num=20;dis=60;   }
+  /* config dom id (optional) + config particles params */
+  particlesJS('js-p', {
+    particles: {
+      color: '#555',
+      shape: 'circle', // "circle", "edge" or "triangle"
+      opacity: 1,
+      size: 4,
+      size_random: true,
+      nb: num,
+      line_linked: {
+        enable_auto: true,
+        distance: dis,
+        color: '#555',
+        opacity: 1,
+        width: 1,
+        condensed_mode: {
+          enable: false,
+          rotateX: 600,
+          rotateY: 600
+        }
+      },
+      anim: {
+        enable: true,
+        speed: .5
+      }
+    },
+    interactivity: {
+      enable: true,
+      mouse: {
+        distance: 300
+      },
+      detect_on: 'canvas', // "canvas" or "window"
+      mode: 'grab',
+      line_linked: {
+        opacity: .5
+      },
+      events: {
+        onclick: {
+          enable: true,
+          mode: 'push', // "push" or "remove"
+          nb: 2
+        }
+      }
+    },
+    /* Retina Display Support */
+    retina_detect: true
+  });
+})
+</script>
 </body>
 </html>
