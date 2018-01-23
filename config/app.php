@@ -13,7 +13,7 @@
 // | 应用设置
 // +----------------------------------------------------------------------
 
-const ITBOYE_CDN = 'http://cdn.my/';
+const ITBOYE_CDN = 'http://115.29.220.243:900/'; //cdn.my
 return [
     //本地不同步百川信息
     'alibaichuan_sync' => true,
