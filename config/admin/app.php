@@ -32,7 +32,7 @@ return [
         '__CSS__'    => __ROOT__ . '/static/default/' . request()->module() . '/css/',
         '__IMG__'    => __ROOT__ . '/static/default/' . request()->module() . '/img/',
         '__CDN__'    => ITBOYE_CDN,
-        '__SKIN__'   => 'http://test.my/learn-layui/',
+        '__SKIN__'   => 'http://115.29.220.243:902/learn-layui/',
     ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => APP_PATH . '/web/view/dispatch/dispatch_jump.tpl',
