@@ -37,7 +37,7 @@ class Base extends Controller{
     $sysConfig = (new ConfigLogic)->queryGroup(ConfigLogic::SYSTEM,0);
     \Config::set(['app'=>array_merge($sysConfig,config('app.'))]);
 
-    //设置程序版本
+    //设置程序版本 - test
     $this->_assignVars(['title'=>config('site_title'),'keywords'=>config('site_keyword'),'description'=>config('site_desc')],['theme'=>config('admin_theme')]);
     $this->_defined();
 
@@ -45,7 +45,7 @@ class Base extends Controller{
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('sort','desc');
 
-    $logicPath = '\src\\'.CONTROLLER_NAME.'\\'.CONTROLLER_NAME.'Logic';
+    $logicPath = '\src\\'.lcfirst(CONTROLLER_NAME).'\\'.CONTROLLER_NAME.'Logic';
     if(class_exists($logicPath)) $this->logic = new $logicPath;
   }
 

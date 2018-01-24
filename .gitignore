@@ -5,3 +5,4 @@ thinkphp
 .env
 .phpintel/
 vendor/
+sftp-config.json
