@@ -67,12 +67,12 @@ class Index extends Base {
       //5. 这一步不会走到
       $this->err("无法处理!");
     }catch (\Exception $e) { // 返回错误信息
+      // addDebugLog('[接口异常]'.$domainClass,$e->getCode().':'.$e->getMessage(),$_POST);
       $this->err($e->getMessage(),$e->getCode());
       // $this->err($e->getTrace(),$e->getCode());
     }
 
   }
-
 
   private function checkParam($arr){
     foreach ($arr as $v) {

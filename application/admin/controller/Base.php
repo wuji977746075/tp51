@@ -12,9 +12,9 @@ class Base extends Controller{
   protected $session_id;
   protected $suc_url = '';
   protected $err_url = '';
-  protected $page = [];
-  protected $sort = [];
-  protected $seo = [
+  protected $page = ['page'=>1,'size'=>10];
+  protected $sort = 'id desc';
+  protected $seo  = [
     'title'       =>'',
     'keywords'    =>'',
     'description' =>'',

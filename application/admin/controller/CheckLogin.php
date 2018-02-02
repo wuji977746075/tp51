@@ -6,6 +6,8 @@ use src\session\SessionLogic;
 class CheckLogin extends Base{
   protected $uid = null;
   protected $id  = 0;
+  protected $page = []; // extend
+  protected $sort = []; // extend
   protected $banDelIds = [];         // 禁止删除的id
   protected $banEditFields = ['id']; // 禁止编辑的字段
   protected $where     = [];         // where

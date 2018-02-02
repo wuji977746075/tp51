@@ -37,6 +37,9 @@ layui.use(['rb','table2','element','form'], function(){
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: { parent : parent }
     ,method: 'get'
+    ,initSort: {
+      field: 'sort',type: 'asc'
+    }
     ,request: { pageName: 'page',limitName: 'size' }
     ,limits: [10,30]
     ,limit: 10
