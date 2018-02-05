@@ -48,7 +48,7 @@ layui.use(['rb','table2','element','form'], function(){
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
       ,{field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
-      ,{field: 'name', title: '菜单 .', width: 150,templet: '#nameTpl',edit: 'text'}
+      ,{field: 'name', title: '菜单 .', width: 150,templet: '#nameTpl',event: 'setName', style:'cursor: pointer;'} //,edit: 'text'
       ,{field: 'icon', title: '图标 .', width: 150,edit: 'text',templet: '#iconTpl'}
       ,{field: 'url', title: '链接 .', width: 150,edit: 'text'}
       ,{field: 'params', title: '链接参数 .', width: 150,edit: 'text'}
@@ -66,6 +66,24 @@ layui.use(['rb','table2','element','form'], function(){
     }
   });
 
+  // 单元格自定义编辑
+  table.on('tool(fDemo)', function(obj){
+    var data = obj.data;
+    if(obj.event === 'setName'){
+      layer.prompt({
+        // formType: 0, //0:text,1:password,2:textarea
+        title: '修改ID['+ data.id +']的菜单名',
+        value: data.name
+      }, function(value, index){
+        layer.close(index);
+        //这里一般是发送修改的Ajax请求
+        //同步更新表格和缓存对应的值
+        obj.update({
+          name: value
+        });
+      });
+    }
+  });
   // 单元格编辑
   table.on('edit(fDemo)', function(obj){
     // console.log(obj); // value , field ,data
