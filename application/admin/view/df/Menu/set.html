@@ -102,10 +102,10 @@
     <div class="layui-tab-content" style="padding:10px 0;">
       <div class="layui-tab-item layui-show">
         <ul>
-          <li title="fa-file"><i class="fa fa-tw fa-file"></i></li>
-          <li title="fa-lock"><i class="fa fa-tw fa-lock"></i></li>
-          <li title="fa-bell"><i class="fa fa-tw fa-bell"></i></li>
-          <li title="fa-close"><i class="fa fa-tw fa-close"></i></li>
+          <li title="fa-file"><i class="fa fa-file"></i></li>
+          <li title="fa-lock"><i class="fa fa-lock"></i></li>
+          <li title="fa-bell"><i class="fa fa-bell"></i></li>
+          <li title="fa-close"><i class="fa fa-close"></i></li>
         </ul>
       </div>
       <div class="layui-tab-item">
@@ -140,7 +140,7 @@ layui.use(['rb','form','element'], function(){
   });
 
   $('#icon-select .layui-tab-item li').click(function(e) {
-    var icon = 'fa fa-tw '+$(this).attr('title');
+    var icon = 'fa '+$(this).attr('title');
     $('#jsf-icon').val(icon);
     layer.close(index);
   });
