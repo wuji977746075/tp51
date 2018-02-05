@@ -1,6 +1,11 @@
 {extend name="df/tpl/base" /}
 
 {block name="area_head"}
+<style>
+  .layui-tab-item{ }
+  .layui-tab-item li{ display: table-cell;border:1px solid #ddd;padding: 11px 15px;margin:0;font-size: 1.4em; }
+  .layui-tab-item i{ }
+</style>
 {/block}
 
 {block name="area_body"}
@@ -79,17 +84,66 @@
     {$html_return|raw}
   </div>
 </form>
+
+<div id="icon-select" style="display:none;padding:10px;">
+  <div id="icon-search layui-form">
+    <div class="layui-form-item">
+      <label for="icon-class" class="layui-form-label" style="text-align:left;border:1px solid #ddd;">搜索图标</label>
+      <div class="layui-input-inline">
+        <input type="text" name="icon-class" id="icon-class" value="" class="layui-input" placeholder="例如: 输入 home 或 user"  autocomplete="off" required  lay-verify="required" >
+      </div>
+    </div>
+  </div>
+  <div class="layui-tab">
+    <ul class="layui-tab-title">
+      <li class="layui-this">font awesome</li>
+      <li>glyphicons</li>
+    </ul>
+    <div class="layui-tab-content" style="padding:10px 0;">
+      <div class="layui-tab-item layui-show">
+        <ul>
+          <li title="fa-file"><i class="fa fa-tw fa-file"></i></li>
+          <li title="fa-lock"><i class="fa fa-tw fa-lock"></i></li>
+          <li title="fa-bell"><i class="fa fa-tw fa-bell"></i></li>
+          <li title="fa-close"><i class="fa fa-tw fa-close"></i></li>
+        </ul>
+      </div>
+      <div class="layui-tab-item">
+        <ul>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 {/block}
 
 {block name="area_foot"}
 <script>
 // page init
-layui.use(['rb','form'], function(){
+layui.use(['rb','form','element'], function(){
   var layer = layui.layer,
   form = layui.form,
+  element = layui.element,
   rb = layui.rb,
   $ = layui.$;
 
+  var index;
+  $('#jsf-icon').click(function(e) {
+    index = layer.open({
+      title:"<h3>选择图标</h3>",
+      type:1,
+      // closeBtn:0,
+      area:["600px","500px"],
+      shadeClose:true,
+      content:$("#icon-select"),
+    });
+  });
+
+  $('#icon-select .layui-tab-item li').click(function(e) {
+    var icon = 'fa fa-tw '+$(this).attr('title');
+    $('#jsf-icon').val(icon);
+    layer.close(index);
+  });
   rb.log('page','init');
 });
 </script>
