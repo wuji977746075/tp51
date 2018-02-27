@@ -26,14 +26,6 @@ return [
     'default_action'         => 'index',
     // 默认输出类型
     'default_return_type' => 'html',
-    'view_replace_str'    => [
-        '__PUBLIC__' => __ROOT__ . '/',
-        '__JS__'     => __ROOT__ . '/static/default/' . request()->module() . '/js/',
-        '__CSS__'    => __ROOT__ . '/static/default/' . request()->module() . '/css/',
-        '__IMG__'    => __ROOT__ . '/static/default/' . request()->module() . '/img/',
-        '__CDN__'    => ITBOYE_CDN,
-        '__SKIN__'   => 'http://115.29.220.243:902/learn-layui/',
-    ],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => APP_PATH . '/web/view/dispatch/dispatch_jump.tpl',
     'dispatch_error_tmpl'    => APP_PATH . '/web/view/dispatch/dispatch_jump.tpl',

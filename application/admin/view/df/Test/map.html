@@ -1,0 +1,105 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-table-cell{height: auto !important;}
+</style>
+<!-- <link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script> -->
+{/block}
+
+{block name="area_body"}
+
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak={:config('baidu_map_ak')}"></script>
+
+<form class="j_form layui-form layui-form-pane post-form" method="post" action="__SELF__" >
+  <input type="hidden" name="lat" value="{$lat}" class="j_lat" />
+  <input type="hidden" name="lng" value="{$lng}" class="j_lng" />
+  <a class="layui-btn ajax-post" target-form="j_form" href="__SELF__"><i class="fa fa-save"></i>更新位置</a>
+</form>
+
+<div id="baidu_map" style="width:100%;height:420px;overflow: hidden;float:left;"></div>
+
+<script type="text/javascript">
+// page init
+layui.use(['rb','form','element'], function(){
+  var layer = layui.layer,
+  form = layui.form,
+  element = layui.element,
+  rb = layui.rb,
+  $ = layui.$;
+});
+  $(function () {
+
+      var top_left_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_TOP_LEFT});// 左上角，添加比例尺
+      var top_left_navigation = new BMap.NavigationControl();  //左上角，添加默认缩放平移控件
+      var top_right_navigation = new BMap.NavigationControl({anchor: BMAP_ANCHOR_TOP_RIGHT, type: BMAP_NAVIGATION_CONTROL_SMALL}); //右上角，仅包含平移和缩放按钮
+
+      var overView = new BMap.OverviewMapControl();
+      var overViewOpen = new BMap.OverviewMapControl({isOpen:true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT});
+      /*缩放控件type有四种类型:
+      BMAP_NAVIGATION_CONTROL_SMALL：仅包含平移和缩放按钮；BMAP_NAVIGATION_CONTROL_PAN:仅包含平移按钮；BMAP_NAVIGATION_CONTROL_ZOOM：仅包含缩放按钮*/
+
+      // 百度地图API功能
+      var map = new BMap.Map("baidu_map");
+      var point = new BMap.Point({$lng}, {$lat});
+      var marker = new BMap.Marker(point); // 创建标注
+      map.addOverlay(marker); // 将标注添加到地图中
+      marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+      marker.enableDragging();
+      map.centerAndZoom(point, 11);
+      map.addControl(top_left_control);
+      map.addControl(top_left_navigation);
+      map.addControl(top_right_navigation);
+      map.addControl(overView);
+      map.addControl(overViewOpen);
+      map.enableScrollWheelZoom(true);
+      var sContent =
+          "<h4 style='margin:0 0 5px 0;padding:0.2em 0'>{$name}</h4>" +
+          "<img style='float:left;margin:4px' id='imgDemo' src='{$logo}' width='80' height='60' title='{$name}'/>" +
+          "<p style='margin:0;line-height:1.5;font-size:13px;text-indent:2em'>{$desc}</p>" +
+          "</div>";
+      var infoWindow = new BMap.InfoWindow(sContent);  // 创建信息窗口对象
+      marker.openInfoWindow(infoWindow);
+
+      marker.addEventListener("click", function() {
+          this.openInfoWindow(infoWindow);
+          document.getElementById('imgDemo').onload = function (){
+              //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+              infoWindow.redraw();
+          }
+      });
+      map.addEventListener("click", function (e) {
+          addMarker(e.point.lng, e.point.lat);
+      });
+
+      console.log(marker);
+
+      function addMarker(lng, lat) {
+        console.log(lng,lat);
+        map.clearOverlays();
+        $(".j_lat").val(lat);
+        $(".j_lng").val(lng);
+        point = new BMap.Point(lng, lat);
+        marker = new BMap.Marker(point); // 创建标注
+        map.addOverlay(marker); // 将标注添加到地图中
+        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+        marker.enableDragging();
+        marker.openInfoWindow(infoWindow);
+
+        marker.addEventListener("click", function() {
+          this.openInfoWindow(infoWindow);
+          document.getElementById('imgDemo').onload = function (){
+            //防止在网速较慢，图片未加载时，生成的信息框高度比图片的总高度小，导致图片部分被隐藏
+            infoWindow.redraw();
+          }
+        });
+
+      }
+
+  })
+</script>
+{/block}
+
+{block name="area_footer"}
+{/block}

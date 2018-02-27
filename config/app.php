@@ -13,7 +13,7 @@
 // | 应用设置
 // +----------------------------------------------------------------------
 
-const ITBOYE_CDN = 'http://115.29.220.243:900/';
+const ITBOYE_CDN = 'http://cdn.my/';
 return [
     //本地不同步百川信息
     'alibaichuan_sync' => true,
@@ -29,20 +29,20 @@ return [
         'alg'           =>'md5_v3',
         'client_id'     =>'by571846d03009e1',
         'client_secret' =>'964561983083ac622f03389051f112e5',
-        'api_url'       =>'http://115.29.220.243:903/index.php',
+        'api_url'       =>'http://tp51/index.php',
         'debug'         =>false
     ],
 
     //地址配置
-    'site_url'=>'http://115.29.220.243:903', //ueditor
-    'api_url'=>'http://115.29.220.243:903/index.php',
-    'avatar_url'=>'http://115.29.220.243:903/index.php/picture/avatar',
-    'picture_url'=>'http://115.29.220.243:903/index.php/picture/index?id=',
-    'file_curl_upload_url'=>'http://115.29.220.243:903/index.php/file/curl_upload',
-    'upload_path'=>'http://115.29.220.243:903/', // 上传用
+    'site_url'=>'http://tp51', //ueditor
+    'api_url'=>'http://tp51/index.php',
+    'avatar_url'=>'http://tp51/index.php/picture/avatar',
+    'picture_url'=>'http://tp51/index.php/picture/index?id=',
+    'file_curl_upload_url'=>'http://tp51/index.php/file/curl_upload',
+    'upload_path'=>'http://tp51/', // 上传用
 
     //百度地图ak
-    'baidu_map_ak' =>'NB4fAMqntPrs1RSGkTXBzjK9FVCMx9ix',//300w/d
+    'baidu_map_ak' =>'bV4eyokvXF2Z36PeTbww7fHQ',//NB4fAMqntPrs1RSGkTXBzjK9FVCMx9ix',//300w/d
 
     //验证码配置
     'code_cfg'=>[
@@ -241,8 +241,6 @@ return [
     // 请求缓存有效期
     'request_cache_expire'   => null,
 
-    // 视图输出字符串内容替换
-    'view_replace_str'       => [],
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => Env::get('think_path') . 'tpl/dispatch_jump.tpl',
     'dispatch_error_tmpl'    => Env::get('think_path') . 'tpl/dispatch_jump.tpl',

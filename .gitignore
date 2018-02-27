@@ -4,5 +4,6 @@ composer.lock
 thinkphp
 .env
 .phpintel/
+public/upload/
 vendor/
 sftp-config.json
