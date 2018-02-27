@@ -24,9 +24,14 @@ define('IS_POST', REQUEST_METHOD == 'POST' ? true : false);
 
 // 当前文件名
 if(!defined('_PHP_FILE_')) {
-    $_temp  = explode('.php',$_SERVER['PHP_SELF']);
-    define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
+  $_temp  = explode('.php',$_SERVER['PHP_SELF']);
+  define('_PHP_FILE_',    rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
+
+  //index模块 无法自动绑定 调整为主动绑定
+  define('BIND_MODULE',ltrim($_temp[0],'/'));
+
 }
+
 if(!defined('__ROOT__')) {
     $_root  =   rtrim(dirname(_PHP_FILE_),'/');
     define('__ROOT__',  (($_root=='/' || $_root=='\\')?'':$_root));
@@ -39,6 +44,6 @@ require __DIR__ . '/../thinkphp/base.php';
 
 // 执行应用并响应
 Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])
-  ->bind(BIND_MODULE) //自动绑定无效
-  ->run()
+  ->bind(BIND_MODULE)
+  ->run() // frame bug : index模块 无法自动绑定
   ->send();

@@ -162,8 +162,8 @@ return [
 
     // 是否支持多模块
     'app_multi_module'       => true,
-    // 入口自动绑定模块 - 5.1.5测试无效
-    'auto_bind_module'       => false,
+    // 入口自动绑定模块 - index模块跳过判断了,可能因为设置了默认
+    'auto_bind_module'       => true,
     // 注册的根命名空间
     'root_namespace'         => [
         'src'=>'../src/'

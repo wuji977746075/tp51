@@ -15,7 +15,6 @@ Route::get('think', function () {
 });
 
 //Route::get('hello/:name', 'index/hello');
-//Route::get('hello', 'index/index');
 
 // web.php
 //Route::get('base', 'base/index');
