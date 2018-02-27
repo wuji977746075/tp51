@@ -1,4 +1,5 @@
 <?php
+namespace think;
 
 // [ 应用启动配置示例 ]
 
@@ -7,7 +8,6 @@ ini_set('memory_limit','16M');
 define('APP_PATH', __DIR__ . '/../application/');
 define('CONFIG_PATH', __DIR__ . '/../config/');
 define('POWER','rainbow');
-// define('RUNTIME_PATH',__DIR__ . '/../runtime/');
 
 // 开始运行时间和内存使用
 define('START_TIME', microtime(true));
@@ -38,7 +38,7 @@ require __DIR__ . '/../thinkphp/base.php';
 // 支持事先使用静态方法设置Request对象和Config对象
 
 // 执行应用并响应
-// \think\Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])
-//     ->bind('admin')
-//     ->run()
-//     ->send();
+Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])
+  ->bind(BIND_MODULE) //自动绑定无效
+  ->run()
+  ->send();

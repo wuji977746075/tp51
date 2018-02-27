@@ -12,4 +12,9 @@ class Test extends CheckLogin{
     $this->assign('lng', 120);
     return $this->show();
   }
+
+  // todo : add modal map
+  public function add(){
+    return $this->show();
+  }
 }

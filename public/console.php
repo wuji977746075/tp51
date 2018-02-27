@@ -9,12 +9,12 @@
 // | Author: yunwuxin <448901948@qq.com>
 // +----------------------------------------------------------------------
 
-// namespace think;
+namespace think;
 
 // ThinkPHP 引导文件
 // 加载基础文件
 require __DIR__ . '/../thinkphp/base.php';
 
 // 执行应用
-\think\Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])->initialize();
-\think\Console::init();
+Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])->initialize();
+Console::init();
