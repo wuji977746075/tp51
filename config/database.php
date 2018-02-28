@@ -17,9 +17,9 @@ return [
     // 数据库名
     'database'        => 'fly',
     // 用户名
-    'username'        => 'root',
+    'username'        => 'fly',
     // 密码
-    'password'        => '1',
+    'password'        => 'fly2613747851',
     // 端口
     'hostport'        => '',
     // 连接dsn
