@@ -9,177 +9,175 @@
 <link type="text/css" rel="stylesheet" href="__CDN__/jquery-uploadify/3.2.1/uploadify.css"/>
 
 <style type="text/css">
-    .banner.wxuploaderimg .img-preview img {
-        width: 320px;
-        height: 150px;
-    }
+.banner.wxuploaderimg .img-preview img {
+  width: 320px;
+  height: 150px;
+}
 </style>
 
 <link type="text/css" rel="stylesheet" href="__CDN__/select2/4.0.0/css/select2.min.css"/>
 <style type="text/css">
-    .select2-container--default .select2-selection--single .select2-selection__placeholder {
-        color: #E7E7E7;
-    }
+  .select2-container--default .select2-selection--single .select2-selection__placeholder {
+      color: #E7E7E7;
+  }
 
-    .select2-container--default .select2-selection--single {
-        background-color: #2780e3;
-        border: 0px solid #aaa;
-        border-radius: 4px;
-    }
+  .select2-container--default .select2-selection--single {
+      background-color: #2780e3;
+      border: 0px solid #aaa;
+      border-radius: 4px;
+  }
 
-    .select2-container {
-        background: #2780e3;
-        color: #fff;
-        padding: 2px;
-        margin: 0px;
-    }
+  .select2-container {
+      background: #2780e3;
+      color: #fff;
+      padding: 2px;
+      margin: 0px;
+  }
 
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        color: #F5F5F5;
-    }
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #F5F5F5;
+  }
 
-    .select2-container--default .select2-search--dropdown .select2-search__field {
-        color: #444;
-    }
+  .select2-container--default .select2-search--dropdown .select2-search__field {
+      color: #444;
+  }
 
-    .wxnumber-item {
-        background: #DFC2C2;
-        width: auto;
-        display: inline-block;
-        padding: 5px;
-        margin: 5px;
-    }
+  .wxnumber-item {
+      background: #DFC2C2;
+      width: auto;
+      display: inline-block;
+      padding: 5px;
+      margin: 5px;
+  }
 
-    .wxnumber-item i.fa {
-        margin: 0px 5px;
-        cursor: pointer;
-    }
+  .wxnumber-item i.fa {
+      margin: 0px 5px;
+      cursor: pointer;
+  }
 
-    .modal-backdrop, .modal-dialog {
-        z-index: 0;
-    }
+  .modal-backdrop, .modal-dialog {
+      z-index: 0;
+  }
 
-    .tangram-suggestion-main {
-        z-index: 123456789;
-    }
+  .tangram-suggestion-main {
+      z-index: 123456789;
+  }
 </style>
 {/block}
 
 {block name="area_body"}
-        <!-- 带验证 form -->
-        <form class="form-horizontal well validateForm">
-            <fieldset>
-                <legend>
-                    创建门店
-                </legend>
-                <div class="form-group">
-                    <label for="name" class="col-md-2 col-lg-2 control-label">门店名称</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="name" id="name"
-                               placeholder="请输入门店名称">
-                        <div class="help-block">(门店名称)</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="telephone" class="col-md-2 col-lg-2 control-label">门店对应淘宝门店地址（选填）</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="taobao_store_url"  placeholder="请输入门店对应淘宝门店地址">
-                        <div class="help-block">(门店对应淘宝门店地址)</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="person_name" class="col-md-2 col-lg-2 control-label">联系人</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="person_name"
-                               id="person_name" placeholder="联系人名字">
-                        <div class="help-block">(门店联系人)</div>
-                    </div>
-                </div>
-                <!--<div class="form-group">-->
-                    <!--<label for="telephone" class="col-md-2 col-lg-2 control-label">管理员电话（账号）（必填）</label>-->
-                    <!--<div class="col-md-10 col-lg-10">-->
-                        <!--<input type="text" class="required form-control input-short input-sm" name="username"-->
-                               <!--id="username" placeholder="管理员电话">-->
-                        <!--<div class="help-block">(管理员电话)</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <div class="form-group">
-                    <label for="telephone" class="col-md-2 col-lg-2 control-label">门店电话</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="telephone"
-                               id="telephone" placeholder="请输入门店电话">
-                        <div class="help-block">(请输入门店电话)</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="mobile" class="col-md-2 col-lg-2 control-label">客服手机</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="mobile"
-                               id="mobile" placeholder="请输入客服手机">
-                        <div class="help-block">(请输入客服手机)</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="inputlogo" class="col-md-2 col-lg-2 control-label">门店logo</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="hidden" class="required form-control input-short" name="logo" id="inputlogo1"
-                               placeholder="请输入门店logo、头像。">
+  <!-- 带验证 form -->
+  <form class="form-horizontal well validateForm">
+    <fieldset>
+      <legend> 创建门店 </legend>
+      <div class="form-group">
+          <label for="name" class="col-md-2 col-lg-2 control-label">门店名称</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="name" id="name"
+                     placeholder="请输入门店名称">
+              <div class="help-block">(门店名称)</div>
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="telephone" class="col-md-2 col-lg-2 control-label">门店对应淘宝门店地址（选填）</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="taobao_store_url"  placeholder="请输入门店对应淘宝门店地址">
+              <div class="help-block">(门店对应淘宝门店地址)</div>
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="person_name" class="col-md-2 col-lg-2 control-label">联系人</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="person_name"
+                     id="person_name" placeholder="联系人名字">
+              <div class="help-block">(门店联系人)</div>
+          </div>
+      </div>
+      <!--<div class="form-group">-->
+          <!--<label for="telephone" class="col-md-2 col-lg-2 control-label">管理员电话（账号）（必填）</label>-->
+          <!--<div class="col-md-10 col-lg-10">-->
+              <!--<input type="text" class="required form-control input-short input-sm" name="username"-->
+                     <!--id="username" placeholder="管理员电话">-->
+              <!--<div class="help-block">(管理员电话)</div>-->
+          <!--</div>-->
+      <!--</div>-->
+      <div class="form-group">
+          <label for="telephone" class="col-md-2 col-lg-2 control-label">门店电话</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="telephone"
+                     id="telephone" placeholder="请输入门店电话">
+              <div class="help-block">(请输入门店电话)</div>
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="mobile" class="col-md-2 col-lg-2 control-label">客服手机</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="mobile"
+                     id="mobile" placeholder="请输入客服手机">
+              <div class="help-block">(请输入客服手机)</div>
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="inputlogo" class="col-md-2 col-lg-2 control-label">门店logo</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="hidden" class="required form-control input-short" name="logo" id="inputlogo1"
+                     placeholder="请输入门店logo、头像。">
 
-                        <div class="wxuploaderimg clearfix logo1" data-maxitems="4">
-                            <div class="img-preview clearfix">
-                            </div>
-                            <div class="add">
-                                <i class="fa fa-plus"></i>
-                            </div>
-                        </div>
-                    </div>
+              <div class="wxuploaderimg clearfix logo1" data-maxitems="4">
+                  <div class="img-preview clearfix">
+                  </div>
+                  <div class="add">
+                      <i class="fa fa-plus"></i>
+                  </div>
+              </div>
+          </div>
 
-                </div>
+      </div>
 
-                <div class="form-group baidumap_position">
-                    <label for="inputtitle" class="col-md-2 col-lg-2 control-label">门店经纬度</label>
-                    <div class="col-md-10 col-lg-10">
-                        经度<input type="text" value="" name="lng" class="lng"/>纬度<input type="text" value="" name="lat" class="lat"/>
-                        <button type="button" class="js_baidumap btn btn-primary btn-sm" data-toggle="modal" data-target="#baidumap">点击选择百度地图
-                        </button>
-                        <div class="help-block">(百度地图内省市区为必选项)</div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="address_detail" class="col-md-2 col-lg-2 control-label">门店详细地址</label>
-                    <div class="col-md-10 col-lg-10">
-                        <input type="text" class="required form-control input-short input-sm" name="address_detail" id="address_detail" placeholder="请输入门店详细地址">
-                        <div class="help-block">(门店详细地址)</div>
-                    </div>
-                </div>
+      <div class="form-group baidumap_position">
+          <label for="inputtitle" class="col-md-2 col-lg-2 control-label">门店经纬度</label>
+          <div class="col-md-10 col-lg-10">
+              经度<input type="text" value="" name="lng" class="lng"/>纬度<input type="text" value="" name="lat" class="lat"/>
+              <button type="button" class="js_baidumap btn btn-primary btn-sm" data-toggle="modal" data-target="#baidumap">点击选择百度地图
+              </button>
+              <div class="help-block">(百度地图内省市区为必选项)</div>
+          </div>
+      </div>
+      <div class="form-group">
+          <label for="address_detail" class="col-md-2 col-lg-2 control-label">门店详细地址</label>
+          <div class="col-md-10 col-lg-10">
+              <input type="text" class="required form-control input-short input-sm" name="address_detail" id="address_detail" placeholder="请输入门店详细地址">
+              <div class="help-block">(门店详细地址)</div>
+          </div>
+      </div>
 
-                <div class="form-group">
-                    <input type="hidden" class="required form-control input-short" name="province" id="PRO">
-                    <input type="hidden" class="required form-control input-short" name="city" id="CITY">
-                    <input type="hidden" class="required form-control input-short" name="area" id="AREA">
-                </div>
+      <div class="form-group">
+          <input type="hidden" class="required form-control input-short" name="province" id="PRO">
+          <input type="hidden" class="required form-control input-short" name="city" id="CITY">
+          <input type="hidden" class="required form-control input-short" name="area" id="AREA">
+      </div>
 
-                <div class="form-group">
-                    <label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
-                    <div class="col-lg-10 col-md-10">
-                        <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm"
-                           onclick="return getData();"
-                           href="{:url('admin/Branch/add')}" autofocus="autofocus"><i class="fa fa-save"></i>
-                            {:L('BTN_SAVE')}</a>
-                        <a class="btn btn-primary btn-sm" href="{:url('admin/Branch/index')}"><i
-                                class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
-                    </div>
-                </div>
-            </fieldset>
-        </form>
-        <!-- form -->
+        <div class="form-group">
+            <label class="col-md-2 col-lg-2 control-label">&nbsp;</label>
+            <div class="col-lg-10 col-md-10">
+                <a target-form="validateForm" class="ajax-post btn btn-primary btn-sm"
+                   onclick="return getData();"
+                   href="{:url('admin/Branch/add')}" autofocus="autofocus"><i class="fa fa-save"></i>
+                    {:L('BTN_SAVE')}</a>
+                <a class="btn btn-primary btn-sm" href="{:url('admin/Branch/index')}"><i
+                        class="fa fa-times-circle"></i> {:L('BTN_CANCEL')}</a>
+            </div>
+        </div>
+    </fieldset>
+  </form>
+  <!-- form -->
 
-        <script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
-        <script type="text/javascript" src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
-        <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
-        {include file="default/template/wxpicture"/}
+  <script type="text/javascript" src="__CDN__/select2/4.0.0/js/select2.min.js"></script>
+  <script type="text/javascript" src="__CDN__/select2/4.0.0/js/i18n/zh-CN.js"></script>
+  <script type="text/javascript" src="__CDN__/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+  {include file="df/tpl/wxpicture"/}
 
-        {include file="default/template/baidumap"/}
+  {include file="df/tpl/baidumap"/}
 {/block}
 
 {block name="area_footer"}

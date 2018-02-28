@@ -24,6 +24,16 @@
         <div class="help-block">(请输入文章标题)</div>
       </div>
     </div>
+
+    <div class="form-group baidumap_position">
+      <label for="inputtitle" class="col-md-2 col-lg-2 control-label">经纬度</label>
+      <div class="col-md-10 col-lg-10">
+        经度<input type="text" value="" name="lng" class="lng"/>纬度<input type="text" value="" name="lat" class="lat"/>
+        <button type="button" class="js_baidumap btn btn-primary btn-sm" data-toggle="modal" data-target="#baidumap">点击选择百度地图
+        </button>
+        <div class="help-block">(百度地图内省市区为必选项)</div>
+      </div>
+    </div>
     <div class="form-group">
       <label for="inputtitle" class="col-md-2 col-lg-2 control-label">文章状态</label>
       <div class="col-md-10 col-lg-10">
@@ -142,6 +152,7 @@
 <!-- form -->
 
 {include file="df/tpl/wxpicture" /}
+{include file="df/tpl/baidumap"/}
 <script>
   var ue = UE.getEditor('jsf-ueditor',{
     toolbars:[

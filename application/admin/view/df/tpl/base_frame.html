@@ -13,12 +13,24 @@
   <div class="layui-header">
     <div class="layui-logo hvr-pop">LOGO / SITENAME</div>
     <a href="javascript:;" id="js-hide-menu" class="switch-menu-wrap" title="转换侧边栏"><i class="fa fa-bars"></i></a>
+    <!-- 显示/隐藏菜单 -->
+    <a href="javascript:;" class="iconfont hideMenu icon-menu1">
+    </a>
+    <!-- 搜索 -->
+    <!-- <div class="layui-form component">
+          <select name="modules" lay-verify="required" lay-search="">
+          <option value="">直接选择或搜索选择</option>
+           <option value="1">layer</option>
+          </select>
+          <i class="layui-icon">&#xe615;</i>
+      </div> -->
+
     <ul class="layui-nav layui-layout-left">
       <!--?php foreach ($menu_all as $v) { ?>
       <li class="hvr-pulse layui-nav-item < ?php if($top_menu_id== $v['id']) echo 'layui-this';?>" data-id="< ?=$v['id']?>"><a href="javascript:;">< ?=$v['name']?></a></li>
       < ?php }?-->
     </ul>
-    <ul class="layui-nav layui-layout-right" style="right:110px">
+    <ul class="layui-nav layui-layout-right" style="right:90px">
       <li class="layui-nav-item">
         <a href="javascript:;">
           <img src="{:getAvatar($uinfo.id,60)}" class="layui-nav-img">
@@ -71,7 +83,25 @@
 </div>
   <!-- 底部固定区域 -->
   <div class="layui-footer  layui-anim layui-anim-up">
-    © layui.com - 底部固定区域
+    <div>© layui.com - 底部固定区域</div>
+    <div class="layui-layout-right layui-nav-item weather" pc  style="right:10px;">
+      <div id="tp-weather-widget"><!-- 天气信息 --></div>
+      <script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
+      <script>tpwidget("init", {
+          "flavor": "slim",
+          "location": "WX4FBXXFKE4F",
+          "geolocation": "enabled",
+          "language": "zh-chs",
+          "unit": "c",
+          "theme": "chameleon",
+          "container": "tp-weather-widget",
+          "bubble": "disabled",
+          "alarmType": "badge",
+          "color": "#FFFFFF",
+          "uid": "U9EC08A15F",
+          "hash": "039da28f5581f4bcb5c799fb4cdfb673"
+      });tpwidget("show");</script>
+    </div>
   </div>
 </div>
 <!-- script -->

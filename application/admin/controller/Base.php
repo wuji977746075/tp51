@@ -47,8 +47,12 @@ class Base extends Controller{
 
     $logicPath = '\src\\'.lcfirst(CONTROLLER_NAME).'\\'.CONTROLLER_NAME.'Logic';
     if(class_exists($logicPath)) $this->logic = new $logicPath;
+    $this->init();
   }
 
+  protected function init(){
+
+  }
   // protected function checkLogin(){
   //   return session('uid');
   // }
