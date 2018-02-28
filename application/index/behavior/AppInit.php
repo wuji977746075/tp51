@@ -22,6 +22,15 @@ class AppInit {
   public function run(){
     // fix app_status
     $file = CONFIG_PATH .config('app_status').Env::get('config_ext','.php');
-    is_file($file) && Config::set(include $file);
+    if(is_file($file)){
+      $cc = include $file;
+      foreach ($cc as $k=>$v) {
+        if(is_array($v)){
+          Config::set($v,$k);
+          unset($cc[$k]);
+        }
+      }
+      $cc && Config::set($cc,true);
+    }
   }
 }
