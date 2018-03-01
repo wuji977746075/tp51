@@ -9,6 +9,7 @@
 return [
   //本地不同步百川信息
   'alibaichuan_sync' => false,
+
   'site_url'=>'http://tp51', //ueditor
   'api_url'=>'http://tp51/index.php',
   'avatar_url'=>'http://tp51/index.php/picture/avatar',

@@ -30,7 +30,7 @@ class AppInit {
           unset($cc[$k]);
         }
       }
-      $cc && Config::set($cc,true);
+      $cc && Config::set($cc,'app');
     }
   }
 }
