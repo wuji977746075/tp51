@@ -1,0 +1,74 @@
+{extend name="df/tpl/base" /}
+
+{block name="area_head"}
+<style>
+  .layui-tab-item{ }
+  .layui-tab-item li{ display: table-cell;border:1px solid #ddd;padding: 11px 15px;margin:0;font-size: 1.4em; }
+  .layui-tab-item i{ }
+</style>
+{/block}
+
+{block name="area_body"}
+<div class="page-header">
+  <div class="page-title"><i></i>
+    {:L('area')}{$op}
+  </div>
+</div>
+<form class="layui-form layui-form-pane post-form">
+  <div class="layui-form-item">
+    <label for="jsf-code" class="layui-form-label">{$jsf.code}</label>
+    <div class="layui-input-inline">
+      <input type="text" name="code" id="jsf-code" value="{$id ?= $info.code}" class="layui-input" placeholder="{:L('type-in')}{$jsf.code}"  autocomplete="off" required  lay-verify="required" >
+    </div>
+    <div class="layui-form-mid layui-word-aux">{:L('tip-area-code')}</div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-province" class="layui-form-label">{$jsf.province}</label>
+    <div class="layui-input-inline">
+      <input type="text" name="province" id="jsf-province" value="{$id ?= $info['province']}" class="layui-input" placeholder="{:L('type-in')}{$jsf.province}"  autocomplete="off" required  lay-verify="required" >
+    </div>
+    <div class="layui-form-mid layui-word-aux">{:L('tip-area-province')}</div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-city" class="layui-form-label">{$jsf.city}</label>
+    <div class="layui-input-inline">
+      <input type="text" name="city" id="jsf-city" value="{$id ?= $info['city']}" class="layui-input" placeholder="{:L('type-in')}{$jsf.city}"  autocomplete="off" required  lay-verify="required" >
+    </div>
+    <div class="layui-form-mid layui-word-aux">{:L('tip-area-city')}</div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-district" class="layui-form-label">{$jsf.district}</label>
+    <div class="layui-input-inline">
+      <input type="text" name="district" id="jsf-district" value="{$id ?= $info['district']}" class="layui-input" placeholder="{:L('type-in')}{$jsf.district}"  autocomplete="off" required  lay-verify="required" >
+    </div>
+    <div class="layui-form-mid layui-word-aux">{:L('tip-area-district')}</div>
+  </div>
+  <div class="layui-form-item">
+    <label for="jsf-sort" class="layui-form-label">{$jsf.sort}</label>
+    <div class="layui-input-inline">
+      <input type="number" min="0" name="sort" id="jsf-sort" value="{$id ?= $info['sort']}" placeholder="" class="layui-input">
+    </div>
+    <div class="layui-form-mid layui-word-aux">{:L('sort-desc')}</div>
+  </div>
+
+  <div class="layui-form-item layui-input-block">
+    <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" >{$op ?: ''}</button>
+    {$html_return|raw}
+  </div>
+</form>
+{/block}
+
+{block name="area_foot"}
+<script>
+// page init
+layui.use(['rb','form','element'], function(){
+  var layer = layui.layer,
+  form = layui.form,
+  element = layui.element,
+  rb = layui.rb,
+  $ = layui.$;
+
+  rb.log('page','init');
+});
+</script>
+{/block}

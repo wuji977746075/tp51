@@ -16,7 +16,8 @@ class CheckLogin extends Base{
     '',''
   ];
   // 表单字段
-  protected $jsf = [
+  protected $jsf = []; //自定义表单字段
+  protected $jsf_df = [ //默认表单字段
     'desc'   =>'描述',
     'sort'   =>'排序',
     'img'    =>'图片',
@@ -53,7 +54,8 @@ class CheckLogin extends Base{
         $this->assign('info',$info);
       }else{    // add
       }
-
+      // 合并表单字段说明,后盖前
+      $this->jsf = $this->jsf ? array_merge($this->jsf_df,$this->jsf) : $this->jsf_df;
       $this->assign('jsf',$this->jsf);
       return $this->show();
     }else{ // save
@@ -79,7 +81,7 @@ class CheckLogin extends Base{
   // 一个字段(id外)修改 , 由id标志
   public function editOne(){
     $field = htmlspecialchars($this->_param('field','',Llack('field')));
-    if(in_array($field,$this->banEditFields)) $this->err('禁止操作字段:'.$field);
+    if(in_array($field,$this->banEditFields)) $this->err(L('ban-op-field').$field);
     $val   = htmlspecialchars(trim($this->_param('val','')));
 
     $this->logic->save(['id'=>$this->id],[$field=>$val]);
@@ -92,7 +94,7 @@ class CheckLogin extends Base{
     $check = $this->_param('check/d',0);
     // ? id
     if($id<=0) $this->err(Linvalid('op'));
-    if(in_array($id,$this->banDelIds)) $this->err('禁止删除id:'.$id);
+    if(in_array($id,$this->banDelIds)) $this->err(L('ban-del').' id: '.$id);
     // ? check
     if($check && $this->logic->getInfo(['parent'=>$id])){
       $this->err(L('need-del-down'));
@@ -108,7 +110,7 @@ class CheckLogin extends Base{
     // ? id
     if(empty($ids)) $this->err(Linvalid('op'));
     $banIds = array_intersect($this->banDelIds,$ids);
-    if($banIds) $this->err('禁止删除id:'.implode('和', $banIds));
+    if($banIds) $this->err(L('ban-del').' id: '.implode(L('&'), $banIds));
     // ? check
     if($check && $this->logic->getInfo([['parent','in',$ids]])){
       $this->err(L('need-del-down'));

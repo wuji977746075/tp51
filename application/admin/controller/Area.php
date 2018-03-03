@@ -10,7 +10,13 @@ class Area extends CheckLogin{
 
   // edit / add
   public function set(){
-
+    $this->jsf = [
+      'code'     =>'编码',
+      'province' =>'省份',
+      'url'      =>'城市',
+      'icon'     =>'市区',
+    ];
+    return parent::set();
   }
 
   public function index(){

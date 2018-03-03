@@ -32,7 +32,6 @@ return [
         'api_url'       =>'http://115.29.220.243:903/index.php',
         'debug'         =>false
     ],
-
     //地址配置
     'site_url'=>'http://115.29.220.243:903', //ueditor
     'api_url'=>'http://115.29.220.243:903/index.php',

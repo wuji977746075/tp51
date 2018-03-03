@@ -20,7 +20,8 @@ use Config,Env;
 class AppInit {
 
   public function run(){
-    // fix app_status
+
+    // 加载用户配置 - 并覆盖项目配置
     $file = CONFIG_PATH .config('app_status').Env::get('config_ext','.php');
     if(is_file($file)){
       $cc = include $file;
