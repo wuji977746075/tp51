@@ -26,10 +26,10 @@ class UserRoleLogic extends BaseLogic{
     // ? role_id
 
     $info = $this->getInfo(['uid'=>$uid]);
-    if(!$info){
-      $this->add(['uid'=>$uid,'role_id'=>$role_id]);
-    }else{
+    if($info){
       $this->save(['uid'=>$uid],['role_id'=>$role_id]);
+    }else{
+      $this->add(['uid'=>$uid,'role_id'=>$role_id]);
     }
   }
 }

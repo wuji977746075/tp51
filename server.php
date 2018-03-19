@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+// linux版
+// require workerman gateway-worker
 namespace think;
 
 ini_set('display_errors', 'on');
@@ -34,12 +36,16 @@ Container::get('app',[APP_PATH])->bind('push/Run')->run()->send();
 
 // ws = new WebSocket("ws://127.0.0.1:8282");
 // ws.onopen = function() {
-//     console.log("连接成功");
+//   console.log("连接成功");
+//   ws.send(JSON.stringify({uid:3,msg:'',type:'login'}));
+//   setInterval(function(){
+//     ws.send(JSON.stringify({uid:3,msg:'',type:'ping'}));
+//   },10000);
 // };
 // ws.onmessage = function(e) {
-//     console.log("收到服务端的消息：" + e.data);
+//   console.log("收到服务端的消息：" + e.data);
 // };
 
-// a = {};a.from=1,a.to=2,a.msg='test...';
+// a = {};a.uid=1,a.msg='test...',a.type='login';
 // as =  JSON.stringify(a);
 // ws.send(as);

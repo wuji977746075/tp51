@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script language="javascript"type="text/javascript">
+  var wsUri ="ws://127.0.0.1:8282/";
+  var output,ws,timer;
+  var uid=1;
+  function init() {
+      output = document.getElementById("output");
+      testWebSocket();
+  }
+  function testWebSocket() {
+      ws = new WebSocket(wsUri);
+      ws.onopen = function(evt) {
+          onOpen(evt)
+      };
+      ws.onclose = function(evt) {
+          onClose(evt)
+      };
+      ws.onmessage = function(evt) {
+          onMessage(evt)
+      };
+      ws.onerror = function(evt) {
+          onError(evt)
+      };
+  }
+
+  function onOpen(evt) { //保持在线
+    console.log("在线...");
+    // writeToScreen("在线...");
+    doSend({ uid: uid,msg:'ttt',type:'ping' });
+    timer = setInterval(function(){
+      doSend({ uid: uid,msg:'ttt',type:'ping' });
+    },10000);
+  }
+
+  function onClose(evt) {
+    // writeToScreen("离线...");
+    console.log("离线...");
+    clearInterval(timer);
+    timer = setInterval(function(){
+      ws = new WebSocket(wsUri);
+      console.log("重连...");
+    },5000);
+  }
+
+  function onMessage(evt) {
+
+    data = JSON.parse(evt.data);
+    console.log('get--',data);
+    if(data.uid){
+      console.log('data.msg',data.msg);
+      writeToScreen('<span style="color: blue;">'+data.uid+'信息: '+ data.msg+'</span>');
+    }else{
+      var t = data.type || '';
+      if(t=='login'){
+        msg = data.msg+'上线了';
+      }else if(t=='ping'){
+        msg = '';//data.msg;
+      }else if(t=='error'){
+        msg = data.msg;
+      }else if(t=='tip'){
+        msg = data.msg;
+      }else if(t=='logout'){
+        msg = data.msg+'下线了';
+      }else{
+        msg = '';
+      }
+      msg && writeToScreen('<span style="color: blue;">'+t+'信息: '+ msg+'</span>');
+    }
+    // writeToScreen('<span style="color: blue;">信息: '+ evt.data+'</span>');
+    // ws.close();
+  }
+
+  function onError(evt) {
+      writeToScreen('<span style="color: red;">错误:</span> '+ evt.data);
+  }
+
+  function doSend(message) {
+    message = JSON.stringify(message);
+    // writeToScreen("发送: " + message);
+    // console.log("发送: " + message);
+    ws.send(message);
+  }
+
+  function writeToScreen(message) {
+      var pre = document.createElement("p");
+      pre.style.wordWrap = "break-word";
+      pre.innerHTML = message;
+      output.appendChild(pre);
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+
+<h2>WebSocket Test</h2>
+<div id="output"></div>
+</body>
+</html>

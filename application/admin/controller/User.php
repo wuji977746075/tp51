@@ -3,11 +3,10 @@ namespace app\admin\controller;
 
 use src\role\RoleLogic;
 use src\role\UserRoleLogic;
-use think\Db;
+use src\user\UserExtraLogic;
 
 class User extends CheckLogin{
   protected $banDelIds = [1];
-
   // logic ajax page-list
   public function index(){
     $role  = $this->_get('role/d',0);
@@ -55,18 +54,50 @@ class User extends CheckLogin{
     }else{      // save
       $paras = $this->_getPara('name,nick','avatar,phone,email');
       $role  = $this->_param('role/d',0);
-      Db::startTrans();
+      $this->trans();
       if($id){  // edit
         $this->logic->save(['id'=>$id],$paras);
       }else{    // add
         $id = $this->logic->add($paras);
+        // add user extra
+        $r = (new UserExtraLogic)->add(['uid'=>$id,'id_code'=>''.intval(1000000+(int)$id)]);
       }
       if($role){
-        $r = (new UserRoleLogic)->setRole($id,$role);
+        // add user role
+        (new UserRoleLogic)->setRole($id,$role);
+
         $this->suc_url = url(CONTROLLER_NAME.'/index');
-        $this->checkOp($r);
+        $this->suc('添加成功');
       }
       $this->err('需要制定角色');
     }
+  }
+
+
+  // 删除, 由id标志, check是检查是否含parent=id
+  public function del(){
+    $id    = $this->id;
+    // ? id
+    if($id<=0) $this->err(Linvalid('op'));
+    if(in_array($id,$this->banDelIds)) $this->err(L('ban-del').' id: '.$id);
+
+    $this->logic->delete(['id'=>$id]);
+    (new UserExtraLogic)->delete(['uid'=>$id]);
+    (new UserRoleLogic)->delete(['uid'=>$id]);
+    $this->opSuc('','',0);
+  }
+
+  // 批量删除, 由id标志
+  public function dels(){
+    $ids   = $this->_param('ids/a',[]);
+    // ? id
+    if(empty($ids)) $this->err(Linvalid('op'));
+    $banIds = array_intersect($this->banDelIds,$ids);
+    if($banIds) $this->err(L('ban-del').' id: '.implode(L('&'), $banIds));
+
+    $this->logic->delete([['id','in',$ids]]);
+    (new UserExtraLogic)->delete([['uid','in',$ids]]);
+    (new UserRoleLogic)->delete([['uid','in',$ids]]);
+    $this->opSuc('','',0);
   }
 }

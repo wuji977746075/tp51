@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+// windows版
+// require workerman-for-win gateway-worker-for-win server2.php server3.php
 namespace think;
 
 ini_set('display_errors', 'on');

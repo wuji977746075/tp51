@@ -10,6 +10,7 @@ class Base extends Controller{
   protected $logic = null;
   protected $module_id = 2;
   protected $session_id;
+  protected $trans = false;
   protected $suc_url = '';
   protected $err_url = '';
   protected $page = ['page'=>1,'size'=>10];
@@ -24,6 +25,10 @@ class Base extends Controller{
     'theme'=>'df'
   ];
 
+  protected function trans(){
+    $this->trans = true;
+    Db::startTrans();
+  }
   //初始化
   protected function initialize(){
     $this->_setAjax();
@@ -221,6 +226,11 @@ class Base extends Controller{
   }
 
   protected function ajaxRet($msg,$url='',$data = [],$count=0,$time=0,$code=0){
+    if($this->trans){
+      $this->trans = false;
+      if($code) Db::rollback();
+      else Db::commit();
+    }
     $r = [];
     $r['code']  = intval($code); // 0:success,1+:error_code
     $r['msg']   = $msg ? $msg : LL('op '.($r['code'] ?'err':'suc'));

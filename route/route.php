@@ -30,7 +30,7 @@ Route::get('think', function () {
 // 5.1.3+
 // Route::redirect('blog/:id','http://blog.thinkphp.cn/read/:id')->status(302);
 // 直接模板渲染 5.1.3+
-Route::view('hello/:name','index@hello',['city'=>'shanghai']);
+Route::view('push/test','push@test',['city'=>'shanghai']);
 
 // 依赖注入
 // Response $resp

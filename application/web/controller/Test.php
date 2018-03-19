@@ -6,13 +6,13 @@
  */
 
 namespace app\web\controller;
-
-use src\post\logic\PostLogic;
-use src\user\action\LoginAction;
-use src\post\model\Post;
 use think\Controller;
 
-use src\client\ClientLogic;
+// use src\post\logic\PostLogic;
+// use src\user\action\LoginAction;
+// use src\post\model\Post;
+// use src\client\ClientLogic;
+use GatewayClient\Gateway;
 /**
  * [simple_description]
  *
@@ -23,6 +23,40 @@ use src\client\ClientLogic;
  * @example
  */
 class Test extends Controller{
+  public function msg($data){
+    return json_encode(["code"=>0,"msg"=>"","data"=>$data]);
+  }
+  public function im(){
+
+    return $this -> fetch();
+  }
+
+  public function imHandle(){
+    Gateway::$registerAddress = '127.0.0.1:1238'; // 注册
+
+    // GatewayClient支持GatewayWorker中的所有接口(Gateway::closeCurrentClient Gateway::sendToCurrentClient除外)
+    // Gateway::sendToAll($this->msg('test'));
+    // Gateway::isOnline($client_id);
+    // Gateway::bindUid($client_id, $uid);
+    // Gateway::isUidOnline($uid);
+    $r = Gateway::getClientIdByUid($_GET['uid']);
+    echo $r[0];
+    // Gateway::sendToClient($r[0], ["uid"=>0,"msg"=>'msg','type'=>'ping']);
+    // dump($r);dump($_SESSION['uid']);
+    // Gateway::closeClient($r[0]);
+    // Gateway::unbindUid($client_id, $uid);
+    // Gateway::sendToUid($uid, $dat);
+    // Gateway::joinGroup($client_id, $group);
+    // Gateway::sendToGroup($group, $data);
+    // Gateway::leaveGroup($client_id, $group);
+    // Gateway::getClientCountByGroup($group);
+    // Gateway::getClientSessionsByGroup($group);
+    // Gateway::getAllClientCount();
+    // Gateway::getAllClientSessions();
+    // Gateway::setSession($client_id, $session);
+    // Gateway::updateSession($client_id, $session);
+    // Gateway::getSession($client_id);
+  }
 
   public function index(){
     $r = (new ClientLogic)->getAuthByClientID('ddd');
