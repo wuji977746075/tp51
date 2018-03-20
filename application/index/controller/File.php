@@ -9,9 +9,9 @@
 namespace app\index\controller;
 
 
-use app\src\base\helper\ConfigHelper;
-use app\src\base\helper\ExceptionHelper;
-use app\src\file\logic\UserPictureLogic;
+// use app\src\base\helper\ConfigHelper;
+// use app\src\base\helper\ExceptionHelper;
+use src\file\UserPictureLogic;
 use app\src\user\logic\MemberLogic;
 use app\src\user\logic\UcenterMemberLogic;
 use think\Controller;
@@ -25,7 +25,7 @@ class File extends Controller
 
     protected $notify_id = NOW_TIME;
     //对应照片搜索、头像、其它、身份证、行驶证
-    protected $Accept_Type = ['photo_search','avatar','other','id_certs','driver_cert'];
+    protected $Accept_Type = ['photo_search','avatar','other','id_certs','driver_cert','im_image','im_file'];
     protected $client_id = "";
 
 
@@ -160,15 +160,51 @@ class File extends Controller
      * @param $data
      * @internal param $i
      */
-    protected function apiReturnSuc($data)
-    {
+    protected function apiReturnSuc($data) {
         header('Content-Type:application/json; charset=utf-8');
         json(['code' => 0, 'data' => $data, 'notify_id' => $this->notify_id])->send();
         exit(0);
     }
+    /**
+     * json返回
+     * code(0=>成功,其他失败),msg(失败信息),data
+     * @param $data
+     * @internal param $i
+     */
+    protected function json($data,$msg='',$code=0) {
+       return json(["code"=>$code,"msg"=>$msg,"data"=>$data]);
+    }
+
+    // im file : $_FILE['file'] : todo : im_file
+    public function imFile(){
+        // $file = [
+        //     "src" => "http://cdn.xxx.com/upload/file/LayIM.zip",
+        //     "name"=> "LayIM.zip"
+        // ];
+        // return $this->json($file);
+    }
+    // im  image : $_FILE['file']
+    public function imImage(){
+        $uid = input('param.uid/d',0);
+        $id  = 0;
+        if(!isset($_FILES['file'])){
+            return $this->json([],Llack('file'),1);
+        }
+        $logic = new UserPictureLogic();
+        $extInfo = ['uid' => $uid,'show_url' => config('upload_path'),'type'=>'im_image'];
+        $info = $logic->upload(
+            request()->file('file'),
+            config('user_picture_upload'),
+            $extInfo
+        );
+        $id = ($info && is_array($info)) ? $info[0]['id'] : 0;
+        $img = [
+            "src" => imgUrl($id)
+        ];
+        return $this->json($img);
+    }
 
     //文件 form 上传
-
     public function upload()
     {
         try{
@@ -183,7 +219,7 @@ class File extends Controller
 
             //检查 UID
             $uid  = intval($this->_param('uid',0));
-            if($uid <= 0) $this->apiReturnErr(lang("invalid_parameter",['param'=>'user id']));
+            if($uid <= 0) $this->apiReturnErr(Llack('user id'));
             $logic = new UcenterMemberLogic();
             $result = $logic->getInfo(['id'=>$uid]);
             if(!$result['status']) $this->apiReturnErr(lang("invalid_parameter",['param'=>'user id']));
@@ -197,11 +233,11 @@ class File extends Controller
 
             /* 调用文件上传组件上传文件 */
             $Picture = new UserPictureLogic();
-            $extInfo = ['uid' => $uid,'show_url' => ConfigHelper::upload_path(),'type'=>$type];
+            $extInfo = ['uid' => $uid,'show_url' => config('upload_path'),'type'=>$type];
 
             $info = $Picture->upload(
                 $files,
-                ConfigHelper::user_picture_upload(),
+                config('user_picture_upload'),
                 $extInfo
             );
             /* 记录图片信息 */

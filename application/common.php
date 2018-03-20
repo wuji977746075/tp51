@@ -235,11 +235,13 @@ function get_client_ip($type = 0,$adv=false) {
     return $ip[$type];
 }
 
-function getAvatar($uid,$size=120){
+// 头像地址
+function avaUrl($uid,$size=120){
   return config('avatar_url').'?uid='.$uid.'&size='.$size;
 }
-function getPicture($uid,$size=120){
-  return config('picture_url').$uid.'&size='.$size;
+// 图片地址
+function imgUrl($id,$size=120){
+  return config('picture_url').'?id='.$id.'&size='.$size;
 }
 // ajax 返回
 function ajaxReturn($msg,$url='',$data = [],$count=0,$time=0,$code=0){

@@ -36,7 +36,7 @@ return [
     'site_url'=>'http://115.29.220.243:903', //ueditor
     'api_url'=>'http://115.29.220.243:903/index.php',
     'avatar_url'=>'http://115.29.220.243:903/index.php/picture/avatar',
-    'picture_url'=>'http://115.29.220.243:903/index.php/picture/index?id=',
+    'picture_url'=>'http://115.29.220.243:903/index.php/picture/index',
     'file_curl_upload_url'=>'http://115.29.220.243:903/index.php/file/curl_upload',
     'upload_path'=>'http://115.29.220.243:903/', // 上传用
 

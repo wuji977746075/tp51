@@ -15,6 +15,7 @@ use Workerman\MySQL\Connection as Db;
 class Events{
     /**
     * 当客户端发来消息时触发 - 变更需要重启server3
+    * 发送 msg type(tip ping error chat)
     * @param int $client 连接id
     * @param mixed $src 具体消息
     */
@@ -22,50 +23,24 @@ class Events{
       global $db;
       try{
         $data = json_decode($src,true);
+        // uid type(chat/login/ping) msg
         if(!is_array($data)){
           self::pushClient($client,'非法操作','error');
         }else{
           $uid  = (int) $data['uid'];
-          $msg  = (string) $data['msg'];
+          $msg  = $data['msg'];
           $type = (string) $data['type'];
-          if($type == 'list'){
-            $ret  = [];
-            // 查询该用户信息
-            $ret["mine"] = [
-              "username" => "纸飞机" //我的昵称
-              ,"id"      => "100000" //我的ID
-              ,"status"  => "online" //在线状态 online：在线、hide：隐身
-              ,"sign"    => "在深邃的编码世界，做一枚轻盈的纸飞机" //我的签名
-              ,"avatar"  => "a.jpg" //我的头像
-            ];
-            // 查询好友列表
-            $ret["friend"] =[];
-            $ret['friend'][] = [
-              "groupname"=> "我的好友" //好友分组名
-              ,"id"=> 1 //分组ID
-              ,"list"=> [[ //分组下的好友列表
-                "username" => "贤心" //好友昵称
-                ,"id"      => "100001" //好友ID
-                ,"avatar"  => "a.jpg" //好友头像
-                ,"sign"    => "这些都是测试数据，实际使用请严格按照该格式返回" //好友签名
-                ,"status"  => "online" //若值为offline代表离线，online或者不填为在线
-              ]]
-            ];
-            // 查询群组列表
-            $ret["group"] = [];
-            $ret["group"][]= [
-              "groupname" => "前端群" //群组名
-              ,"id"       => "101" //群组ID
-              ,"avatar"   => "a.jpg" //群组头像
-            ];
-            self::pushClient($client,$ret,'list');
-          }else if($type == 'chat'){
+          if($type == 'chat'){
+            // $msg 可考虑保存到数据库
+            // .mine( avatar: content: id: mine: username )
+            //  content:face[标志] a(地址)[文本] img[地址] file(地址)[文本] audio[地址] video[地址]
+            // .to (avatar: id: name: type: friend/group/kefu sign:username)
             if($uid){ //用户推送
               if(Gateway::isUidOnline($uid)){
-                self::pushUid($_SESSION['uid'],$uid,$msg);
-                self::pushUid(0,$_SESSION['uid'],'发送成功 ...','tip');
+                self::pushUid($uid,$msg,'chat');
+                self::pushClient($client,'发送成功 ...','tip');
               }else{
-                self::pushUid(0,$_SESSION['uid'],$uid.'不在线 ...');
+                self::pushUid($_SESSION['uid'],$uid.'不在线 ...','tip');
               }
             }else{ //用户咨询
                 self::pushClient($client,'感谢您的反馈 ...');
@@ -86,8 +61,7 @@ class Events{
     }
     private static function pushClient($client,$msg,$type="tip") {
       $data = [
-       'uid'  =>0,
-       'msg'  =>$msg,
+       'msg'  =>self::getSendMsg($msg,$type),
        'type' =>$type,
       ];
       Gateway::sendToClient($client,json_encode($data));
@@ -97,20 +71,50 @@ class Events{
     // }
     private static function pushAll($msg,$type='tip') {
       $data = [
-       'uid'  =>0,
-       'msg'  =>$msg,
+       'msg'  =>self::getSendMsg($msg,$type),
        'type' =>$type,
       ];
       Gateway::sendToAll(json_encode($data));
     }
-    private static function pushUid($from,$to,$msg,$type='chat'){
+    private static function pushUid($uid,$msg,$type='chat'){
       // tip msg
       $data = [
-        'uid' =>$from,
-        'msg' =>$msg,
+        'msg' =>self::getSendMsg($msg,$type),
         'type'=>$type
       ];
-      Gateway::sendToUid($to,json_encode($data));
+      Gateway::sendToUid($uid,json_encode($data));
+    }
+    private static function getSendMsg($msg,$type){
+      if($type == 'chat'){   //用户聊天
+        $msg = [
+          'username' =>$msg['mine']['username'], //来源用户名
+          'avatar'   =>$msg['mine']['avatar'], //来源用户头像
+          'id'       =>$msg['mine']['id'],//来源ID（私聊用户id/群聊群组id）
+          'type'     =>$msg['to']['type'],
+          'content'  =>$msg['mine']['content'],//消息内容
+          // 'cid'=>0,//消息id，可不传。除非你要对消息进行一些操作（如撤回）
+          'mine'=> false, //true显示在右方
+          'fromid'=>$msg['mine']['id'],//消息的发送者id（比如群组中的某个消息发送者），可用于自动解决浏览器多窗口时的一些问题
+          'timestamp'=> time()*1000 //服务端时间戳毫秒数。
+        ];
+      }else{ // 系统消息 tip error ping
+        if(is_string($msg)){
+          $msg = [
+           'system' =>true,
+           'id'     =>$_SESSION['uid'],
+           'type'   =>'friend',
+           'content'=>$msg,
+          ];
+        }else{
+          $msg = [
+           'system' =>true,
+           'id'     =>$msg['mine']['id'],
+           'type'   =>$msg['to']['type'],
+           'content'=>$msg['mine']['content'],
+          ];
+        }
+      }
+      return $msg;
     }
     /**
      * 当客户端连接时触发
@@ -120,28 +124,32 @@ class Events{
      */
     public static function onConnect($client) {
     }
+
     /**
-     * 当连接断开时触发的回调函数
+     * 当连接断开时触发的回调函数 : 经观察不断在关闭连接
+     * 客户端与Gateway进程的连接断开时触发。不管是客户端主动断开还是服务端主动断开，都会触发这个回调。一般在这里做数据清理。
+     * 注意：onClose回调里无法使用Gateway::getSession来获得当前用户的session数据，但是仍然可以使用$_SESSION变量获得
      * 客户端js: readyState 3
      * @param $connection
      */
     public static function onClose($client) {
-      Gateway::closeClient($client);
-      global $db;
       $uid = intval($_SESSION['uid']);
-      $clients = Gateway::getClientIdByUid($uid);
-      if(!$clients){ // 全设备下线
-        echo $uid.':all offline<br/>';
-        $_SESSION['uid'] = null;
-        // 用户在线 => 离线
-        $db->update('f_user_extra')->cols(['im_status'=>0])->where('im_status=1 and id='.$uid)->query();
-        // 删除全部 clent
-        $row_count = $db->delete('f_im_user')->where("uid=".$uid)->query();
-        self::pushAll($uid,'logout');
-      }else{ // 一设备下线
-        echo $uid.': offline'.$client.'<br/>';
-        // 删除 clent
-        $row_count = $db->delete('f_im_user')->where("uid=".$uid." and client='".$client."'")->query();
+      if($uid){ // 不管其他
+        global $db;
+        $clients = Gateway::getClientIdByUid($uid);
+        if(!$clients){ // 全设备下线
+          echo $uid.'_all_offline : ';
+          $_SESSION['uid'] = null;
+          // 用户在线 => 离线
+          $db->update('f_user_extra')->cols(['im_status'=>0])->where('im_status=1 and id='.$uid)->query();
+          // 删除全部 clent
+          $row_count = $db->delete('f_im_user')->where("uid=".$uid)->query();
+          self::pushAll($uid,'logout');
+        }else{ // 一设备下线
+          echo $uid.'_'.$client.'_offline : ';
+          // 删除 clent
+          $row_count = $db->delete('f_im_user')->where("uid=".$uid." and client='".$client."'")->query();
+        }
       }
     }
     /**
@@ -237,6 +245,7 @@ class Events{
       $now = time();
       // todo : 设备数 限制
       if(isset($_SESSION['uid']) && $_SESSION['uid']){
+      }else{
         $_SESSION['uid'] = $uid;
       }
       Gateway::bindUid($client, $uid);

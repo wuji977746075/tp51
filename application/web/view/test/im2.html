@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>LayIM 测试 2</title>
+<link rel="stylesheet" href="http://cdn.my/layui/2.2.4/css/layui.css" media="all">
+</head>
+<body>
+<script src="http://cdn.my/layui/2.2.4/layui.js"></script>
+<script>
+var wsUri = 'ws://127.0.0.1:8282/';
+var ws,timer,uid=2;
+function doSend(message) {
+  message = JSON.stringify(message);
+  ws.send(message);
+}
+//演示代码
+layui.use('layim', function(layim){
+  var layim = layui.layim;
+  ws = new WebSocket(wsUri);
+  ws.onopen = function(evt) {    //保持在线
+    console.log("在线...");
+    // writeToScreen("在线...");
+    doSend({ uid: uid,msg:'ttt',type:'ping' });
+    timer = setInterval(function(){
+      doSend({ uid: uid,msg:'ttt',type:'ping' });
+    },10000);
+  };
+  ws.onclose = function(evt) {
+    console.log("离线...");
+    clearInterval(timer);
+    timer = setTimeout(function(){
+      ws = new WebSocket(wsUri);
+      console.log("重连...");
+    },5000);
+  };
+  ws.onmessage = function(evt) {
+    data = JSON.parse(evt.data);
+    console.log('get--',data);
+    if(data.type == 'chat'){
+      layim.getMessage(data.msg);
+    }else if(data.type == 'ping'){
+    }else if(data.type == 'error'){
+      layim.getMessage(data.msg);
+    }else if(data.type == 'tip'){
+      layim.getMessage(data.msg);
+    }else{
+    }
+  };
+  ws.onerror = function(evt) {
+    console.log(evt);
+  };
+
+  // 点击发送 消息
+  layim.on('sendMessage', function(res){
+    // console.log('send',res);
+    doSend({ uid: res.to.id, msg: res, type:'chat'});
+  });
+  layim.config({
+    notice:true,
+    initSkin: '5.jpg',
+    // isgroup:false,
+    copyright:false,
+    members: {  //自动传递id（群组id）
+      url: 'http://tp51/web.php/test/ajaxImMembers',
+      data: { }
+    },
+    init: {
+      url  : "http://tp51/web.php/test/ajaxImList?uid="+uid,
+      data : { }
+    }
+    ,uploadImage: {
+      url: 'http://tp51/index.php/file/imImage'
+    }
+    // ,uploadFile: {
+    //   url: 'http://tp51/index.php/file/imFile'
+    // }
+    //开启客服模式
+    // ,brief: true
+  });
+  //打开一个客服面板
+  // layim.chat({
+  //   name: '客服一' //名称
+  //   ,type: 'friend' //聊天类型
+  //   ,avatar: 'http://tp1.sinaimg.cn/5619439268/180/40030060651/1' //头像
+  //   ,id: 1 //定义唯一的id方便你处理信息
+  // });
+  // layim.setChatMin(); //收缩聊天面板
+});
+
+</script>
+</body>
+</html>

@@ -23,14 +23,70 @@ use GatewayClient\Gateway;
  * @example
  */
 class Test extends Controller{
-  public function msg($data){
-    return json_encode(["code"=>0,"msg"=>"","data"=>$data]);
-  }
-  public function im(){
 
+  // code(0=>成功,其他失败),msg(失败信息),data
+  public function json($data,$msg='',$code=0){
+    return json(["code"=>$code,"msg"=>$msg,"data"=>$data]);
+  }
+
+  //IM :我的信息、好友列表、群组列表。
+  public function ajaxImList($uid){
+    $uid2 = 3 - $uid;
+    $data = [
+      "mine"=>[
+         "id"       => $uid,
+         "username" => "user_".$uid,
+         "avatar"   => avaUrl($uid),
+         "sign"     => "sign_".$uid.":在深邃的编码世界，做一枚轻盈的纸飞机",
+         "status"   => "online", //online:在线、hide:隐身
+      ],
+      "friend"=>[[
+        "groupname"=> "好友",
+        "id"=> 1, //分组ID
+        "list"=> [[
+          "id"       => $uid2,
+          "username" => "user_".$uid2,
+          "avatar"   => avaUrl($uid2),
+          "sign"     => "sign_".$uid2,
+          "status"   => "online", //offline:离线，online或空:在线
+        ]]
+      ]],
+      "group"=>[
+        [
+        "groupname"=> "客服",
+        "id"=> 101,
+        "avatar"=> "//tva1.sinaimg.cn/crop.0.0.200.200.50/006q8Q6bjw8f20zsdem2mj305k05kdfw.jpg"
+        ], [
+        "groupname"=>"前端",
+        "id"=>102,
+        "avatar"=>"//tva2.sinaimg.cn/crop.0.0.199.199.180/005Zseqhjw1eplix1brxxj305k05kjrf.jpg"
+        ]
+      ]
+    ];
+    return $this->json($data);
+  }
+  // IM:群员列表
+  public function ajaxImMembers($id){
+    $uid = 8;
+    $data = [];
+    $data['list'] = [];
+    $data['list'][] = [
+      "username" => "马小云",
+      "id"       => $uid,
+      "avatar"   => avaUrl($uid),
+      "sign"     => "让天下没有难写的代码"
+    ];
+    return $this->json($data);
+  }
+  // 用户1
+  public function im1(){
     return $this -> fetch();
   }
-
+  // 用户2
+  public function im2(){
+    return $this -> fetch();
+  }
+  // 聊天处理
   public function imHandle(){
     Gateway::$registerAddress = '127.0.0.1:1238'; // 注册
 
@@ -41,7 +97,7 @@ class Test extends Controller{
     // Gateway::isUidOnline($uid);
     $r = Gateway::getClientIdByUid($_GET['uid']);
     echo $r[0];
-    // Gateway::sendToClient($r[0], ["uid"=>0,"msg"=>'msg','type'=>'ping']);
+    Gateway::sendToClient($r[0], ["uid"=>8,"msg"=>'test - msg','type'=>'ping']);
     // dump($r);dump($_SESSION['uid']);
     // Gateway::closeClient($r[0]);
     // Gateway::unbindUid($client_id, $uid);
