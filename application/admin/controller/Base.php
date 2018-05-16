@@ -34,9 +34,7 @@ class Base extends Controller{
     $this->_setAjax();
     session("?session_id");
     $this->session_id = session_id();
-    if(empty($this->session_id)){
-        throw  new Exception("Session 未初始化");
-    }
+    empty($this->session_id) && $this->error("Session 未初始化");
 
     // 查询设置系统配置
     $sysConfig = (new ConfigLogic)->queryGroup(ConfigLogic::SYSTEM,0);
@@ -49,14 +47,27 @@ class Base extends Controller{
     // set page and sort
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('sort','desc');
-
-    $logicPath = '\src\\'.lcfirst(CONTROLLER_NAME).'\\'.CONTROLLER_NAME.'Logic';
-    if(class_exists($logicPath)) $this->logic = new $logicPath;
+    // set main logic
+    $this->setLogic();
     $this->init();
+    // !$this->logic && $this->error('需要配置主logic');
+  }
+  // set main login if possible
+  protected function setLogic($dir='') {
+    $logic_dir = $dir ? $dir : lcfirst(CONTROLLER_NAME);
+    $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+    if(class_exists($logicPath)){
+      $this->logic = new $logicPath;
+    }else{
+      $logic_dir = preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
+      $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+      if(class_exists($logicPath)){
+        $this->logic = new $logicPath;
+      }
+    }
   }
 
   protected function init(){
-
   }
   // protected function checkLogin(){
   //   return session('uid');

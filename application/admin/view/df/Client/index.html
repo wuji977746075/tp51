@@ -1,28 +1,22 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-<style>
-  .layui-table-cell{height: auto !important;}
-</style>
-{/block}
-
 {block name="area_body"}
 <fieldset class="layui-elem-field">
   <legend>用户管理</legend>
   <div class="layui-field-box">
     {:html_head_tip('用户基础数据,点击单元格编辑')}
     <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i>添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="fa fa-trash"></i> 批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
     </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </fieldset>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/auth',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-chevron-right"></i> 权限</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/auth',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-set"></i>权限</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
 </div>
 </script>
 {/block}

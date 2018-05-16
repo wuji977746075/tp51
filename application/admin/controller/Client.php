@@ -6,13 +6,20 @@ class Client extends CheckLogin{
   protected $banEditFields = ['client_id','id'];
 
   public function set(){
-    $this->jsf = array_merge($this->jsf,[
+    $this->jsf = [
       'client_name'  => '客户端',
       'client_id'    => 'client_id',
       'client_secret'=> 'client_secret',
       'api_alg'      => '加密方式',
-    ]);
+    ];
     if(IS_GET){ // view
+      $this->jsf_tpl = [
+        ['client_name'],
+        ['client_id','input-long'],
+        ['client_secret','input-long'],
+        ['api_alg|select','input-long',['md5'=>'MD5']],
+        ['desc|textarea','input-long'],
+      ];
     }else{ // save
       $this->jsf_field = ['client_name,client_id,client_secret,api_alg|md5','desc'];
     }

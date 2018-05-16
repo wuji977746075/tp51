@@ -1,0 +1,105 @@
+<style>
+.layui-tab-item{ }
+.layui-tab-item li{ display: table-cell;border:1px solid #ddd;padding: 11px 15px;margin:0;font-size: 1.4em; }
+.layui-tab-item i{ }
+#icon-select{
+  display:none;padding:10px;
+}
+#icon-select .hide{ display: none; }
+#icon-select .icon-search label{
+  text-align:left;border:1px solid #ddd;
+}
+#icon-select .layui-tab-content{
+  padding:10px 0;
+}
+#icon-select .layui-tab-content li{
+  cursor: pointer;
+}
+#icon-select .layui-tab-content li:hover{
+  border-color: #aaa;
+}
+</style>
+<div id="icon-select">
+  <div id="icon-search layui-form">
+    <div class="layui-form-item">
+      <label for="icon-class" class="layui-form-label">搜索图标</label>
+      <div class="layui-input-inline">
+        <input type="text" name="icon-class" id="js-icon-search" value="" class="layui-input" placeholder="例如: 输入 home"  autocomplete="off" required  lay-verify="required" >
+      </div>
+    </div>
+  </div>
+  <div class="layui-tab layui-tab-brief">
+    <ul class="layui-tab-title">
+      <li class="layui-this">layui icon</li>
+      <li>font awesome</li>
+    </ul>
+    <div class="layui-tab-content">
+      <div class="layui-tab-item layui-show">
+        <ul>
+          <li title="ok"><i class="layui-icon layui-icon-ok"></i></li>
+          <li title="add-1"><i class="layui-icon layui-icon-add-1"></i></li>
+          <li title="delete"><i class="layui-icon layui-icon-delete"></i></li>
+          <li title="edit"><i class="layui-icon layui-icon-edit"></i></li>
+          <li title="search"><i class="layui-icon layui-icon-search"></i></li>
+        </ul>
+      </div>
+      <div class="layui-tab-item">
+        <ul>
+          <li title="file"><i class="fa fa-file"></i></li>
+          <li title="lock"><i class="fa fa-lock"></i></li>
+          <li title="bell"><i class="fa fa-bell"></i></li>
+          <li title="close"><i class="fa fa-close"></i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+// require : jquery layui[layer,element(tab)] input#jsf-icon
+// todo : 改造为多个 .jsf-icon
+;$(function(){
+  // icon select 事件
+  var timer,index,$this;
+  // modal 打开事件
+  $('.js-jsf-icon').click(function(e) {
+    $this = $(this);
+    console.log($this);
+    index = layer.open({
+      title:"<h3>选择图标</h3>",
+      type:1,
+      // closeBtn:0,
+      area:["600px","500px"],
+      shadeClose:true,
+      content:$("#icon-select"),
+    });
+  });
+  // model 图标点击
+  $('#icon-select .layui-tab-item li').click(function(e) {
+    $this.val($(this).find('i').attr('class'));
+    layer.close(index);
+  });
+  // modal 及时搜索
+  $('#icon-select #js-icon-search').keyup(function(e) {
+    clearInterval(timer);
+    $this = $(this);
+    timer = setInterval(function(){
+      var kword = $this.val();
+      // console.log('kword',kword);
+      if(kword){
+        $('#icon-select .layui-tab-content i').map(function(i, el) {
+          $el = $(el);
+          if($el.attr('class').indexOf(kword) == -1){
+            $el.parent().addClass('hide');
+          }else{
+            $el.parent().removeClass('hide');
+          }
+          // continue;
+          // return something;
+        })
+      }else{
+        $('#icon-select .layui-tab-content li').removeClass('hide');
+      }
+    },200);
+  });
+})
+</script>

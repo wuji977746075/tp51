@@ -13,9 +13,20 @@ class Area extends CheckLogin{
     $this->jsf = [
       'code'     =>'编码',
       'province' =>'省份',
-      'url'      =>'城市',
-      'icon'     =>'市区',
+      'city'     =>'城市',
+      'district' =>'市区',
     ];
+    if(IS_GET){ // view
+      $this->jsf_tpl = [
+        ['code'],
+        ['province','input-long'],
+        ['city','input-long'],
+        ['district','input-long'],
+        ['sort|number'],
+      ];
+    }else{ // save
+      $this->jsf_field = ['code','province,city,district,sort|0'];
+    }
     return parent::set();
   }
 
@@ -26,13 +37,11 @@ class Area extends CheckLogin{
       $r = $this->logic->getInfo(['id'=>$parent]);
       if($r) $parent = $r['parent'];
     }
-    $name   = '省市区';
     if($parent){
       $r = $this->logic->getInfo(['id'=>$parent]);
       $name = $r['city'] ? $r['city'] : $r['province'];
     }
     $this->assign('parent',$parent);
-    $this->assign('name',$name);
     return $this->show();
   }
 

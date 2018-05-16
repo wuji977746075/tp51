@@ -205,13 +205,14 @@ class File extends Base
                     , $extInfo
                 );
                 /* 记录图片信息 */
-                if ($info) {
+                if (is_array($info)) {
                     $return['status'] = 1;
                     $return['info'] = $info[0];
                     // $return = array_merge($info, $return);
                 } else {
                     $return['status'] = 0;
-                    $return['info'] = $Picture->getError();
+                    // $return['info'] = $Picture->getError();
+                    $return['info'] = $info;
                 }
             // }else{
                 /* 上传到远程服务器 */
@@ -263,13 +264,14 @@ class File extends Base
                 );
 
                 /* 记录图片信息 */
-                if ($info) {
+                if (is_array($info)) {
                     $return['status'] = 1;
                     $return['info'] = $info[0];
                     // $return = array_merge($info, $return);
                 } else {
                     $return['status'] = 0;
-                    $return['info'] = $Picture->getError();
+                    $return['info'] = $info;
+                    // $return['info'] = $Picture->getError();
                 }
             }else{
                 /* 上传到远程服务器 */
@@ -314,20 +316,12 @@ class File extends Base
     public function del(){
         $imgIds = $this->_param("imgIds/a",-1);
         if($imgIds!=-1){
-            $map=array(
-                'id'=>array(
-                    'in',$imgIds
-                )
-            );
-
-            $result = (new UserPictureLogic())->save($map,array('status'=>-1));
-
-            if ($result['status']) {
-                $this->success("删除成功!");
-            }else{
-                $this->error("删除失败!");
-            }
-
+            $map = [
+                ['id','in',$imgIds]
+            ];
+            $r = (new UserPictureLogic)->save($map,['status'=>0]);
+            empty($r) && $this->error("删除失败!");
+            $this->success("删除成功!");
         }else{
             $this->error("请先选中要删除的图片!");
         }

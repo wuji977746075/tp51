@@ -10,6 +10,11 @@ class Auth extends CheckLogin{
       'title' => '节点名',
     ]);
     if(IS_GET){ // view
+      $this->jsf_tpl = [
+        ['title'],
+        ['name'],
+        ['desc|textarea','input-long']
+      ];
     }else{ // save
       $this->jsf_field = ['name,title','desc'];
     }

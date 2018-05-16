@@ -49,8 +49,8 @@
     </form>
     <hr >
     <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i> 添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops"><i class="fa fa-trash"></i> 批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
       <a href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" class="layui-btn confirm js-ops"><i class="fa fa-ban"></i> 批量禁用</a>
     </div>
 
@@ -58,14 +58,26 @@
   </div>
 </fieldset>
 <!-- tpl -->
-<script type="text/html" id="nickTpl">
-  <img src="{:config('avatar_url')}?uid={{ d.id }}&size=60" class="layui-nav-img js-view">  {{ d.nick }}
+<script type="text/html" id="nameTpl">
+  <img src="{:config('avatar_url')}?uid={{ d.id }}&size=60" layer-src="{:config('avatar_url')}?uid={{ d.id }}"  class="layui-nav-img js-view">  {{ d.name }}
+</script>
+<script type="text/html" id="timeTpl">
+  {{# if(d.reg_time>0){ }}
+  {{ new Date((d.reg_time)*1000).format('yyyy/MM/dd hh:mm:ss') }}
+  {{# } }}
+</script>
+<script type="text/html" id="statusTpl">
+  <form class="layui-form">
+  <input type="checkbox" data-id="{{ d.id }}"
+  {{# if(d.status){ }} checked  {{#  } }}
+  lay-skin="switch">
+  </form>
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-chevron-right "></i> 详情</a>
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-username"></i>详情</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
 </div>
 </script>
 {/block}
@@ -99,12 +111,12 @@ layui.use(['rb','table2','element','form','picView'], function(){
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
       ,{field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
-      ,{field: 'nick', title: '昵称 .', width: 200,templet:'#nickTpl',edit: 'text'}
-      ,{field: 'name', title: '用户名', width: 100}
+      ,{field: 'name', title: '用户名', width: 150,templet:'#nameTpl'}
       ,{field: 'email', title: '邮箱 .', width: 150,edit: 'text'}
-      ,{field: 'phone', title: '手机 .', width: 150,edit: 'text'}
-      ,{field: 'role_name', title: '角色', width: 80}
-      ,{field: 'status', title: '状态', width: 80}
+      ,{field: 'phone', title: '手机 .', width: 120,edit: 'text'}
+      ,{field: 'role_name', title: '角色', width: 100}
+      ,{field: 'status', title: '状态', width: 80,templet:'#statusTpl'}
+      ,{field: 'reg_time', title: '注册时间', width: 120,templet:'#timeTpl'}
       ,{align:'left',title: '操作',width:250,toolbar: '#barDemo'} //,fixed: 'right'
     ]]
     ,done: function(res, page, count){

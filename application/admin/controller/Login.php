@@ -21,23 +21,27 @@ class Login extends Base{
       $uinfo = $r['info'];
       $uid   = $uinfo['id'];
 
-      // todo : 查询用户角色id
-      // $r = (new RoleLogic)->getRoleId($uid);
-      // !$r['status'] && $this->error($r['info']);
-      // $role_id = (int) $r['info'];
+      // ? 超级管理员
+      $ur = new UserRoleLogic;
+      if($ur->isSuperUser($uid)){
+      }else{
+        // todo : 查询用户角色id
+        $r = $ur->getRoleId($uid);
+        !$r['status'] && $this->error($r['info']);
+        $role_id = (int) $r['info'];
 
-      // todo : 是否为此客户端角色
-      // $r = (new AuthLogic)->checkRole($uid,$client_id);
-      // !$r['status'] && $this->error($r['info']);
+        // todo : 是否为此客户端角色
+        // $r = (new AuthLogic)->checkRole($uid,$client_id);
+        // !$r['status'] && $this->error($r['info']);
 
-      // todo : 是否拥有登陆权限
-      // $r = (new AuthLogic)->checkRoleRight($role_id,'user_login');
-      // !$r['status'] && $this->error($r['info']);
+        // todo : 是否拥有登陆权限
+        // $r = (new AuthLogic)->checkRoleRight($role_id,'user_login');
+        // !$r['status'] && $this->error($r['info']);
 
+      }
       // 登陆
       $r = (new UserLogic)->login($uid,$d_token,$d_type,true);
       !$r['status'] && $this->error($r['info']);
-
       $this->redirect(url('manager/index'));
     }
   }

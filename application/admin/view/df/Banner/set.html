@@ -1,112 +1,11 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-{/block}
-
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    Banner子项 {$op ?: ''}
+    Banner子项 {$op}
   </div>
 </div>
-<form class="layui-form layui-form-pane post-form">
-  <div class="layui-form-item">
-    <label for="jsf-dt-id" class="layui-form-label">{$jsf.dt_id}</label>
-    <div class="layui-input-inline">
-      <select name="dt_id" id="jsf-dt-id" required lay-verify="required">
-        <option value="0"> == 选择 == </option>
-        {volist name="types" id="v"}
-        <option value="{$v.id}" {eq name="v.id" value="$dt_id"} selected {/eq}>{$v.title} </option>
-        {/volist}
-      </select>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-title" class="layui-form-label">{$jsf.title}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="title" id="jsf-title" value="{$id ?= $info['title']}" class="layui-input" placeholder="请输入子项名"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-img" class="layui-form-label">{$jsf.img}</label>
-    <div class="layui-input-inline">
-      <input type="hidden" name="img" id="jsf-img" value="{$id ?= $info.img}" >
-      <div class="wxuploaderimg clearfix main_img" data-maxitems="1">
-        <div class="img-preview clearfix " style="display:{$has_img ? 'inline-block': 'none'}">
-          {notempty name="has_img"}
-          <div class="pull-left clearfix img-item">
-            <img class="img-responsive thumbnail" src="{:getPicture($info.img,120)}" alt="image" data-imageid="{$info.img}"/>
-            <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
-          </div>
-          {/notempty}
-        </div>
-        <div class="add" style="{$has_img ? 'display:none': ''}">
-          <i class="fa fa-plus"></i>
-        </div>
-      </div>
-    </div>
-    <div class="layui-form-mid layui-word-aux"> banner图片,建议尺寸为640像素*640像素，大小不超过500kb </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-url" class="layui-form-label">{$jsf.url}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="url" id="jsf-url" value="{$id ?= $info['url']}" class="layui-input" placeholder="请输入图片链接"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">url / 类型主键</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-url-type" class="layui-form-label">{$jsf.url_type}</label>
-    <div class="layui-input-inline">
-      <select name="url_type" id="jsf-url-type" required  lay-verify="required" >
-        <option value="0"> == 选择 == </option>
-        {volist name="url_types" id="v"}
-        <option value="{$v.id}" {notempty name="id"}{eq name="v.id" value="$info.url_type"} selected {/eq}{/notempty}>{$v.title} </option>
-        {/volist}
-      </select>
-    </div>
-    <div class="layui-form-mid layui-word-aux">链接类型</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-desc" class="layui-form-label">{$jsf.desc}</label>
-    <div class="layui-input-inline  input-long">
-      <textarea name="desc" id="jsf-desc" placeholder="配置描述" class="layui-textarea">{$id ?= $info['desc']}</textarea>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-sort" class="layui-form-label">{$jsf.sort}</label>
-    <div class="layui-input-inline">
-      <input type="number" min="0" name="sort" id="jsf-sort" value="{$id ?= $info['sort']}" placeholder="" class="layui-input">
-    </div>
-    <div class="layui-form-mid layui-word-aux">越小越靠前</div>
-  </div>
-
-  <div class="layui-form-item layui-input-block">
-    <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"   onclick="return getData();">{$op ?: ''}</button>
-    {$html_return|raw}
-  </div>
-</form>
+{include file="df/tpl/set_form"}
 {include file="df/tpl/pic_select" /}
-{/block}
-
-{block name="area_foot"}
-<script>
-function getData() {
-  var main_img = $(".main_img .img-preview img").data("imageid") || '';
-  main_img && $("#jsf-img").val(main_img);
-}
-
-// page init
-layui.use(['rb','form'], function(){
-  var layer = layui.layer,
-  form = layui.form,
-  rb = layui.rb,
-  $ = layui.$;
-
-  rb.log('page','init');
-
-  wxuploadimg.init({cont:".wxuploaderimg"});
-});
-
-</script>
 {/block}

@@ -8,7 +8,7 @@ class SessionLogic extends BaseLogic{
 
   const LIFE_TIME = 86400; // 1天
   const ADMIN_KEY = 'admin_user';
-
+  // return
   public static function getSessionId(){
     return  session_id();
   }
@@ -21,10 +21,13 @@ class SessionLogic extends BaseLogic{
     session(null);
     session("[destroy]");
   }
+  // return
   public static function isAdminLogin(){
     return intval(session(self::ADMIN_KEY));
   }
   // 添加 session ,登一次记一次
+  // return
+  // throws
   public function add($uid,$device_token='',$device_type='',$login_info=[],$life_time=self::LIFE_TIME){
     $now   = time();
     // 至少5分钟
@@ -40,11 +43,12 @@ class SessionLogic extends BaseLogic{
         // 'create_time'=> $now,
         'expire_time' => $now + $life_time,
     ];
-    if(parent::add($add)) return returnSuc($sid);
-    return returnErr('add session err');
+    if(parent::add($add)) return $sid;
+    throws('add session err');
   }
 
   // api验证用 , 未过期则顺延 , 所有接口带sid(? token)
+  // throws
   public function check($uid,$sid='',$life_time=self::LIFE_TIME){
     $now = time();
     // 至少5分钟
@@ -52,16 +56,12 @@ class SessionLogic extends BaseLogic{
 
     $map = ['uid'=>$uid,'session_id'=>$sid];
     $info = $this->getInfo($map);
-    if(empty($info)) return returnErr('会话错误,请重新登陆');
+    empty($info) && throws('会话错误,请重新登陆');
 
     $id = $info['id'];
     $expire_time = intval($info['expire_time']);
-    if($now > $expire_time){
-      return returnErr('会话已过期,请重新登陆');
-    }
+    ($now > $expire_time) && throws('会话已过期,请重新登陆');
     // 会话顺延
-    $r = $this->saveByID($id,['expire_time'=>$now + $life_time]);
-    if($r) return returnSuc('psss');
-    return resultErr('会话错误');
+    !($this->saveByID($id,['expire_time'=>$now + $life_time])) && throws('会话错误');
   }
 }

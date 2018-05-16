@@ -60,6 +60,13 @@ function cache_clear($key='',$return=false){
   }
 }
 
+// 驼峰式 转下划线
+function humpToLine($str,$flag='_'){
+    $str = preg_replace_callback('/([A-Z]{1})/',function($matches){
+        return $flag.strtolower($matches[0]);
+    },$str);
+    return $str;
+}
 /**
 * msubstr($str, $start=0, $length, $charset="utf-8", $suffix=true)
 * $str:要截取的字符串
@@ -93,6 +100,7 @@ function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=false){
  $slice = join("",array_slice($match[0], $start, $length));
  return ($suffix && $slice!=$str) ? $slice.'...':$slice;
 }
+
 /**
  * 获取链接
  * 传入U方法可接受的参数或以http开头的完整链接地址
@@ -113,6 +121,7 @@ function getURL($str, $param = '') {
 
   return U($str);
 }
+
 
 // 分析枚举类型配置值 格式 a:名称1,b:名称2
 function parse_config_attr($string) {

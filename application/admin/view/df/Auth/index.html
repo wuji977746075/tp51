@@ -1,19 +1,13 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-<style>
-  .layui-table-cell{height: auto !important;}
-</style>
-{/block}
-
 {block name="area_body"}
 <fieldset class="layui-elem-field">
-  <legend>节点管理</legend>
+  <legend>节点 管理</legend>
   <div class="layui-field-box">
     {:html_head_tip('前端节点数据,点击单元格编辑')}
     <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="fa fa-plus"></i> 添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops"><i class="fa fa-trash"></i> 批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i> 添加</a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops"><i class="layui-icon layui-icon-delete"></i> 批量删除</a>
       <a href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" class="layui-btn confirm js-ops"><i class="fa fa-ban"></i> 批量禁用</a>
     </div>
     <table id="demo" lay-filter="fDemo"></table>
@@ -69,12 +63,9 @@ layui.use(['rb','table2','element','form','picView'], function(){
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-chevron-right "></i> 详情</a>
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-right"></i> 详情</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i> 编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"> <i class="layui-icon layui-icon-delete"></i> 删除</a>
 </div>
 </script>
-{/block}
-
-{block name="area_foot"}
 {/block}

@@ -1,22 +1,22 @@
 <?php
 
 namespace src\menu;
-use  src\base\BaseLogic;
+use src\base\BaseLogic;
 use src\user\UserLogic;
 
 class MenuLogic extends BaseLogic{
 
   public function getUserMenu($mid=0,$uid=0,$cache=true){
     $menus = $this->getModuleMenu($mid,$cache);
-    $isSuper = true;
-    $userMenuIds = []; // todo : array
-    if($isSuper){ // 超管
+    if((new UserLogic)->isSuperUser($uid)){ // 超管
       $ret = $menus;
-    }else{
+    }else{ // 非超管
+      // todo : array
+      $userMenuIds = [];
       $ret = [];
       foreach ($menus as $v) {
         $id = $v['id'];
-        if(!$v['hide'] && in_array($id,$userMenuIds)){
+        if($v['show'] && in_array($id,$userMenuIds)){
           $ret[$id] = $v;
         }
       }
@@ -49,7 +49,7 @@ class MenuLogic extends BaseLogic{
     if($cache && cache($cacheKey)) {
       return cache($cacheKey);
     }else{
-      $all = $this->query([['level','<=',$level]],'sort asc','id,name,parent,url,icon,params,module_id,hide');
+      $all = $this->query([['level','<=',$level]],'sort asc','id,name,parent,url,icon,params,module_id,show');
       $ret = [];$top_arr = [];
       foreach ($all as $k=>&$v) { // 一级菜单
         $v['link'] = $v['url'];

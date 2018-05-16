@@ -34,8 +34,15 @@ class Config extends CheckLogin{
       'group' =>'分组',
     ]);
     if(IS_GET){ // view
-      $this->assign('type_list',config('config_type_list'));
-      $this->assign('group_list',config('config_group_list'));
+      $this->jsf_tpl = [
+        ['name'],
+        ['title'],
+        ['type|select','',config('config_type_list')],
+        ['group|select','',config('config_group_list')],
+        ['value|textarea','input-long'],
+        ['desc|textarea','input-long'],
+        ['sort|number'],
+      ];
     }else{      // save
       $this->jsf_field = ['name,title,value','type|0|int,group|0|int,desc,sort|0|int'];
     }

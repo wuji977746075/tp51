@@ -5,10 +5,13 @@ use src\base\BaseLogic;
 use src\auth\AuthLogic;
 
 class RoleLogic extends BaseLogic{
+  const ADMIN        = 1;
+  const DEFAULT_ROLE = 2;
+
   const API_AUTH  = 'api_auth'; // api权限(所有客户端) : json字符串存储
   const MENU_AUTH = 'menu_auth';// admin权限 : id,连接存储
 
-  public function getAuthByRole($role_id,$type=''){
+  function getAuthByRole($role_id,$type=''){
     $r = $this->get($role_id);
     if(empty($r)) return [];
 
@@ -22,7 +25,7 @@ class RoleLogic extends BaseLogic{
     return $auth;
   }
 
-  public function checkApiAuth($uid,$node='',$client_id){
+  function checkApiAuth($uid,$node='',$client_id){
     $node = trim($node);
     if(empty($node)) return true;
     // 用户角色

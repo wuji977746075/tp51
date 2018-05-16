@@ -22,7 +22,7 @@
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    设置角色[{$info['name'] ?: ' ..'}]的权限
+    设置角色权限 - {$info['name'] ?: ' ..'}
   </div>
 </div>
 {:html_head_tip('菜单权限即ADMIN权限,API那边设置的暂未使用.')}
@@ -67,7 +67,7 @@
         {/volist}
       </div>
       {/volist}
-      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'menu'])}" class="layui-btn ajax-post" target-form="menuForm">确定</button>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'menu'])}" class="layui-btn ajax-post" target-form="menuForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
       {$html_return|raw}
       </form>
     </div>
@@ -89,7 +89,7 @@
       </div>
       {/volist}
       <div class="mb20"></div>
-      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'api'])}" class="layui-btn ajax-post" target-form="apiForm">确定</button>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'api'])}" class="layui-btn ajax-post" target-form="apiForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
       {$html_return|raw}
       </form>
     </div>

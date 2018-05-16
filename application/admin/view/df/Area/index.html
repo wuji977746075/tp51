@@ -1,20 +1,17 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-{/block}
-
 {block name="area_body"}
 <fieldset class="layui-elem-field">
-  <legend>{$name} 管理</legend>
+  <legend>省市区 管理</legend>
   <div class="layui-field-box">
     {:html_head_tip('省市区最多3级,前面00-99中国,点击带 .列单元格编辑')}
     <div class="block clearfix">
       <div class="layui-btn-group">
-        <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn"><i class="fa fa-plus"></i> 添加</a>
-        <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="fa fa-trash"></i> 批量删除</a>
+        <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn left-radius"><i class="layui-icon layui-icon-add-1"></i>添加
+        <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
       </div>
       {gt name="parent" value="0"}
-      <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm" id="js-return"><i class="fa fa-reply"></i> 返回</a>
+      <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-primary" id="js-return"><i class="fa fa-reply"></i> 返回</a>
       {/gt}
       <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary"><i class="fa fa-superpowers"></i> 高级模式</a>
     </div>
@@ -29,11 +26,13 @@ layui.use(['rb','table2','element','form'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
+
+
   ,rb = layui.rb
   ,$ = layui.$;
   rb.log('page','init');
   //执行渲染
-  table.render({ elem: '#demo'
+  var tb2 = table.render({ elem: '#demo'
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: { parent : parent }
     ,method: 'get'
@@ -47,12 +46,12 @@ layui.use(['rb','table2','element','form'], function(){
     ,page: true
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 80,templet: '#urlTpl'}
+      ,{field: 'id', title: 'ID <i class="layui-icon layui-icon-link"></i>', width: 80,event: 'go',templet:'#urlTpl', style:'cursor: pointer;'}
       ,{field: 'code', title: '编码 .', width: 150,edit: 'text'}
       ,{field: 'province', title: '省 .', width: 150,edit: 'text'}
       ,{field: 'city', title: '市 .', width: 150,edit: 'text'}
       ,{field: 'district', title: '区 .', width: 150,edit: 'text'}
-      ,{field: 'sort',title: '排序 .',width:80,edit: 'text'}
+      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
       ,{align:'left',title: '操作',width:200,toolbar: '#barDemo'} //,fixed: 'right'
     ]]
     ,done: function(res, page, count){
@@ -67,21 +66,24 @@ layui.use(['rb','table2','element','form'], function(){
 
   // 单元格自定义编辑
   table.on('tool(fDemo)', function(obj){
+    console.log(obj);
     var data = obj.data;
-    if(obj.event === 'setName'){
-      layer.prompt({
-        // formType: 0, //0:text,1:password,2:textarea
-        title: '修改ID['+ data.id +']的菜单名',
-        value: data.name
-      }, function(value, index){
-        layer.close(index);
-        //这里一般是发送修改的Ajax请求
-        //同步更新表格和缓存对应的值
-        obj.update({
-          name: value
-        });
-      });
+    if(obj.event === 'go'){
+      rb.goTo(obj.tr.find('a').attr('href'));
     }
+  });
+  // 单元格排序
+  table.on('sort(fDemo)', function(obj){
+    //this 当前排序的 th 对象
+    //desc（降序）、asc（升序）、null（空对象，默认排序）
+    tb2.reload({
+      initSort: obj
+      ,where: {
+        field: obj.field
+        ,order: obj.type
+        ,parent: parent
+      }
+    });
   });
   // 单元格编辑
   table.on('edit(fDemo)', function(obj){
@@ -104,11 +106,8 @@ layui.use(['rb','table2','element','form'], function(){
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="fa fa-edit"></i> 编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="fa fa-trash"></i> 删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
+  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
 </div>
 </script>
-{/block}
-
-{block name="area_foot"}
 {/block}

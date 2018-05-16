@@ -18,6 +18,19 @@ class User extends CheckLogin{
     return $this->show();
   }
 
+  public function detail(){
+    $id = $this->id;
+    // 用户信息
+    $info = $this->logic->getInfo(['id'=>$id]);
+    !$info && $this->error('无此用户');
+    $this->assign('info',$info);
+    // 用户角色
+    $roles = (new UserRole)->queryUserRoles(['uid'=>$id]);
+    $this->assign('roles',$roles);
+    // 用户资产
+    // 用户订单
+    return $this->show();
+  }
   // logic ajax page-list
   public function ajax(){
     $kword  = $this->_get('kword','');  // 搜索昵称
@@ -46,10 +59,21 @@ class User extends CheckLogin{
       $roles = (new RoleLogic)->query();
       $this->assign('roles',$roles);
       // 查询用户角色
+      $role_id = '';
       if($id){
         $userRole = (new UserRoleLogic)->getInfo(['uid'=>$id]);
         $this->assign('userRole',$userRole);
+        $role_id = $userRole['role_id'];
       }
+      $this->jsf_tpl = [
+        ['*name'],
+        ['nick','input-long'],
+        ['avatar|btimg','',1],
+        ['phone'],
+        ['email'],
+        ['status|radio'],
+        ['*role|selects|'.$role_id,'',$roles],
+      ];
       return parent::set();
     }else{      // save
       $paras = $this->_getPara('name,nick','avatar,phone,email');

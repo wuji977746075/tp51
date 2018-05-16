@@ -1,0 +1,33 @@
+{extend name="df/tpl/base" /}}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>用户管理</legend>
+  <div class="layui-field-box">
+    {:html_head_tip('用户单个查看和管理')}
+    <div class="layui-tab layui-tab-card">
+      <ul class="layui-tab-title">
+        <li class="layui-this">用户信息</li>
+        <li>用户角色</li>
+        <li>用户资产</li>
+        <li>用户订单</li>
+      </ul>
+      <div class="layui-tab-content" style="height: 100px;">
+        <div class="layui-tab-item layui-show">
+          <!-- 信息 -->
+          <img src="{$info.avatar}">
+        </div>
+        <div class="layui-tab-item">
+          <!-- 角色 -->
+        </div>
+        <div class="layui-tab-item">
+          <!-- 资产 -->
+        </div>
+        <div class="layui-tab-item">
+          <!-- 订单 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+{/block}

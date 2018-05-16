@@ -99,6 +99,7 @@ class UserAudioLogic extends BaseLogic
      * 文件上传
      * todo: 文件真实目录是否存在
      * todo: 待删除重复的文件
+     * fix多图上传错误(path变量污染) 2018-03-30 16:44:04
      * @param  array  $files   要上传的文件列表（通常是$_FILES数组）
      * @param  array  $setting config.php中的文件上传配置
      * eg: ConfigHelper::user_picture_upload(),
@@ -106,7 +107,7 @@ class UserAudioLogic extends BaseLogic
      * eg:['uid' => $uid,'show_url' => ConfigHelper::upload_path(),'type'=>$type];
      * @param  string $driver  上传驱动名称
      * @param  array  $config  上传驱动配置
-     * @return array           文件上传成功后的信息
+     * @return array(成功信息)/string(失败字符串)
      */
     public function upload($files, $setting,$extInfo, $driver = 'local', $config = null){
         $now      = time();
@@ -186,13 +187,13 @@ class UserAudioLogic extends BaseLogic
                 if(empty($r2)){
                   //该图片该类型该用户未上传过
                   unset($r['id']);
-                  $r['uid']      = $uid;
-                  $r['type']     = $type;
-                  $r['ori_name'] = $name;
+                  $r['uid']         = $uid;
+                  $r['type']        = $type;
+                  $r['ori_name']    = $name;
                   $r['create_time'] = $now;
                   $r['status']      = 1;
                   $r['update_time'] = $now;
-                  $r['duration'] = $length;
+                  $r['duration']    = $length;
                   // url(图片链接) ? ...
                   $id = (int) $this->add($r);
                   if($id){
@@ -208,11 +209,11 @@ class UserAudioLogic extends BaseLogic
 
               $ext      = $upload->getExtension();
               $savename = $upload->getFilename();
-              $path     = $relate_path.$sub_path.'/'.$savename;
-              // $imgurl   = rtrim($show_url,'/').$path;
+              $path1    = $relate_path.$sub_path.'/'.$savename;
+              // $imgurl   = rtrim($show_url,'/').$path1;
               $img_info = [
                 'ori_name'    => $name,
-                'path'        => $path,
+                'path'        => $path1,
                 'uid'         => $uid,
                 'save_name'   => $savename,
                 'size'        => $info['size'],

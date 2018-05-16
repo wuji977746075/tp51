@@ -21,7 +21,7 @@ class Manager extends CheckLogin{
     $menu_id  = 0;
     $menu_all = $this->menu;
     // dump($menu_all);die();
-    $uinfo = (new UserLogic)->getAll($this->uid);
+    $uinfo = (new UserLogic)->getAllInfo($this->uid);
 
     $menu_json = json_encode($menu_all);
     $this->assign('top_menu_id',$top_menu_id);

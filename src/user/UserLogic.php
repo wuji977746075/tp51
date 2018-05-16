@@ -5,54 +5,51 @@ use src\base\BaseLogic;
 use src\session\SessionLogic;
 
 class UserLogic extends BaseLogic{
+  const SUPER_USERS = [1];
 
-  private $super_ids = null;
-
-  public function init(){
-    $this->super_ids = [1]; //todo : getConfig
-  }
-
+  // return
   public function login($uid,$token='',$type='',$isAdmin=false){
     // add new session and logout the oldest
-    $r = (new SessionLogic)->add($uid,$token,$type);
-    if(!$r['status']) return $r;
-    $sid = $r['info'];
+    $sid = (new SessionLogic)->add($uid,$token,$type);
     $isAdmin && session(SessionLogic::ADMIN_KEY,$uid);
-    return returnSuc($sid);
+    return $sid;
   }
 
   public function logout(){
 
   }
-
-  public function isSuperAdmin($uid){
-    return in_array($uid, $this->super_ids);
+  // return
+  public function isSuperUser($uid){
+    return in_array($uid, self::SUPER_USERS);
   }
 
-  public function getAll($uid){
+  // return
+  public function getAllInfo($uid){
     $model = $this->getModel();
     $r = $model->get($uid);
     $r->extra;
     return $r->toArray();
   }
 
-  // apiReturn
+  // return
+  // throws
   public function checkUser($name='',$pass=''){
     $r = $this->getInfo(['name'=>$name]);
-    if(empty($r)) return returnErr('无此用户');
-    if(!$this->checkPass($r['pass'],$pass)) return returnErr('密码错误');
-    return returnSuc($r);
+    empty($r) && throws('无此用户');
+    !$this->checkPass($r['pass'],$pass) && throws('密码错误');
+    return $r;
   }
-
+  // return
   public function checkPass($pass,$check){
     return $pass == $this->getPass($check);
   }
-
+  //return
   public function getPass($pass,$salt=''){
     $salt = $salt ? $salt : 'rainbow';
     return md5($pass.$salt);
   }
-
+  // return
+  // throws
   public function queryCountWithRole($map = null, $page = false, $order = false, $params = false, $fields = false) {
     empty($page) && $page = ['page'=>1,'size'=>10];
     empty($fields) && $fields = 'u.*';

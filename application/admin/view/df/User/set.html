@@ -1,105 +1,11 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-{/block}
-
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    用户{$op ?: ''}
+    用户 {$op}
   </div>
 </div>
-<form class="layui-form layui-form-pane post-form">
-  <div class="layui-form-item">
-    <label for="jsf-name" class="layui-form-label">{$jsf.name}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="name" id="jsf-name" value="{$id ?= $info['name']}" class="layui-input" placeholder="请输入用户名"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-nick" class="layui-form-label">{$jsf.nick}</label>
-    <div class="layui-input-inline  input-long">
-      <input  type="text" name="nick" id="jsf-nick" value="{$id ?= $info['nick']}" class="layui-input"  placeholder="请输入用户昵称" autocomplete="off" required  lay-verify="required" >
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="" class="layui-form-label">{$jsf.avatar}</label>
-    <div class="layui-input-inline">
-      <input type="hidden" name="avatar" id="jsf-avatar" value="{$id ?= $info['avatar']}" >
-      <div class="wxuploaderimg clearfix main_img" data-maxitems="1">
-        <div class="img-preview clearfix " style="display:{$id ? 'inline-block': 'none'}">
-          {notempty name="id"}
-          <div class="pull-left clearfix img-item">
-            <img class="img-responsive thumbnail" src="{:getAvatar($info['id'],120)}" alt="image" data-imageid="{$info['avatar']}"/>
-            <div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div>
-          </div>
-          {/notempty}
-        </div>
-        <div class="add" style="{$id ? 'display:none': ''}">
-          <i class="fa fa-plus"></i>
-        </div>
-      </div>
-    </div>
-    <div class="layui-form-mid layui-word-aux"> 建议尺寸为640像素*640像素，大小不超过500kb </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-phone" class="layui-form-label">{$jsf.phone}</label>
-    <div class="layui-input-inline">
-     <input  type="text" name="phone" id="jsf-phone" value="{$id ?= $info['phone']}" class="layui-input">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-email" class="layui-form-label">{$jsf.email}</label>
-    <div class="layui-input-inline">
-     <input  type="text" name="email" id="jsf-email" value="{$id ?= $info['email']}" class="layui-input">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-status" class="layui-form-label">{$jsf.status}</label>
-    <div class="layui-input-inline">
-     <input type="text" name="status" id="jsf-status" value="{$id ?= $info['status']}" class="layui-input">
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-role" class="layui-form-label">{$jsf.role}</label>
-    <div class="layui-input-inline">
-      <select name="role" id="jsf-role" lay-filter="jsf-role">
-        <option value="0"> 全部 </option>
-        {volist name="roles" id="v"}
-        <option value="{$v.id}"
-          {php}if($id && $userRole['role_id']==$v['id']){ echo 'selected';}{/php}
-        >{$v.name}</option>
-        {/volist}
-      </select>
-    </div>
-  </div>
-
-  <div class="layui-form-item layui-input-block">
-      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"  onclick="return getData();">{$op ?: ''}</button>
-      {$html_return|raw}
-  </div>
-</form>
+{include file="df/tpl/set_form" /}
 {include file="df/tpl/pic_select" /}
-{/block}
-
-{block name="area_foot"}
-<script>
-function getData() {
-  var main_img = $(".main_img .img-preview img").data("imageid") || '';
-  main_img && $("#jsf-avatar").val(main_img);
-}
-
-// page init
-layui.use(['rb','form'], function(){
-  var layer = layui.layer,
-  form = layui.form,
-  rb = layui.rb,
-  $ = layui.$;
-
-  rb.log('page','init');
-
-  wxuploadimg.init({cont:".wxuploaderimg"});
-});
-</script>
 {/block}

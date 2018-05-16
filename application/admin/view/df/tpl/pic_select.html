@@ -1,6 +1,19 @@
+<script type="text/javascript">
+// .ajax-post 表单 需要放在form后面
+// .wxuploaderimg 触发区域
+// #wxuploaderimg modal
+$('.ajax-post').click(function(){
+  var flag = true,img;
+  $('.wxuploaderimg').each(function(index, el) {
+    $el = $(el);
+    img = $el.find('.img-preview img').map(function(i,el) { return el.getAttribute('data-imageid'); }).get().join(',');
+    $el.prev('input').val(img); // 修改图片表单域
+  });
+  return flag;
+});
+</script>
 <link type="text/css" rel="stylesheet" href="__CDN__/comp/wxuploader.css?v=__APP_VERSION__" />
-
-<link type="text/css" rel="stylesheet" href="__CDN__admin/theme/simplex.min.css" /> <!-- bootstrap.css -->
+<link type="text/css" rel="stylesheet" href="__CDN__admin/theme/simplex.min.css" /><!-- bootstrap.css -->
 <style>
 #upload_picture:hover{ cursor: pointer; }
 /*调整cosmo样式*/
@@ -14,6 +27,20 @@ a:hover,a:focus{ text-decoration: none; }
 }
 .admin-main {
   margin-top: 40px;
+}
+.thumbnail{ padding: 0!important; }
+.img-selected:after{
+  width:117px !important;
+}
+.wxuploaderimg .img-preview img{
+  width:100px !important;
+}
+.wxuploaderimg .img-preview .edit_pic_wrp{
+  background-color: rgba(229,229,229,0.2)!important;
+  width:100px;height:100px;
+}
+.wxuploaderimg .img-preview .edit_pic_wrp a{
+  width:100px;height:100px;left:0;bottom:0;margin-left: 0;padding-top: 40px;
 }
 @media (min-width: 768px) { }
 @media (min-width: 992px) { }
@@ -69,8 +96,17 @@ a:hover,a:focus{ text-decoration: none; }
 </div>
 
 <script type="text/javascript">
+Array.prototype.remove = function(val) {
+  var index = this.indexOf(val);
+  if (index > -1) {
+  this.splice(index, 1);
+  }
+};
   var img_show_url = "{:config('picture_url')}";
-  var imgIds = [];
+  function getImgUrl(id,size){
+    return img_show_url+'?id='+id+'&size='+size;
+  }
+  var imgIds = []; // 选中的图片 ids
   function getImg(d){
     var id = $(d).find('img').data('imageid');
     if(!$(d).hasClass("img-selected")){
@@ -85,9 +121,7 @@ a:hover,a:focus{ text-decoration: none; }
   }
 
   function removeImg(){
-
     //console.log(imgIds);
-
     if(confirm("你真的要删除图片吗？如果有商品正在使用将无法正常显示！！！")){
       $.ajax({
         type:"POST",
@@ -97,13 +131,11 @@ a:hover,a:focus{ text-decoration: none; }
         },
         context:window,
         dataType: "json",
-
         success:function(data){
           //console.log(data);
           if(data.code == 1){
               console.info(data);
               imgIds.length = 0;
-
               window.wxuploadimg.setChecked(0);
               window.wxuploadimg.queryImgList();
           }else{
@@ -111,7 +143,6 @@ a:hover,a:focus{ text-decoration: none; }
           }
         }
       })
-
       return false;
     }
 
@@ -134,12 +165,7 @@ a:hover,a:focus{ text-decoration: none; }
         var $cont = $("#wxuploadimg .imgs-list").empty(),$item,item;
         for (var i = 0; i < list.length; i++) {
           item = list[i];
-          var imgsrc = img_show_url+item.id;
-          // var imgsrc = item.imgurl;
-          // if(!imgsrc){
-          //  var url = {php}$url = config('PICTURE_REMOTE_URL')==NULL?config('SITE_URL'):config('PICTURE_REMOTE_URL');echo "'$url'"{/php};
-          //  imgsrc = url+item.path;
-          // }
+          var imgsrc = getImgUrl(item.id,120);
           $item = $("<div class='img-item ' onclick='getImg(this)'><img class='img-responsive  thumbnail js_img_click' data-imageid='"+ item.id+"' src='" + imgsrc  + "' title='"+item.ori_name+"'/><p class='img-desc'>"+item.ori_name+"</p></div>");
           $cont.append($item);
 
@@ -168,7 +194,7 @@ a:hover,a:focus{ text-decoration: none; }
           if(checked == window.wxuploadimg.setting.MaxChecked){
             var len = $(".img-preview img",window.wxuploadimg.current).length;
 
-            $.scojs_message('最多可选'+(wxuploadimg.setting.MaxChecked-len)+'张!', $.scojs_message.TYPE_OK);
+            $.scojs_message('最多可选'+(wxuploadimg.setting.MaxChecked-len)+'张!', $.scojs_message.TYPE_ERROR);
           }
 
           if(checked < window.wxuploadimg.setting.MaxChecked){
@@ -230,9 +256,9 @@ a:hover,a:focus{ text-decoration: none; }
 
     function clearSelected(){
       $("#wxuploadimg .img-item.img-selected").removeClass("img-selected");
+      imgIds = [];
     }
-
-        var i=0;
+    var i=0;
     /**
      * callback
      * @param {Object} cont 触发模态框的选择器
@@ -288,27 +314,18 @@ a:hover,a:focus{ text-decoration: none; }
       });
 
       if(!hadBind){
-
         //使用此标志来防止 当调用多次init方法来初始化时，#wxuploadimg绑定了多次click监听器
-
-
         pagerClick();
         //选中图片
         $("#wxuploadimg .js_check_img").click(function(){
 
           window.wxuploadimg.setting.callback = wxuploadimg.setting.callback || callback;
-
           window.wxuploadimg.setting.callback.apply(this,$("#wxuploadimg .img-selected img"));
-
           if(checked == wxuploadimg.setting.MaxChecked){
             $(".add",window.wxuploadimg.current).hide();
           }
-
           $('#wxuploadimg').modal("hide");
-
         });
-
-
 
         //查找
         $(".js_search").click(function(){
@@ -394,10 +411,10 @@ a:hover,a:focus{ text-decoration: none; }
     }
   }
   $(function(){
-    var init = '[autoinit]';
-    if(init == 'true'){
+    // var init = '[autoinit]';
+    // if(init == 'true'){
       wxuploadimg.init({cont:".wxuploaderimg"});
-    }
+    // }
 
     if($.fn.datetimepicker){
       $("#wxuploadimg input.time").datetimepicker({

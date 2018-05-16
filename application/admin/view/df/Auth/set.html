@@ -1,53 +1,10 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-{/block}
-
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    节点{$op ?: ''}
+    节点 {$op}
   </div>
 </div>
-<form class="layui-form layui-form-pane post-form">
-  <div class="layui-form-item">
-    <label for="jsf-title" class="layui-form-label">{$jsf.title}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="title" id="jsf-title" value="{$id ?= $info['title']}" class="layui-input" placeholder="请输入节点名"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内,如: 用户登陆</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-name" class="layui-form-label">{$jsf.name}</label>
-    <div class="layui-input-inline  input-long">
-      <input  type="text" name="name" id="jsf-name" value="{$id ?= $info['name']}" class="layui-input"  placeholder="请输入唯一的系统名" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内,如: user_login</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-desc" class="layui-form-label">{$jsf.desc}</label>
-    <div class="layui-input-inline input-long">
-     <textarea name="desc" id="jsf-desc" class="layui-textarea">{$id ?= $info['desc']}</textarea>
-    </div>
-  </div>
-
-  <div class="layui-form-item layui-input-block">
-    <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"  onclick="return getData();">{$op ?: ''}</button>
-    {$html_return|raw}
-  </div>
-</form>
-{/block}
-
-{block name="area_foot"}
-<script>
-// page init
-layui.use(['rb','form'], function(){
-  var layer = layui.layer,
-  form = layui.form,
-  rb   = layui.rb,
-  $    = layui.$;
-
-  rb.log('page','init');
-});
-</script>
+{include file="df/tpl/set_form"}
 {/block}

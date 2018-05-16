@@ -1,16 +1,10 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-<style>
-  .layui-table-cell{height: auto !important;}
-</style>
-{/block}
-
 {block name="area_body"}
 <fieldset class="layui-elem-field">
   <legend>API权限配置 - {$info['client_name']}[{$info['client_id']}]</legend>
   <div class="layui-field-box">
-    <form class="layui-form apiForm">
+    <form class="layui-form layui-form-pane post-form">
       {volist name="auths" id="v"}
       <div class="block">
         <div class="block-header auth-node-top">
@@ -19,21 +13,9 @@
       </div>
       {/volist}
       <div class="mb20"></div>
-      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id])}" class="layui-btn ajax-post" target-form="apiForm">确定</button>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id])}" class="layui-btn ajax-post" style="margin-left:20px;" target-form="post-form"> <i class="layui-icon layui-icon-ok"></i>确定</button>
       {$html_return|raw}
     </form>
   </div>
 </fieldset>
-{/block}
-
-{block name="area_foot"}
-<script>
-layui.use(['rb','form','element'], function(){
-  var form = layui.form
-  ,$ = layui.$
-  ,rb = layui.rb
-  ,el = layui.element
-  ;
-});
-</script>
 {/block}

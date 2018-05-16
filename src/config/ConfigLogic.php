@@ -67,4 +67,22 @@ class ConfigLogic extends BaseLogic{
     }
     return $value;
   }
+
+  /**
+   * old - 设置
+   * @return true 设置成功 false 参数不正确
+   */
+  public function set($config) {
+    $effects = 0;
+    if ($config && is_array($config)) {
+      foreach ($config as $name => $value) {
+        $map = ['name' => $name];
+        $result = $this -> where($map) -> setField('value', $value);
+        if(false !== $result) $effects = $effects + $result;
+      }
+      if(0 === $effects) return false;
+      return $effects;
+    }
+    return false;
+  }
 }

@@ -11,9 +11,15 @@ class Role extends CheckLogin{
   public function set(){
     $id = $this->id;
     $this->jsf = array_merge($this->jsf,[
-      'name'=>'角色名',
+      'name'  =>'角色名',
+      'status'=>'启用'
     ]);
     if(IS_GET){ // view
+      $this->jsf_tpl = [
+        ['*name'],
+        ['desc|textarea','input-long'],
+        ['status|radio'],
+      ];
     }else{      // save
       $this->jsf_field = ['name','desc,status|0|int'];
       $this->suc_url   = url('admin/role/index');

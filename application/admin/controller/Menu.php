@@ -64,9 +64,8 @@ class Menu extends CheckLogin{
       'name'   =>'标题',
       'parent' =>'父级',
       'url'    =>'链接',
-      'icon'   =>'图标',
       'params' =>'链接参数',
-      'hide'   =>'显示',
+      'show'   =>'显示',
     ]);
     $super  = $this->_param('super/d',0); // 是否为高级模式
     $parent = $this->_param('parent/d',0);
@@ -87,11 +86,22 @@ class Menu extends CheckLogin{
 
       // 查询2级菜单 tree
       $menu = $this->logic->getAllMenu(false,2);
+      array_unshift($menu, ['id'=>0,'name'=>'* 顶级 *','child'=>[]]);
       $this->assign('menu',$menu);
 
+      $this->jsf_tpl = [
+        ['*name'],
+        ['*parent|selects','',$menu],
+        ['url'],
+        ['icon|icon'],
+        ['params'],
+        ['show|radio','','',3],
+        ['desc|textarea','input-long'],
+        ['sort|number'],
+      ];
       return parent::set();
     }else{ //save
-      $paras = $this->_getPara('name','url,icon,params,hide|1|int,desc,sort|0|int,parent|0|int');
+      $paras = $this->_getPara('name','url,icon,params,show|0|int,desc,sort|0|int,parent|0|int');
 
       if($id){ // edit
         $info = $this->logic->getInfo(['id'=>$id]);

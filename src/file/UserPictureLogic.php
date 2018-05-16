@@ -52,153 +52,151 @@ class UserPictureLogic extends BaseLogic
       }
       return true;
     }
-
     /**
      * 文件上传
      * todo: 文件真实目录是否存在
      * todo: 待删除重复的文件
-     * @param  array  $files   要上传的文件列表（通常是$_FILES数组）
-     * @param  array  $setting config.php中的文件上传配置
+     * fix多图上传错误(path变量污染) 2018-03-30 16:44:04
+     * @param  array $files 要上传的文件列表（通常是$_FILES数组）
+     * @param  array $setting config.php中的文件上传配置
      * eg: ConfigHelper::user_picture_upload(),
-     * @param  array  $extInfo 传递过来的额外信息
+     * @param  array $extInfo 传递过来的额外信息
      * eg:['uid' => $uid,'show_url' => ConfigHelper::upload_path(),'type'=>$type];
-     * @param  string $driver  上传驱动名称
-     * @param  array  $config  上传驱动配置
-     * @return array           文件上传成功后的信息
+     * @param  string $driver 上传驱动名称
+     * @param  array $config 上传驱动配置
+     * @return array(成功信息)/string(失败字符串)
      */
-    public function upload($files, $setting,$extInfo, $driver = 'local', $config = null){
-        $now      = time();
-        $model    = $this->getModel();
-        $type     = $extInfo['type'];
-        $uid      = $extInfo['uid'];
+    public function upload($files, $setting, $extInfo, $driver = 'local', $config = null)
+    {
+        $now = time();
+        $model = $this->getModel();
+        $type = $extInfo['type'];
+        $uid = $extInfo['uid'];
         $show_url = $extInfo['show_url'];
 
         $rule = 'date';//保存规则 : date(推荐,其他类型要改) md5 ...
-        $path  = isset($setting['rootPath']) ? rtrim($setting['rootPath'],'/'):'./upload/userPicture';
-        $path .= '/'.$type; //根据文件类型再分分文件夹
-        if(!$this->checkPath($path)) return $this->getError();
+        $path = isset($setting['rootPath']) ? rtrim($setting['rootPath'], '/') : './upload/user_picture';
+        $path .= '/' . $type; //根据文件类型再分分文件夹
+        // if(!$this->checkPath($path)) return $this->getError();
         //设置日期子文件夹
-        $relate_path = ltrim($path,'.').'/';
-        $sub_path    = isset($setting['subName']) ? $setting['subName']:['date','Ymd'];
-        if(is_string($sub_path[1]))
-          $sub_path = call_user_func($sub_path[0],$sub_path[1]);
+        $relate_path = ltrim($path, '.') . '/';
+        $sub_path = isset($setting['subName']) ? $setting['subName'] : ['date', 'Ymd'];
+        if (is_string($sub_path[1]))
+            $sub_path = call_user_func($sub_path[0], $sub_path[1]);
         else
-          $sub_path = call_user_func_array($sub_path[0],$sub_path[1]);
-        if(!$this->checkPath($path.'/'.$sub_path)) return $this->getError();
-
+            $sub_path = call_user_func_array($sub_path[0], $sub_path[1]);
+        // if(!$this->checkPath($path.'/'.$sub_path)) return $this->getError();
         //统一封装成多张上传
-        if(is_object($files)) $files = [$files];
+        if (is_object($files)) $files = [$files];
 
         //文件检查设置 - 后缀
         $check = ['ext' => $setting['exts']];
         //文件检查设置 - 大小
-        if(isset($setting['maxSize'])){
-          $size =  (int) $setting['maxSize'];
-          if($size>0) $check['size'] = $size;
+        if (isset($setting['maxSize'])) {
+            $size = (int)$setting['maxSize'];
+            if ($size > 0) $check['size'] = $size;
         }
         //文件检查设置 - 类型
-        if(isset($setting['mimes']) && !empty($setting['mimes'])) $check['type'] = $setting['mimes'];
+        if (isset($setting['mimes']) && !empty($setting['mimes'])) $check['type'] = $setting['mimes'];
+        $type = $extInfo['type'];
         //文件检查设置 - 长宽比
-        if(isset($setting[$type.'_rate'])){
-          $rate_arr = $setting[$type.'_rate'];
-          $rate_check = true;
-        }else{
-          $rate_check = false;
+        if (isset($setting[$type . '_rate'])) {
+            $rate_arr = $setting[$type . '_rate'];
+            $rate_check = true;
+        } else {
+            $rate_check = false;
         }
 
-        $return  = [];//返回
-        foreach($files as $file){
-            //  上传根目录: /public/upload/userPicture
-            //  详细地址  : 上传根目录+/{$type}/{date}/{md5(microtime)}.{ext}
+        $return = [];//返回
+        foreach ($files as $file) {
+            //  上传根目录: /public/upload/user_picture
+            //  详细地址  : 上传根目录+/{$type}/{date}/{md5}.{ext}
             // $temp = $file->getPathName();
             // $md5  = md5_file($temp);
             // $sha1 = sha1_file($temp);
             $info = $file->getInfo();
             $name = $info['name'];
             //? 文件检查 长宽比
-            if($rate_check){
+            if ($rate_check) {
                 $f_info = getimagesize($temp);
-                if($f_info[0]*$rate_arr[1] != $f_info[1]*$rate_arr[0]){
-                  return '该类型图片需要比例'.$rate_arr[0].':'.$rate_arr[1];
+                if ($f_info[0] * $rate_arr[1] != $f_info[1] * $rate_arr[0]) {
+                    return '该类型图片需要比例' . $rate_arr[0] . ':' . $rate_arr[1];
                 }
             }
 
             //文件检查
-            if(!$file->check($check)) return $file->getError();
+            if (!$file->check($check)) return $file->getError();
             //上传图片
             $upload = $file->rule($rule)->move($path);
-            // $upload = $file->rule($rule)->move('./upload/userPicture/'.$type);
-            if($upload->getError()){
+            if ($upload->getError()) {
                 // 上传失败获取错误信息
                 return $upload->getError();
             }
             // 成功上传后 获取上传信息
             $sha1 = $upload->hash('sha1');
-            $md5  = $upload->hash('md5');
+            $md5 = $upload->hash('md5');
 
             // ? 图片上传过
-            $field = 'path,uid,ori_name,save_name,size,url,imgurl,md5,sha1,type,ext,id';
-            $r = $model->where('md5',$md5)->field($field)->find();
-            if(!empty($r)){ //无需记录
+            $field = 'path,uid,ori_name,savename,size,url,imgurl,md5,sha1,type,ext,id';
+            $r = sdb('itboye_user_picture', '')->where('md5', $md5)->where('status', 1)->field($field)->find();
+            if (!empty($r)) { //无需记录
                 //todo : 真实图片是否存在
                 // $path = '.'.$field['path'];
                 // if($is_file($path)){
                 //     unlink($path);
                 // }
                 $img_info = $r;
-                $r2 = $model->where(['md5'=>$md5,'uid'=>$uid,'type'=>$type])->field($field)->find();
-                if(empty($r2)){
+                $r2 = sdb('itboye_user_picture', '')->where(['md5' => $md5, 'uid' => $uid, 'type' => $type, 'status' => 1])->field($field)->find();
+                if (empty($r2)) {
                     //该图片该类型该用户未上传过
                     unset($r['id']);
-                    $r['uid']      = $uid;
-                    $r['type']     = $type;
+                    $r['uid'] = $uid;
+                    $r['type'] = $type;
                     $r['ori_name'] = $name;
                     $r['create_time'] = $now;
                     // url(图片链接) ? ...
-                    $id = (int) $model->insertGetId($r);
-                    if($id){
+                    $id = (int)$model->insertGetId($r);
+                    if ($id) {
                         $r['id'] = $id;
                         $img_info = $r;
                     }
-                }else{
-                    $img_info  = $r2;
+                } else {
+                    $img_info = $r2;
                 }
                 $img_info['new'] = 0; //文件已存在
                 $return[] = $img_info;
-            }else{
+            } else {
 
-                $ext      = $upload->getExtension();
+                $ext = $upload->getExtension();
                 $savename = $upload->getFilename();
-                //修复多文件上传 20170116 : $path
-                $path2     = $relate_path.$sub_path.'/'.$savename;
-                $imgurl   = rtrim($show_url,'/').$path2;
+                $path1 = $relate_path . $sub_path . '/' . $savename;
+                $imgurl = rtrim($show_url, '/') . $path1;
                 $img_info = [
-                  'path'        => $path2,
-                  'uid'         => $uid,
-                  'ori_name'    => $name,
-                  'save_name'    => $savename,
-                  'size'        => $info['size'],
-                  'url'         => '',//图片链接
-                  'imgurl'      => $imgurl,//完整显示地址
-                  'md5'         => $md5,
-                  'sha1'        => $sha1,
-                  'type'        => $type,
-                  'ext'         => $ext,
-                  'create_time' => $now,
+                    'path'        => $path1,
+                    'uid'         => $uid,
+                    'ori_name'    => $name,
+                    'savename'    => $savename,
+                    'size'        => $info['size'],
+                    'url'         => '',//图片链接
+                    'imgurl'      => $imgurl,//完整显示地址
+                    'md5'         => $md5,
+                    'sha1'        => $sha1,
+                    'type'        => $type,
+                    'ext'         => $ext,
+                    'create_time' => $now,
                 ];
-                $id = (int) $model->insertGetId($img_info);
-                if(!$id){
+                $id = (int)$model->insertGetId($img_info);
+                if (!$id) {
                     //TODO: 上传成功，插入失败,记录日志
                     return $model->getError();
                 }
-                $img_info['id']  = $id;
+                $img_info['id'] = $id;
                 $img_info['new'] = 1; //新文件
                 $return[] = $img_info;
             }
         }
         return $return;
     }
-
     /**
      * curl 文件上传 - 20170118修复 rainbow
      * 老版curl_upload上传

@@ -24,6 +24,13 @@ use GatewayClient\Gateway;
  */
 class Test extends Controller{
 
+  public function t(){
+    // libxml_disable_entity_loader(false);
+    $xmlstr = '<xml> <ToUserName><![CDATA[toUser]]></ToUserName> <FromUserName><![CDATA[fromUser]]></FromUserName> <CreateTime>1348831860</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content><![CDATA[this is a test]]></Content> <MsgId></MsgId> </xml>';
+    $a = simplexml_load_string($xmlstr, 'SimpleXMLElement', LIBXML_NOCDATA);
+    dump($a);
+    dump(json_decode(json_encode($a), true));
+  }
   // code(0=>成功,其他失败),msg(失败信息),data
   public function json($data,$msg='',$code=0){
     return json(["code"=>$code,"msg"=>$msg,"data"=>$data]);

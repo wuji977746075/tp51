@@ -9,6 +9,7 @@ return [
   'fail' => '失败',
   'invalid' => '非法',
   'lack' => '缺少',
+  'list' => '列表',
   'need' => '需要',
   'op'   => '操作',
   'para' => '参数',

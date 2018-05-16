@@ -1,88 +1,10 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-{/block}
-
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    配置{$op ?: ''}
+    配置 {$op}
   </div>
 </div>
-<form class="layui-form layui-form-pane post-form">
-  <div class="layui-form-item">
-    <label for="jsf-title" class="layui-form-label">{$jsf.title}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="title" id="jsf-title" value="{$id ?= $info['title']}" class="layui-input" placeholder="请输入字典名"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-name" class="layui-form-label">{$jsf.name}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="name" id="jsf-name" value="{$id ?= $info['name']}" class="layui-input" placeholder="请输入系统名"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内,系统类型直接config('')</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-group" class="layui-form-label">{$jsf.group}</label>
-    <div class="layui-input-inline">
-      <select name="group" id="jsf-group">
-        {foreach :config('config_group_list') as $k=>$v}
-        <option value="{$k}" {notempty name="id"}{eq name="k" value="$info.group"} selected {/eq}{/notempty}>{$v} </option>
-        {/foreach}
-      </select>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-type" class="layui-form-label">{$jsf.type}</label>
-    <div class="layui-input-inline">
-      <select name="type" id="jsf-type">
-        {foreach :config('config_type_list') as $k=>$v}
-        <option value="{$k}" {notempty name="id"}{eq name="k" value="$info.type"} selected {/eq}{/notempty}>{$v} </option>
-        {/foreach}
-      </select>
-    </div>
-    <div class="layui-form-mid layui-word-aux">类型</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-value" class="layui-form-label">{$jsf.value}</label>
-    <div class="layui-input-inline input-long">
-      <textarea name="value" id="jsf-value" class="layui-textarea" placeholder="请输入配置值">{$id ?= $info.value}</textarea>
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-desc" class="layui-form-label">{$jsf.desc}</label>
-    <div class="layui-input-inline  input-long">
-      <textarea name="desc" id="jsf-desc" placeholder="配置描述" class="layui-textarea">{$id ?= $info.desc}</textarea>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-sort" class="layui-form-label">{$jsf.sort}</label>
-    <div class="layui-input-inline">
-      <input type="number" min="0" name="sort" id="jsf-sort" value="{$id ?= $info['sort']}" placeholder="" class="layui-input">
-    </div>
-    <div class="layui-form-mid layui-word-aux">越小越靠前</div>
-  </div>
-
-  <div class="layui-form-item layui-input-block">
-      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" >{$op ?: ''}</button>
-      {$html_return|raw}
-  </div>
-</form>
-{/block}
-
-{block name="area_foot"}
-<script>
-// page init
-layui.use(['rb','form'], function(){
-  var layer = layui.layer,
-  form = layui.form,
-  rb = layui.rb,
-  $ = layui.$;
-
-  rb.log('page','init');
-});
-</script>
+{include file="df/tpl/set_form"}
 {/block}

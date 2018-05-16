@@ -45,6 +45,15 @@ class Datatree extends CheckLogin{
         }
       }
       $this->assign('parent',$parent);
+      $this->jsf_tpl = [
+        ['name'],
+        ['title'],
+        ['icon|icon'],
+        ['is_sys|radio','','',3],
+        ['desc|textarea','input-long'],
+        ['sort|number'],
+        ['parent|hidden'],
+      ];
       return parent::set();
     }else{ //save
       $paras = $this->_getPara('name,title','icon,is_sys|0|int,desc,sort|0|int,parent|0|int');

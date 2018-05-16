@@ -9,7 +9,7 @@
   <meta name="description" content="{$seo.description|default=' '}" />
   <meta name="author" content="{$cfg.owner|default=' rainbow '}" />
 
-  <link rel="stylesheet" href="__CDN__layui/2.2.4/css/layui.css" media="all">
+  <link rel="stylesheet" href="__CDN__layui/2.3.0rc1/css/layui.css" media="all">
   <!-- nprogress + select2:4.0.0 + scojs:1.0.2 -->
   <link rel="stylesheet" href="__SKIN__css/screen.css?v=2017101801" media="screen">
   {if condition ="config('is_debug')" }
@@ -19,8 +19,8 @@
   {/if}
   {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css,__CDN__hover/css/hover-min.css"}
 
-  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.2.4/layui.js,__CDN__nprogress/nprogress.js"}
-  <script src="__SKIN__js/lib/lang_zh.js?v=2017101301"></script>
+  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.3.0rc1/layui.js,__CDN__nprogress/nprogress.js"}
+  <script src="__SKIN__js/lib/lang_zh.js?v=2018051201"></script>
   <script>
   var _dir  = "{:config('is_debug') ? '' : 'min/'}";
   var _top_menu_id = {$top_menu_id ?? '0'} || 0;
@@ -33,7 +33,7 @@
   }).extend({
     'scojs':'sco',
     'picView':'picView',
-    'table2':'table223',
+    'table2':'table230rc1',
   }).use('app');
   function local(key=''){ // localStorage存/取
     return ('undefined' != typeof arguments[1]) ? localStorage.setItem(key,JSON.stringify(arguments[1])) : JSON.parse(localStorage.getItem(key));
