@@ -22,7 +22,7 @@ return [
 
   'tip-banner-title'=>'32字以内',
   'tip-banner-url'=>'url / 类型主键',
-  'tip-banner-img'=>'banner图片,建议尺寸为640像素*640像素，大小不超过500kb',
+  'tip-banner-img'=>'banner图片,建议3:1且不超过500K,以标题说明优先',
   'tip-cmsCate-name'=>'32字以内',
   'tip-cmsCate-url'=>'分类链接,url(\'\')参数 或 http地址',
   'tip-cmsCate-hide'=>'是否对用户隐藏,超管无效,一般开发用',
@@ -40,5 +40,5 @@ return [
   'tip-role-name'=>'32字以内',
   'tip-user-name'=>'32字以内',
   'tip-user-nick'=>'32字以内',
-  'tip-user-avatar'=>'建议尺寸为640像素*640像素，大小不超过500kb',
+  'tip-user-avatar'=>'用户头像,建议1:1且不超过500K',
 ];

@@ -38,13 +38,13 @@ layui.use(['rb','table2','element','form'], function(){
     ,page: true
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl'}//,sort:true,fixed: 'left'
-      ,{field: 'title', title: '字典名 .', width: 150,edit: 'text'}
+      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl', style:'cursor: pointer;',sort:true,event:'go'}//,fixed: 'left'
+      ,{field: 'title', title: '字典名 .', width: 200,edit: 'text'}
       ,{field: 'name', title: '系统名 .', width: 150,edit: 'text'}
       ,{field: 'icon', title: '图标 .', width: 120,edit: 'text',templet: '#iconTpl'}
       ,{field: 'desc', title: '描述 .', width: 150,edit: 'text'}
       ,{field: 'is_sys', title: '系统字典', width: 120,templet:'#isSysTpl'}
-      ,{field: 'sort',title: '排序 .',width:80,edit: 'text'}
+      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
       ,{align:'left',title: '操作',width:200,toolbar: '#barDemo'} //,fixed: 'right'
     ]]
     ,done: function(res, page, count){
@@ -56,7 +56,27 @@ layui.use(['rb','table2','element','form'], function(){
       // res.count = 100;
     }
   });
-
+  // 单元格排序
+  table.on('sort(fDemo)', function(obj){
+    //this 当前排序的 th 对象
+    //desc（降序）、asc（升序）、null（空对象，默认排序）
+    tb2.reload({
+      initSort: obj
+      ,where: {
+        field: obj.field
+        ,order: obj.type
+        ,parent: parent
+      }
+    });
+  });
+  // 单元格自定义编辑
+  table.on('tool(fDemo)', function(obj){
+    // console.log(obj);
+    var data = obj.data;
+    if(obj.event === 'go'){
+      rb.goTo(obj.tr.find('a').attr('href'));
+    }
+  });
   // 单元格编辑
   table.on('edit(fDemo)', function(obj){
     // console.log(obj); // value , field ,data

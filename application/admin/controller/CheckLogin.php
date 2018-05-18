@@ -45,37 +45,36 @@ class CheckLogin extends Base{
 
   // require
   function jsf_tpl($field,$type='text',$val='',$css='',$extra,$tip=0){
-    $need  = (substr($field, 0,1)=='*' ? '*':'') ;
-    $field = ltrim($field,'*');
+    $need  = (substr($field, 0,1)=='*' ? '*':'') ; // ? 必须字段
+    $need_ipt = $need ? ' required  lay-verify="required" ' : ''; // ? layui 验证开启
+    $field = ltrim($field,'*'); // 字段名
     !isset($this->jsf[$field]) && $this->error(L('need-jsf-name').':'.$field);
-    $name = $this->jsf[$field];
-    $hide = $type == 'hidden' ? 'hide' : '';
-    $tpl = '';
-    $jsf = str_replace('_', '-', $field);
+    $name = $this->jsf[$field]; // 字段显示名
+    $hide = $type == 'hidden' ? 'hide' : ''; //是否为 隐藏域
+    $hold = $need ? L('type-in').$name : ''; // 表单placeholder
+    $jsf = str_replace('_', '-', $field); // 表单id
+
+    $tpl = ''; // 模板hrtml
     $tpl.= '<div class="layui-form-item '.$hide.'">';
     $tpl.=   '<label for="jsf-'.$jsf.'" class="layui-form-label">'.$need.' '.$name.'</label>';
     $tpl.=   '<div class="layui-input-inline '. $css.'">';
-    $hold = $need ? L('type-in').$name : '';
-    if($type == 'text'){ // text
-      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input" placeholder="'.$hold.'"  autocomplete="off" required  lay-verify="required" >';
-    }else if($type == 'hidden'){ // hidden
-      $tpl.= '<input type="hidden" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input" placeholder="'.$hold.'"  autocomplete="off" required  lay-verify="required" >';
-    }else if($type == 'icon'){ // icon
-      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-jsf-icon" placeholder="'.$hold.'"  autocomplete="off" required  lay-verify="required" >';
-      $tpl .= '</div>'.($val ? '<div class="layui-input-inline"><i class="'.$val.'"></i></div>' : '').'<div>';
+    if(in_array($type,['text','hidden','number','password'])){
+      $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.'>';
     }else if($type == 'radio'){ // radio
       $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="0" '.($val ? 'checked' : '').'>';
-    }else if($type == 'number'){ // number
-      $tpl.='<input type="number" min="0" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" placeholder="'.$hold.'" class="layui-input">';
+    }else if($type =='textarea'){ // textarea
+      $tpl.='<textarea name="desc" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
+    }else if($type == 'check'){ // check
+      $tpl.= '<div> todo ... </div>';
     }else if($type == 'select'){ // select(k=>v)
-      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'" required  lay-verify="required" >';
+      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.' >';
       $tpl.= '<option value="">'.L('select-df').'</option>';
       foreach ($extra as $k=>$v) {
         $tpl.= '<option value="'.$k.'"'.($k==$val ? ' selected="selected"':'').'>'.$v.'</option>';
       }
       $tpl.= '</select>';
-    }else if($type =='selects'){ //select(id,name,child)
-      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'" required  lay-verify="required" >';
+    }else if($type =='selects'){ // select(id,name,child)
+      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.'>';
       $tpl.= '<option value="">'.L('select-df').'</option>';
       foreach ($extra as $v) {// level1
         $tpl.= '<option value="'.$v['id'].'"'.($v['id']==$val ? ' selected="selected"':'').'>'.$v['name'].'</option>';
@@ -91,9 +90,10 @@ class CheckLogin extends Base{
         }
       }
       $tpl.= '</select>';
-    }else if($type =='textarea'){ //textarea
-      $tpl.='<textarea name="desc" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'">'.$val.'</textarea>';
-    }else if($type =='btimg'){ //btimg imgselect
+    }else if($type == 'icon'){ // icon 自定义图标选择
+      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-jsf-icon" placeholder="'.$hold.'"  autocomplete="off"  '.$need_ipt.'>';
+      $tpl .= '</div>'.($val ? '<div class="layui-input-inline"><i class="'.$val.'"></i></div>' : '').'<div>';
+    }else if($type =='btimg'){ // btimg 自定义图片选择
       $show_add = false;
       $vals = explode(',', $val);
       $l = count($vals);
@@ -104,7 +104,7 @@ class CheckLogin extends Base{
         $val<1 && $show_add = true;
       }
       // $extra = max
-      $tpl .= '<input type="hidden" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" >';
+      $tpl .= '<input type="hidden" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'"  '.$need_ipt.'>';
       $tpl .= '<div class="wxuploaderimg clearfix" data-maxitems="'.$extra.'">';
       $tpl .= ' <div class="img-preview clearfix " style="display:'.($val ? 'inline-block': 'none').'">';
       if($val){

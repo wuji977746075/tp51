@@ -46,7 +46,7 @@ layui.use(['rb','table2','element','form'], function(){
     ,page: true
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID <i class="layui-icon layui-icon-link"></i>', width: 80,event: 'go',templet:'#urlTpl', style:'cursor: pointer;'}
+      ,{field: 'id', title: 'ID', width: 80,event: 'go',templet:'#urlTpl', style:'cursor: pointer;',sort:true}
       ,{field: 'code', title: '编码 .', width: 150,edit: 'text'}
       ,{field: 'province', title: '省 .', width: 150,edit: 'text'}
       ,{field: 'city', title: '市 .', width: 150,edit: 'text'}

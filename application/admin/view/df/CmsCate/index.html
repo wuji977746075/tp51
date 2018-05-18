@@ -4,7 +4,7 @@
 <fieldset class="layui-elem-field">
   <legend>CMS类目管理</legend>
   <div class="layui-field-box">
-    {:html_head_tip('最多3级菜单,点击带 .列单元格编辑')}
+    {:html_head_tip('最多3级类目,点击带 .列单元格编辑')}
     <div class="block clearfix">
       <div class="layui-btn-group">
         <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn"> <i class="layui-icon layui-icon-add-1"></i>添加</a>
@@ -35,7 +35,7 @@ layui.use(['rb','table2','element','form'], function(){
     ,where: { parent : parent }
     ,method: 'get'
     ,initSort: {
-      field: 'sort',type: 'asc'
+      field: 'sort',type: 'desc'
     }
     ,request: { pageName: 'page',limitName: 'size' }
     ,limits: [10,30]
@@ -44,7 +44,7 @@ layui.use(['rb','table2','element','form'], function(){
     ,page: true
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID <i class="layui-icon layui-icon-link"></i>', width: 80,event: 'go',templet:'#urlTpl', style:'cursor: pointer;'}//,sort:true,fixed: 'left'
+      ,{field: 'id', title: 'ID', width: 80,event: 'go',templet:'#urlTpl', style:'cursor: pointer;',sort:true}//,fixed: 'left'
       ,{field: 'name', title: '菜单 .', width: 150,edit: 'text'}
       ,{field: 'icon', title: '图标 .', width: 150,edit: 'text',templet: '#iconTpl'}
       ,{field: 'url', title: '链接 .', width: 150,edit: 'text'}

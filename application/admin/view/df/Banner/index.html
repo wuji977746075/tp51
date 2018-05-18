@@ -39,7 +39,7 @@
 <!-- tpl -->
 <script type="text/html" id="imgTpl">
 {{# if (d.img >0){ }}
-  <img src="{:config('picture_url')}?id={{ d.img }}&size=60" class="layui-nav-img js-view">
+  <img src="{:config('picture_url')}?id={{ d.img }}&size=60" class="js-view">
 {{# }else{ }}
 {{# } }}
 </script>
@@ -87,11 +87,11 @@ layui.use(['rb','table2','form'], function(){
     }
     ,cols:  [[
       {checkbox: true}
-      ,{field: 'dt_id', title: '位置 .', width: 150,edit: 'text',templet:'#dtIdTpl'}
       ,{field: 'img', title: '图片', width: 100,templet:'#imgTpl'}
       // ,{field: 'title', title: '标志 .', width: 150,edit: 'text'}
       ,{field: 'url', title: '链接 .', width: 250,edit: 'text'}
       ,{field: 'url_type', title: '链接类型 .', width: 100,edit: 'text',templet:'#urlTypeTpl'}
+      ,{field: 'dt_id', title: '位置 .', width: 200,edit: 'text',templet:'#dtIdTpl'}
       ,{field: 'sort', title: '排序 .', width: 80,edit: 'text',sort:true}
       ,{align:'left',title: '操作',width:250,toolbar: '#barDemo'} //,fixed: 'right'
     ]]

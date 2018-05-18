@@ -6,22 +6,51 @@
  */
 
 namespace app\admin\controller;
-// use
+use src\cms\CmsCateLogic;
 
 class CmsPost extends CheckLogin {
-  protected $banEditFields = ['uid','id'];
+  protected $banEditFields = ['author','id'];
 
-  public function set(){
+  // todo :获取字符串的分词信息
+  function ajaxFenci() {
+    $title = '北京大学生喝进口红酒，在北京大学生活区喝进口红酒';
+    // $title = '聚知台是一个及时沟通工具';
+    $ar = getFenci($title);
+    print_r($ar);
+
+  }
+  // todo :文章采集
+  function ajaxCaiji() {
+
+  }
+  function set(){
     $this->jsf = array_merge($this->jsf,[
-      'uid'     => '作者',
+      'cate'    => '分类',
+      'content' => '详情',
       'excerpt' => '摘要',
+      'kwords'  => '关键词',
+      'main_img'=> '列表图',
+      'status'  => '发布',
+      'publish_time'  => '发布时间',
     ]);
     if(IS_GET){ // view
+      $cates = (new CmsCateLogic)->getAllMenu(false,3);
+      $this->jsf_tpl = [
+        ['*title','input-long'],
+        ['*cate|selects','',$cates],
+        ['*content|textarea','input-long'],
+        ['excerpt|textarea','input-long'], //默认内容前50字
+        ['kwords','input-long'], //默认标题分词
+        ['main_img|btimg','',1],
+        ['status|radio'],
+        ['publish_time|time','','Y-m-d H:i:s'],
+      ];
     }else{ // save
-      $this->jsf_field = ['title,uid,category,main_img,excerpt,content','desc'];
-      // 分词信息
-      // keywords
+      // todo: editor 分页 图片保存到本地
+      $this->jsf_field = ['title,cate,main_img,excerpt,content',',kwords,status|0,publish_time|0'];
+      // check cate add(草稿时publish_time/0 author/UID)
       // save to post
+      // content 分词信息
       // save to post_extra
     }
     return parent::set();

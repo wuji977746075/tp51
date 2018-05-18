@@ -101,6 +101,19 @@ function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=false){
  return ($suffix && $slice!=$str) ? $slice.'...':$slice;
 }
 
+define('_VIC_WORD_DICT_PATH_',__DIR__.'/../vendor/lizhichao/word/Data/dict.igb');
+ini_set("memory_limit","100M");
+function getFenci($w){
+  // require php_igbinary.dll pecl
+  $fc = new \Lizhichao\Word\VicWord('igb');
+  //长度优先分词
+  // $ar = $fc->getWord($w);
+  //细切分
+  // $ar = $fc->getShortWord($w);
+  //自动 这种方法最耗时
+  $ar = $fc->getAutoWord($w);
+  return changeArrKey($ar);
+}
 /**
  * 获取链接
  * 传入U方法可接受的参数或以http开头的完整链接地址

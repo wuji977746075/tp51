@@ -4,16 +4,6 @@ use src\base\BaseLogic;
 
 class CmsCateLogic extends BaseLogic{
 
-  public function getUserMenu($mid=0,$uid=0,$cache=true){
-    $menus = $this->getAllMenu($cache);
-    //去掉数组 key
-    foreach ($menu as &$v) {
-      $v['child'] = array_values($v['child']);
-    } unset($v);
-    $ret = array_values($ret);
-    return $ret;
-  }
-
   // 获取模块菜单 / 全部
   public function getAllMenu($cache=true,$level=3){
     $cacheKey = 'cms_cates_all';

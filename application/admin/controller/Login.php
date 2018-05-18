@@ -23,8 +23,7 @@ class Login extends Base{
 
       // ? 超级管理员
       $ur = new UserRoleLogic;
-      if($ur->isSuperUser($uid)){
-      }else{
+      if(!$ur->isSuperUser($uid)){
         // todo : 查询用户角色id
         $r = $ur->getRoleId($uid);
         !$r['status'] && $this->error($r['info']);

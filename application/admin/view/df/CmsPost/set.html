@@ -1,57 +1,46 @@
 {extend name="df/tpl/base" /}
 
 {block name="area_head"}
+<!-- <link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script> -->
 {/block}
 
 {block name="area_body"}
 <div class="page-header">
   <div class="page-title"><i></i>
-    文章{$op ?: ''}
+    文章 {$op}
   </div>
 </div>
 <form class="layui-form layui-form-pane post-form">
   <div class="layui-form-item">
-    <label for="jsf-client-name" class="layui-form-label">{$jsf.title}</label>
-    <div class="layui-input-inline">
-      <input type="text" name="title" id="jsf-client-name" value="{$id ?= $info['title']}" class="layui-input" placeholder="请输入标题"  autocomplete="off" required  lay-verify="required" >
-    </div>
-    <div class="layui-form-mid layui-word-aux">32字以内</div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-client-id" class="layui-form-label">{$jsf.client_id}</label>
-    <div class="layui-input-inline input-long">
-      <input type="text" name="client_id" id="jsf-client-id" value="{$id ?= $info['client_id']}" class="layui-input" placeholder="请输入客户端client_id"  autocomplete="off" required  lay-verify="required" >
+    <label class="layui-form-label">复选框</label>
+    <div class="layui-input-block">
+      <input type="checkbox" name="like[write]" title="写作">
+      <input type="checkbox" name="like[read]" title="阅读">
     </div>
   </div>
-  <div class="layui-form-item">
-    <label for="jsf-client-secret" class="layui-form-label">{$jsf.client_secret}</label>
-    <div class="layui-input-inline input-long">
-      <input type="text" name="client_secret" id="jsf-client-secret" value="{$id ?= $info['client_secret']}" class="layui-input" placeholder="请输入客户端"  autocomplete="off" required  lay-verify="required" >
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-api-alg" class="layui-form-label">{$jsf.api_alg}</label>
-    <div class="layui-input-inline input-long">
-      <select name="api_alg" id="jsf-api-alg" required  lay-verify="required" >
-        <option value="md5">MD5</option>
-      </select>
-    </div>
-  </div>
-  <div class="layui-form-item">
-    <label for="jsf-desc" class="layui-form-label">{$jsf.desc}</label>
-    <div class="layui-input-inline input-long">
-      <textarea name="desc" id="jsf-desc" class="layui-textarea">{$id ?= $info.desc}</textarea>
-    </div>
-  </div>
+  {volist name="jsf_tpl" id="v"}{$v}{/volist}
   <div class="layui-form-item layui-input-block">
-      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" >{$op ?: ''}</button>
+      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" ><i class="layui-icon layui-icon-ok"></i>{$op}</button>
       {$html_return|raw}
   </div>
 </form>
+{include file="df/tpl/pic_select"}
 {/block}
 
 {block name="area_foot"}
 <script>
+;$(function (){
+    // if($.fn.datetimepicker){
+    //   $(".jsf input.time").datetimepicker({
+    //     lang: 'ch',
+    //     timepicker:false,
+    //     format:'Y-m-d',
+    //     allowBlank : true,
+    //   });
+    //   console.log("日期初始化成功！");
+    // }
+});
 // page init
 layui.use(['rb','form'], function(){
   var layer = layui.layer,

@@ -152,7 +152,7 @@ class File extends Base
                 $cur=$this->_param('p',0);
             }
             $size = $this->_param('size',10);
-            $map  = [];//array('uid'=>UID,'status'=>1);
+            $map  = ['status'=>1];//array('uid'=>UID,'status'=>1);
             $page = [ 'page'=>$cur,'size'=>$size];
             $order  = 'create_time desc';
             $params = [
@@ -171,6 +171,7 @@ class File extends Base
 
             $fields = 'id,create_time,status,path,url,md5,imgurl,ori_name,save_name,size';
             $list = (new UserPictureLogic)->queryPage($map,$page,$order,$params,$fields);
+
             $this->ajaxReturnSuc($list);
 
         // }
