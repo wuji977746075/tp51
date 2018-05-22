@@ -350,7 +350,7 @@ function addLog(){
  * add by zhouhou
  */
 function LL($str='',$dif=' ',$add = ''){
-    return implode($add,array_map('lang',explode($dif, trim($str))));
+    return implode($add,array_map('L',explode($dif, trim($str))));
 }
 /**
  * lang() alias 方法别名
@@ -359,7 +359,7 @@ function LL($str='',$dif=' ',$add = ''){
  * @param string $lang [description]
  */
 function L($name, $vars = [], $lang = ''){
-  return lang($name, $vars, $lang);
+  return Lang::has($name) ? lang($name, $vars, $lang) : '';
 }
 /**
  * 缺少参数函数别名
