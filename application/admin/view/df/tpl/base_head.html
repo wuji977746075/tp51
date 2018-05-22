@@ -22,6 +22,7 @@
   {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.3.0rc1/layui.js,__CDN__nprogress/nprogress.js"}
   <script src="__SKIN__js/lib/lang_zh.js?v=2018051201"></script>
   <script>
+  window.rainbow = { api_url:"{:config('api_url')}" };//ueditor ...
   var _dir  = "{:config('is_debug') ? '' : 'min/'}";
   var _top_menu_id = {$top_menu_id ?? '0'} || 0;
   var _menu_id = {$menu_id ?? '0'} || 0;

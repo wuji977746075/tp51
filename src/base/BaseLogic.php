@@ -329,7 +329,7 @@ abstract class BaseLogic {
         if(false !== $order) $query = $query->order($order);
         if(false !== $fields) $query = $query->field($fields);
 
-        $start = max(0,(intval($page['page'])-1)*intval($page['size']));
+        $start = isset($page['start']) ? $page['start'] : max(0,(intval($page['page'])-1)*intval($page['size']));
         $list = $query -> limit($start,$page['size']) -> select();
         $count = $this -> model -> where($map) -> count();
         return ["count" => $count, "list" => $list->toArray()];

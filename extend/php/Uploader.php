@@ -21,6 +21,8 @@ class Uploader
     private $filePath; //完整文件名,即从当前配置目录开始的URL
     private $fileSize; //文件大小
     private $fileType; //文件类型
+    private $sha1=''; //文件类型
+    private $md5=''; //文件类型
     private $stateInfo; //上传状态信息,
     private $stateMap = array( //上传状态映射表，国际化用户需考虑此处数据的国际化
         "SUCCESS", //上传成功标记，在UEditor中内不可改变，否则flash判断会出错
@@ -94,6 +96,8 @@ class Uploader
         $this->fullName = $this->getFullName();
         $this->filePath = $this->getFilePath();
         $this->fileName = $this->getFileName();
+        $this->md5   = md5_file($file["tmp_name"]);
+        $this->sha1  = hash_file('sha1', $file["tmp_name"]);
         $dirname = dirname($this->filePath);
 
         //检查文件大小是否超出限制
@@ -344,7 +348,9 @@ class Uploader
             "title" => $this->fileName,
             "original" => $this->oriName,
             "type" => $this->fileType,
-            "size" => $this->fileSize
+            "size" => $this->fileSize,
+            "sha1" => $this->sha1,
+            "md5" => $this->md5
         );
     }
 

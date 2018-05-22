@@ -45,7 +45,7 @@ class CheckLogin extends Base{
 
   // require
   function jsf_tpl($field,$type='text',$val='',$css='',$extra='',$tip=0){
-    $need  = (substr($field, 0,1)=='*' ? '*':'') ; // ? 必须字段
+    $need = (substr($field, 0,1)=='*' ? '*':'') ; // ? 必须字段
     $need_ipt = $need ? ' required  lay-verify="required" ' : ''; // ? layui 验证开启
     $field = ltrim($field,'*'); // 字段名
     !isset($this->jsf[$field]) && $this->error(L('need-jsf-name').':'.$field);

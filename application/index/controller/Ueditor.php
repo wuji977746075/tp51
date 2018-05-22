@@ -11,8 +11,9 @@ namespace app\index\controller;
 use think\Controller;
 // use Think\Controller\RestController;
 use php\Uploader;
+use src\file\UserPictureLogic;
 
-class Ueditor extends Controller {
+class Ueditor {
 
     private $CONFIG;
     private $url ;// 当前上传图片保存到的域名
@@ -103,7 +104,9 @@ class Ueditor extends Controller {
         // vendor('Uploader',APP_PATH.'Api/Vendor/php/','.class.php');
         /* 上传配置 */
         $base64 = "upload";
-        switch (htmlspecialchars($_GET['action'])) {
+        $action = htmlspecialchars($_GET['action']);
+        $uid    = input('param.uid/d',0);
+        switch ($action) {
             case 'uploadimage':
                 $config = array(
                     "pathFormat" => $this->CONFIG['imagePathFormat'],
@@ -147,24 +150,43 @@ class Ueditor extends Controller {
         /**
          * 得到上传文件所对应的各个参数,数组结构
          * array(
-         *     "state" => "",          //上传状态，上传成功时必须返回"SUCCESS"
-         *     "url" => "",            //返回的地址
-         *     "title" => "",          //新文件名
          *     "original" => "",       //原始文件名
-         *     "type" => ""            //文件类型
          *     "size" => "",           //文件大小
+         *     "state" => "",          //上传状态，上传成功时必须返回"SUCCESS"
+         *     "title" => "",          //新文件名
+         *     "type" => ""            //文件类型
+         *     "url" => "",            //返回的地址
          * )
          */
         $fileinfo = $up->getFileInfo();
-        $fileinfo['url'] = $this->url.$fileinfo['url'];
+        if($action == 'uploadimage' && $fileinfo['state'] == 'SUCCESS'){
+            // 上传图片正确
+            $add = [
+                'path'        => $fileinfo['url'],
+                'uid'         => $uid,
+                'ori_name'    => $fileinfo['original'],
+                'savename'    => $fileinfo['title'],
+                'size'        => $fileinfo['size'],
+                'url'         => '',//图片链接
+                'imgurl'      => $this->url.$fileinfo['url'],//完整显示地址
+                'md5'         => $fileinfo['md5'],
+                'sha1'        => $fileinfo['sha1'],
+                'type'        => 'ueditor',
+                'ext'         => ltrim($fileinfo['type'],'.'),
+                'create_time' => time(),
+            ];
+            $id = (new UserPictureLogic)->add($add);
+        }
         /* 返回数据 */
+        $fileinfo['url'] = $this->url.$fileinfo['url'];
         return json_encode($fileinfo);
     }
 
     private function action_list(){
 
         /* 判断类型 */
-        switch ($_GET['action']) {
+        $action = $_GET['action'];
+        switch ($action) {
             /* 列出文件 */
             case 'listfile':
                 $allowFiles = $this->CONFIG['fileManagerAllowFiles'];
@@ -187,37 +209,41 @@ class Ueditor extends Controller {
 
         /* 获取文件列表 */
         $path = $_SERVER['DOCUMENT_ROOT'] . (substr($path, 0, 1) == "/" ? "":"/") . $path;
-// dump($path);die();
-        $files = $this->getfiles($path, $allowFiles);
-        if (!count($files)) {
-            return json_encode(array(
-                "state" => "no match file",
-                "list" => array(),
+
+        if($action == 'listimage'){
+            // 从本地获取图片 2018-05-22 16:46:29
+            $list = (new UserPictureLogic)->queryCount(['status'=>1],['start'=>$start,'size'=>$size],'id desc',[],'id,imgurl as url,create_time as mtime');
+            $result = json_encode(array(
+                "state" => "SUCCESS",
+                "list" => $list['list'],
+                "start" => $start,
+                "total" => $list['count']
+            ));
+        }else{
+            $files = $this->getfiles($path, $allowFiles);
+            if (!count($files)) {
+                return json_encode(array(
+                    "state" => "no match file",
+                    "list" => array(),
+                    "start" => $start,
+                    "total" => count($files)
+                ));
+            }
+            /* 获取指定范围的列表 */
+            $len = count($files);
+            for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
+                $list[] = $files[$i];
+            }
+            /* 返回数据 */
+            $result = json_encode(array(
+                "state" => "SUCCESS",
+                "list" => $list,
                 "start" => $start,
                 "total" => count($files)
             ));
+
         }
-
-        /* 获取指定范围的列表 */
-        $len = count($files);
-        for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
-            $list[] = $files[$i];
-        }
-
-
-
-        /* 返回数据 */
-        $result = json_encode(array(
-            "state" => "SUCCESS",
-            "list" => $list,
-            "start" => $start,
-            "total" => count($files)
-        ));
-
         return $result;
-
-
-
     }
 
     /**
