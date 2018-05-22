@@ -25,11 +25,12 @@ return [
     'tpl_begin'    => '{',
     // 模板引擎普通标签结束标记
     'tpl_end'      => '}',
+    // bug : request()->module()/action() 获取不到
     'tpl_replace_string'  =>  [
         '__PUBLIC__' => __ROOT__ . '/',
-        '__JS__'     => __ROOT__ . '/static/default/' . request()->module() . '/js/',
-        '__CSS__'    => __ROOT__ . '/static/default/' . request()->module() . '/css/',
-        '__IMG__'    => __ROOT__ . '/static/default/' . request()->module() . '/img/',
+        '__JS__'     => __ROOT__ . '/static/default/' . BIND_MODULE . '/js/',
+        '__CSS__'    => __ROOT__ . '/static/default/' . BIND_MODULE . '/css/',
+        '__IMG__'    => __ROOT__ . '/static/default/' . BIND_MODULE . '/img/',
         '__CDN__'    => ITBOYE_CDN,
         '__SELF__' => request()->url(),
         '__SKIN__'   => 'http://test.my/learn-layui/',

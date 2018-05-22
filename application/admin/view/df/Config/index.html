@@ -53,7 +53,10 @@ layui.use(['rb','table2','form'], function(){
   //执行渲染
   var Ltable = table.render({ elem: '#demo'
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,where: { sort : 'asc',group : group,kword: kword }
+    ,where: { group : group,kword: kword }
+    ,initSort: {
+      field: 'sort',type: 'desc'
+    }
     ,method: 'get'
     ,request: { pageName: 'page',limitName: 'size', }
     ,limits: [10,30]

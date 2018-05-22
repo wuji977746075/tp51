@@ -4,6 +4,12 @@
 <script type="text/javascript" src="__CDN__/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 {block name="area_head"}
+<style>
+.layui-tab-title li{ padding:0 0 0 20px !important; }
+.layui-tab-content {
+  background: url('__IMG__/bg.png') center center no-repeat;
+}
+</style>
   <!--顶部区域 -->
 {/block}
 </head>
@@ -11,7 +17,7 @@
 <div class="layui-layout layui-layout-admin">
   <!-- 头部区域 -->
   <div class="layui-header">
-    <div class="layui-logo hvr-pop">LOGO / SITENAME</div>
+    <div class="layui-logo hvr-pop js-tab" data-href="{:url('manager/welcome')}" data-tab="0">LOGO / SITENAME</div>
     <a href="javascript:;" id="js-hide-menu" class="switch-menu-wrap" title="转换侧边栏"><i class="fa fa-bars"></i></a>
     <!-- 显示/隐藏菜单 -->
     <a href="javascript:;" class="iconfont hideMenu icon-menu1">
@@ -37,7 +43,7 @@
           {$uinfo.nick}
         </a>
         <dl class="layui-nav-child">
-          <dd><a href="">基本资料</a></dd>
+          <dd><a href="javascript:;" data-href="{:url('user/detail',['id'=>$uinfo.id])}" class="js-tab" data-tab="admin">基本资料</a></dd>
           <dd><a href="">安全设置</a></dd>
         </dl>
       </li>
@@ -72,14 +78,14 @@
     </div>
   </div>
   <!-- 内容主体 -->
-  <div class="layui-body layui-tab" lay-filter="mainTab">  <!-- lay-allowClose="true"  -->
+  <div class="layui-body layui-tab" lay-filter="mainTab" lay-allowClose="true">
     <ul class="layui-tab-title">
-  <li lay-id="iframe0"><i class="fa fa-desktop"></i></li>
-</ul>
+    <!-- <li lay-id="iframe0"><i class="fa fa-desktop"></i></li> -->
+  </ul>
 <div class="layui-tab-content">
-  <div class="layui-tab-item">
+  <!-- <div class="layui-tab-item">
     <iframe id="iframe0" src="{:url('manager/welcome')}" frameborder="0" style="width:100%;height:100%;"></iframe>
-  </div>
+  </div> -->
 </div>
   <!-- 底部固定区域 -->
   <div class="layui-footer  layui-anim layui-anim-up">
@@ -106,7 +112,7 @@
 </div>
 <!-- script -->
 <script>
-
+var initTabs  = [];
 // var winWidth = $(window).width();
 // var heiHeght = $(window).height();
 // page init
@@ -121,19 +127,33 @@ layui.use(['rb','element'], function(){
   var menus = JSON.parse('{$menu_json|raw}')
   ,site = "{:config('site_url')}";
 
-  // addWelcome();
-  // function addWelcome(){
-  //   el.tabDelete('mainTab','iframe0').tabAdd('mainTab',{
-  //     title:'<i class="fa fa-desktop"></i>网站首页'
-  //     ,content:'<iframe id="iframe0" src="welcome.php" frameborder="0" style="width:100%;height:100%;"></iframe>'
-  //     ,id:'iframe0'
-  //   }).tabChange('mainTab','iframe0');
-  // }
-  $('.layui-logo').click(function(e) {
-    var src = "{:url('manager/welcome')}";
-    $('#iframe0').attr('src',src);
-    el.tabChange('mainTab', 'iframe0');
-    // $('.js-refresh').trigger('click');
+  el.render('tab','mainTab'); // tab init
+  var welcome = {
+    title:'<i class="fa fa-desktop"></i>',
+    content:'<iframe id="iframe0" src="{:url('manager/welcome')}" frameborder="0" style="width:100%;height:100%;"></iframe>',
+    id:'iframe0'
+  };
+  tabChange('mainTab','iframe0',welcome);
+  el.on('tabDelete(mainTab)', function(data){
+    initTabs.remove($(this).parent().attr('lay-id'));
+  });
+  $('.js-tab').click(function(e) {
+    var $this = $(this);
+    var id  = $this.data('tab'),o;
+    var src,title;
+    if(id == '0'){
+      o = welcome;
+    }else{
+      src = $this.data('href');//this.getAttribute('data-href')
+      title = $this.html().replace(/&nbsp;/g, "");
+      //+'<i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
+      o = {
+        title : title
+        ,content: '<iframe id="iframe'+id+'" src="' + src +'" frameborder="0" style="width:100%;height:100%;"></iframe>'
+        ,id : 'iframe'+id
+      };
+    }
+    tabChange('mainTab', 'iframe'+id,o);
   });
 
   // console.log(menus);
@@ -186,7 +206,7 @@ layui.use(['rb','element'], function(){
         });
         // if(html){
           $('.layui-nav-tree.layui-nav-side').html(html);
-          el.init();
+          // el.render('tab','mainTab'); // el.init();
           $('.layui-nav-tree.layui-nav-side').on('click','dd', function(e) {
             e.preventDefault();
             $this = $(this);
@@ -198,19 +218,21 @@ layui.use(['rb','element'], function(){
             var icon = $this.parent().prev('a').children('i').prop("outerHTML");
             var html = $a.html();
             var href = $a.attr('href');
-            el.tabDelete('mainTab', 'iframe'+id).tabAdd('mainTab', {
-              title : icon+html.replace(/&nbsp;/g, "")+'<i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
+            tabChange('mainTab', 'iframe'+id,{
+              title : icon+html.replace(/&nbsp;/g, "")
+              //+'<i class="layui-icon layui-unselect layui-tab-close">ဆ</i>'
               ,content: '<iframe id="iframe'+id+'" src="' + href + '?menu_id='+id + '" frameborder="0" style="width:100%;height:100%;"></iframe>'
               ,id : 'iframe'+id
-            }).tabChange('mainTab', 'iframe'+id);
+            });
           });
         // }
       }).filter('[data-id='+_top_menu_id+']').addClass('layui-this').trigger('click');
     }
   }
-  $('.layui-tab').on('click','.layui-tab-close',function(){
-    el.tabDelete('mainTab', $(this).parent().attr('lay-id'));
-  })
+  // 不写 关闭结构 自动绑定事件
+  // $('.layui-tab').on('click','.layui-tab-close',function(){
+  //   el.tabDelete('mainTab', $(this).parent().attr('lay-id'));
+  // })
 
   // 自动记忆上次的每个大菜单的小菜单
   var menu_id = _menu_id || 0;
@@ -220,7 +242,14 @@ layui.use(['rb','element'], function(){
   if(menu_id){
     $('.layui-nav-tree dd a[data-id='+menu_id+']').click();
   }else{
-    el.tabChange('mainTab', 'iframe0');
+    tabChange('mainTab', 'iframe0',welcome);
+  }
+  function tabChange(filter,id,initObj=false) {
+    if(!initTabs.contains(id)){
+      initTabs.push(id);
+      el.tabDelete(filter, id).tabAdd(filter, initObj);
+    }
+    el.tabChange(filter, id);
   }
 });
 </script>

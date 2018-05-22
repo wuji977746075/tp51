@@ -1,8 +1,8 @@
 {extend name="df/tpl/base" /}
 
 {block name="area_head"}
-<!-- <link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
-<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script> -->
+<link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script>
 {/block}
 
 {block name="area_body"}
@@ -12,14 +12,14 @@
   </div>
 </div>
 <form class="layui-form layui-form-pane post-form">
+  {volist name="jsf_tpl" id="v"}{$v}{/volist}
   <div class="layui-form-item">
-    <label class="layui-form-label">复选框</label>
+    <label class="layui-form-label">标签</label>
     <div class="layui-input-block">
       <input type="checkbox" name="like[write]" title="写作">
       <input type="checkbox" name="like[read]" title="阅读">
     </div>
   </div>
-  {volist name="jsf_tpl" id="v"}{$v}{/volist}
   <div class="layui-form-item layui-input-block">
       <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" ><i class="layui-icon layui-icon-ok"></i>{$op}</button>
       {$html_return|raw}
@@ -31,15 +31,20 @@
 {block name="area_foot"}
 <script>
 ;$(function (){
-    // if($.fn.datetimepicker){
-    //   $(".jsf input.time").datetimepicker({
-    //     lang: 'ch',
-    //     timepicker:false,
-    //     format:'Y-m-d',
-    //     allowBlank : true,
-    //   });
-    //   console.log("日期初始化成功！");
-    // }
+    if($.fn.datetimepicker){
+      $(".js-datetime-picker").each(function(index, el) {
+        var $el = $(el);
+        var fmt = $el.data('format');
+        $el.datetimepicker({
+          lang: 'ch',
+          timepicker:fmt.indexOf("i") != -1,
+          datepicker:fmt.indexOf("m") != -1,
+          // step: 5,
+          format:fmt,
+          allowBlank : true,
+        });
+      });
+    }
 });
 // page init
 layui.use(['rb','form'], function(){

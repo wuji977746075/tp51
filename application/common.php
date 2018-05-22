@@ -158,9 +158,9 @@ function parse_config_attr($string) {
  * @author 麦当苗儿 <zuojiazi@vip.qq.com>
  */
 function format_bytes($size, $delimiter = '') {
-    $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
-    for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
-    return round($size, 2) . $delimiter . $units[$i];
+  $units = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+  for ($i = 0; $size >= 1024 && $i < 5; $i++) $size /= 1024;
+  return round($size, 2) . $delimiter . $units[$i];
 }
 /**
  * 结束时间距离现在时间 禁言用到
@@ -171,18 +171,41 @@ function format_bytes($size, $delimiter = '') {
 function getDateInfo($time1,$dateline=NOW_TIME){
   $time = $time1-$dateline;
   if($time < 0){
-      return "已结束";
+    return "已结束";
   }else if($time <= 60){
-      return "马上";
+    return "马上";
   }else if($time > 60 && $time <= 3600){
-      return floor($time/60)."分钟";
+    return floor($time/60)."分钟";
   }else if($time > 3600 && $time <= 3600*24){
-      return floor($time/3600)."小时";
+    return floor($time/3600)."小时";
   }else if($time > 3600*24){
-      return date('Y-m-d',$dateline);
+    return date('Y-m-d',$dateline);
   }
 }
-
+//取出数组的某一列
+function getArr($arr,$key_f='',$val_f=null){
+  if(version_compare(PHP_VERSION,'5.5.0','>=')){
+    return array_column($arr, $val_f,$key_f); //php5.5+
+  }else{
+    $r = [];
+    foreach ($arr as $v) {
+      if($val_f && isset($v[$val_f])){
+        if($key_f && isset($v[$key_f])){
+          $r[$v[$key_f]] = $v[$val_f];
+        }else{
+          $r[] = $v[$val_f];
+        }
+      }else{
+        if($key_f && isset($v[$key_f])){
+          $r[$v[$key_f]] = $v;
+        }else{
+          $r[] = $v;
+        }
+      }
+    }
+    return $r;
+  }
+}
 //身份证验证
 function isIdCard($id_number=''){
   return preg_match('/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/', $id_number);

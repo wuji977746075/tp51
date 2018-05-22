@@ -21,6 +21,7 @@
 - 统一editor和modal图片
 - 用户登陆权限 菜单权限 控制
 ##admin
+- 主题切换
 - ->error() 的错误页点取消iframe的tab消失
 - 删除图片时 删除原图和缩略图
 - pic_view 无需关闭可立即点击

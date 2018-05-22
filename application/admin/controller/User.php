@@ -9,6 +9,7 @@ class User extends CheckLogin{
   protected $banDelIds = [1];
   // logic ajax page-list
   public function index(){
+
     $role  = $this->_get('role/d',0);
     $this->assign('role',$role);
 
@@ -25,7 +26,13 @@ class User extends CheckLogin{
     !$info && $this->error('无此用户');
     $this->assign('info',$info);
     // 用户角色
-    $roles = (new UserRole)->queryUserRoles(['uid'=>$id]);
+    $user_roles = (new UserRoleLogic)->query(['uid'=>$id]);
+    $user_roles = getArr($user_roles,'','role_id');
+    // 查询所有角色
+    $roles = (new RoleLogic)->query();
+    foreach ($roles as &$v) {
+      $v['check'] = in_array($v['id'],$user_roles) ? 1 : 0;
+    } unset($v);
     $this->assign('roles',$roles);
     // 用户资产
     // 用户订单

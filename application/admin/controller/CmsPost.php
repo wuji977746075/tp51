@@ -23,6 +23,13 @@ class CmsPost extends CheckLogin {
   function ajaxCaiji() {
 
   }
+  function index() {
+    $l = L('icon-class');
+    dump($l);die();
+
+    parent::index();
+  }
+
   function set(){
     $this->jsf = array_merge($this->jsf,[
       'cate'    => '分类',
@@ -36,18 +43,18 @@ class CmsPost extends CheckLogin {
     if(IS_GET){ // view
       $cates = (new CmsCateLogic)->getAllMenu(false,3);
       $this->jsf_tpl = [
-        ['*title','input-long'],
         ['*cate|selects','',$cates],
+        ['*title','input-long'],
+        ['kwords','input-long'], //默认标题分词
         ['*content|textarea','input-long'],
         ['excerpt|textarea','input-long'], //默认内容前50字
-        ['kwords','input-long'], //默认标题分词
         ['main_img|btimg','',1],
-        ['status|radio'],
+        ['status|radio','','lay-text="发布|草稿"'],
         ['publish_time|time','','Y-m-d H:i:s'],
       ];
     }else{ // save
       // todo: editor 分页 图片保存到本地
-      $this->jsf_field = ['title,cate,main_img,excerpt,content',',kwords,status|0,publish_time|0'];
+      $this->jsf_field = ['title,cate,main_img,excerpt,content',',kwords,status|0,publish_time'];
       // check cate add(草稿时publish_time/0 author/UID)
       // save to post
       // content 分词信息

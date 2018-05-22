@@ -8,17 +8,21 @@
     <div class="layui-tab layui-tab-card">
       <ul class="layui-tab-title">
         <li class="layui-this">用户信息</li>
-        <li>用户角色</li>
+        <li>用户角色 </li>
         <li>用户资产</li>
         <li>用户订单</li>
       </ul>
       <div class="layui-tab-content" style="height: 100px;">
         <div class="layui-tab-item layui-show">
           <!-- 信息 -->
-          <img src="{$info.avatar}">
+          <img src="{:avaUrl($info['id'],120)}">
+          {$info['name']} - {$info['nick']}
         </div>
         <div class="layui-tab-item">
           <!-- 角色 -->
+          {volist name="roles" id="v"}
+            <input type="checkbox" value="{$v.id}" name="roles[]" {eq name="v.check" value="1"} checked {/eq}> {$v.name}
+          {/volist}
         </div>
         <div class="layui-tab-item">
           <!-- 资产 -->
