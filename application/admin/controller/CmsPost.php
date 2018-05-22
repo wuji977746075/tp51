@@ -23,14 +23,15 @@ class CmsPost extends CheckLogin {
   function ajaxCaiji() {
 
   }
-  function index() {
-    $l = L('icon-class');
-    dump($l);die();
+  // function index() {
+  //   $l = L('icon-class');
+  //   dump($l);//die();
 
-    parent::index();
-  }
+  //   parent::index();
+  // }
 
   function set(){
+$this->error('test');
     $this->jsf = array_merge($this->jsf,[
       'cate'    => '分类',
       'content' => '详情',

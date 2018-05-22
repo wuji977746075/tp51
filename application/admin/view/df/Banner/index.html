@@ -39,7 +39,7 @@
 <!-- tpl -->
 <script type="text/html" id="imgTpl">
 {{# if (d.img >0){ }}
-  <img src="{:config('picture_url')}?id={{ d.img }}&size=60" class="js-view">
+  <img src="{:config('picture_url')}?id={{ d.img }}&size=60" class="js-view" layer-src="{:config('picture_url')}?id={{ d.img }}">
 {{# }else{ }}
 {{# } }}
 </script>

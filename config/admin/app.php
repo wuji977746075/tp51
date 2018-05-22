@@ -27,6 +27,6 @@ return [
     // 默认输出类型
     'default_return_type' => 'html',
     // 默认跳转页面对应的模板文件
-    'dispatch_success_tmpl'  => APP_PATH . '/web/view/dispatch/dispatch_jump.tpl',
-    'dispatch_error_tmpl'    => APP_PATH . '/web/view/dispatch/dispatch_jump.tpl',
+    'dispatch_success_tmpl'  => APP_PATH . 'admin/view/df/dispatch/jump.tpl',
+    'dispatch_error_tmpl'    => APP_PATH . 'admin/view/df/dispatch/jump.tpl',
 ];

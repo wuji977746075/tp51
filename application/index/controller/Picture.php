@@ -35,7 +35,7 @@ class Picture extends Controller{
 
     public function avatar(){
       $uid  = input('param.uid/d',0);
-      $size = input('param.size/d',120); // 默认尺寸
+      $size = input('param.size/d',0); // 默认尺寸
       $df   = 2; //默认头像图片id
       if($uid){
         $logic = new UserLogic;
