@@ -22,8 +22,7 @@
         "workerman/workerman-for-win": "^3.5",
         "workerman/gateway-worker-for-win": "^3.0",
         "workerman/gatewayclient": "^3.0",
-        "workerman/mysql": "^1.0",
-        "lizhichao/word": "^1.1"
+        "workerman/mysql": "^1.0"
     },
     "autoload": {
         "files": ["src/alibaichuan/sdk/TopSdk.php"],

@@ -101,18 +101,40 @@ function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=false){
  return ($suffix && $slice!=$str) ? $slice.'...':$slice;
 }
 
-define('_VIC_WORD_DICT_PATH_',__DIR__.'/../vendor/lizhichao/word/Data/dict.igb');
-ini_set("memory_limit","100M");
-function getFenci($w){
-  // require php_igbinary.dll pecl
-  $fc = new \Lizhichao\Word\VicWord('igb');
-  //长度优先分词
-  // $ar = $fc->getWord($w);
-  //细切分
-  // $ar = $fc->getShortWord($w);
-  //自动 这种方法最耗时
-  $ar = $fc->getAutoWord($w);
-  return changeArrKey($ar);
+/**
+ * 中文分词处理方法
+ *+---------------------------------
+ * @author Nzing
+ * @access public
+ * @version 1.0
+ *+---------------------------------
+ * @param stirng  $string 要处理的字符串
+ * @param boolers $sort=false 根据value进行倒序
+ * @param Numbers $top=0 返回指定数量，默认返回全部
+ *+---------------------------------
+ * @return void
+ */
+function scws($text, $top = 5, $return_array = false, $sep = ',') {
+    // include('./pscws4.php');
+    $cws = new \pscws4\pscws4('utf-8');
+    $cws -> set_charset('utf-8');
+    $cws -> set_dict('../extend/pscws4/etc/dict.utf8.xdb');
+    $cws -> set_rule('../extend/pscws4/etc/rules.utf8.ini');
+    //$cws->set_multi(3);
+    $cws -> set_ignore(true);
+    //$cws->set_debug(true);
+    //$cws->set_duality(true);
+    $cws -> send_text($text);
+    $ret = $cws -> get_tops($top, 'r,v,p');
+    $result = null;
+    foreach ($ret as $value) {
+        if (false === $return_array) {
+            $result .= $sep . $value['word'];
+        } else {
+            $result[] = $value['word'];
+        }
+    }
+    return false === $return_array ? substr($result, 1) : $result;
 }
 /**
  * 获取链接
@@ -351,6 +373,17 @@ function addLog(){
  */
 function LL($str='',$dif=' ',$add = ''){
     return implode($add,array_map('L',explode($dif, trim($str))));
+}
+
+function cslog($val){
+    $debug = debug_backtrace(); //调用堆栈
+    unset($debug[0]['args']);
+    echo '<script> try{',
+         'console.log('. json_encode(str_repeat ( "~~~" ,  40 )). ');',
+         'console.log('. json_encode($debug[0]). ');',
+         'console.log('. json_encode($val). ');',
+         'console.log('. json_encode(str_repeat ( "~~~" ,  40 )). ');',
+         '}catch(e){}</script>';
 }
 /**
  * lang() alias 方法别名

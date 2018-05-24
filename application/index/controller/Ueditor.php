@@ -165,7 +165,7 @@ class Ueditor {
                 'path'        => $fileinfo['url'],
                 'uid'         => $uid,
                 'ori_name'    => $fileinfo['original'],
-                'savename'    => $fileinfo['title'],
+                'save_name'   => $fileinfo['title'],
                 'size'        => $fileinfo['size'],
                 'url'         => '',//图片链接
                 'imgurl'      => $this->url.$fileinfo['url'],//完整显示地址

@@ -6,5 +6,6 @@ thinkphp
 .phpintel/
 runtime/
 public/upload/
+extend/pscws4/etc/dict.utf8.xdb
 vendor/
 sftp-config.json

@@ -7,7 +7,7 @@
 ===============
 - ThinkPHP5.1+ (PHP5.6+,..)
 - uediter (admin)
-- layui (admin)
+- layui (admin: 模块css合并到screen,skin为风格相关)
 - avalonjs (test)
 
 #note
@@ -21,7 +21,6 @@
 - 用户登陆权限 菜单权限 控制
 ##admin
 - 主题切换
-- 删除图片时 删除原图和缩略图
-- 分词 文章采集
-- ueditor / time-time选择
-- ueditor 升级1.4.3.3,修复ddos
+- 文章采集
+- jsf:ueditor/time-time选择
+- ueditor:升级1.4.3.3,修复ddos/添加图片删除

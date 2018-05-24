@@ -137,8 +137,8 @@ class UserPictureLogic extends BaseLogic
             $md5 = $upload->hash('md5');
 
             // ? 图片上传过
-            $field = 'path,uid,ori_name,savename,size,url,imgurl,md5,sha1,type,ext,id';
-            $r = sdb('itboye_user_picture', '')->where('md5', $md5)->where('status', 1)->field($field)->find();
+            $field = 'path,uid,ori_name,save_name,size,url,imgurl,md5,sha1,type,ext,id';
+            $r = $model->where('md5', $md5)->where('status', 1)->field($field)->find();
             if (!empty($r)) { //无需记录
                 //todo : 真实图片是否存在
                 // $path = '.'.$field['path'];
@@ -146,7 +146,7 @@ class UserPictureLogic extends BaseLogic
                 //     unlink($path);
                 // }
                 $img_info = $r;
-                $r2 = sdb('itboye_user_picture', '')->where(['md5' => $md5, 'uid' => $uid, 'type' => $type, 'status' => 1])->field($field)->find();
+                $r2 = $model->where(['md5' => $md5, 'uid' => $uid, 'type' => $type, 'status' => 1])->field($field)->find();
                 if (empty($r2)) {
                     //该图片该类型该用户未上传过
                     unset($r['id']);
@@ -175,7 +175,7 @@ class UserPictureLogic extends BaseLogic
                     'path'        => $path1,
                     'uid'         => $uid,
                     'ori_name'    => $name,
-                    'savename'    => $savename,
+                    'save_name'    => $savename,
                     'size'        => $info['size'],
                     'url'         => '',//图片链接
                     'imgurl'      => $imgurl,//完整显示地址

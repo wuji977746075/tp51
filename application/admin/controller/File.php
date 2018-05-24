@@ -317,11 +317,17 @@ class File extends Base
     public function del(){
         $imgIds = $this->_param("imgIds/a",-1);
         if($imgIds!=-1){
-            $map = [
-                ['id','in',$imgIds]
-            ];
-            $r = (new UserPictureLogic)->save($map,['status'=>0]);
-            empty($r) && $this->error("删除失败!");
+            foreach ($imgIds as $v) {
+                $info = (new UserPictureLogic)->getInfo(['id'=>$v]);
+                empty($info) && $this->error("无此图片!");
+                (new UserPictureLogic)->save(['id'=>$v],['status'=>0]);
+                unlink('.'.$info['path']);
+            }
+            // $map = [
+            //     ['id','in',$imgIds]
+            // ];
+            // $r = (new UserPictureLogic)->save($map,['status'=>0]);
+            // empty($r) && $this->error("删除失败!");
             $this->success("删除成功!");
         }else{
             $this->error("请先选中要删除的图片!");

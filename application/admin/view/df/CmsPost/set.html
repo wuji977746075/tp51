@@ -1,9 +1,6 @@
 {extend name="df/tpl/base" /}
 
 {block name="area_head"}
-<!-- datetimepicker -->
-<link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
-<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script>
 <!-- ueditor -->
 <script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.all.min.js"> </script>
@@ -35,40 +32,46 @@
 
 {block name="area_foot"}
 <script>
-;$(function (){
-  if($.fn.datetimepicker){
-    $(".js-datetime-picker").each(function(index, el) {
-      var $el = $(el);
-      var fmt = $el.data('format');
-      // $el.datetimepicker({
-      //   lang: 'ch',
-      //   timepicker:fmt.indexOf("i") != -1,
-      //   datepicker:fmt.indexOf("m") != -1,
-      //   // step: 5,
-      //   format:fmt,
-      //   allowBlank : true,
-      // });
-    });
-  }
-  var ue = UE.getEditor('jsf-content',{
-    toolbars:[
-      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
-     , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','insertvideo','emotion','link', 'unlink', 'anchor', '|','map','print', 'preview',  'drafts','forecolor','backcolor'
-      ]
-  ]});
-});
 // page init
-layui.use(['rb','form'], function(){
+layui.use(['rb','form','datetimepicker'], function(){
   var layer = layui.layer,
   form = layui.form,
   rb = layui.rb,
   $ = layui.$;
 
   rb.log('page','init');
+
+  // datetimepicker
+  $(".js-datetime-picker").each(function(index, el) {
+    var $el = $(el);
+    var fmt = $el.data('format');
+    $el.datetimepicker({
+      lang: 'ch',
+      timepicker:fmt.indexOf("i") != -1,
+      datepicker:fmt.indexOf("m") != -1,
+      // step: 5,
+      format:fmt,
+      allowBlank : true,
+    });
+  });
+  // ueditor
+  var ue = UE.getEditor('jsf-content',{
+    toolbars:[
+      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
+     , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map', 'preview',  'drafts','forecolor','backcolor'
+      ]
+  ]});
+
+  var ajaxUrl = "{:url(CONTROLLER_NAME.'/ajax_scws')}",kword;
   $('#jsf-title').change(function(e) {
-    e.preventDefault();
-    console.log($(this).val());
-    // rb.ajax();
+    rb.stope(e);
+    kword = $(this).val();
+    console.log(kword);
+    $.post(ajaxUrl, { kword: kword }, function(d) {
+      rb.ajaxErr(d,function(d){
+        $('#jsf-kwords').val(d.data);
+      });
+    });
   });
 });
 </script>

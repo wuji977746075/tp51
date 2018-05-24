@@ -11,16 +11,18 @@ use src\cms\CmsCateLogic;
 class CmsPost extends CheckLogin {
   protected $banEditFields = ['author','id'];
 
-  // todo :获取字符串的分词信息
-  function ajaxFenci() {
-    $title = '北京大学生喝进口红酒，在北京大学生活区喝进口红酒';
+  // 获取字符串的分词信息
+  function ajax_scws() {
+    $kword = urldecode($this->_param('kword','','需要关键词'));
+    $size  = max($this->_param('size/d',10),1);
+    $arr   = boolval($this->_param('arr',false));
+    // $title = '北京大学生喝进口红酒，在北京大学生活区喝进口红酒';
     // $title = '聚知台是一个及时沟通工具';
-    $ar = getFenci($title);
-    print_r($ar);
-
+    $r = scws($kword,$size,$arr);
+    $this->suc('','',$r);
   }
-  // todo :文章采集
-  function ajaxCaiji() {
+  // todo :文章采集 : xx网站 分页规则 抓取文章
+  function ajax_grab() {
 
   }
   function index() {

@@ -1,40 +1,16 @@
-<script type="text/javascript">
-// .ajax-post 表单 需要放在form后面
-// .wxuploaderimg 触发区域
-// #wxuploaderimg modal
-$('.ajax-post').click(function(){
-  var flag = true,img;
-  $('.wxuploaderimg').each(function(index, el) {
-    $el = $(el);
-    img = $el.find('.img-preview img').map(function(i,el) { return el.getAttribute('data-imageid'); }).get().join(',');
-    $el.prev('input').val(img); // 修改图片表单域
-  });
-  return flag;
-});
-</script>
-<link type="text/css" rel="stylesheet" href="__CDN__/comp/wxuploader.css?v=__APP_VERSION__" />
+<link type="text/css" rel="stylesheet" href="__CDN__comp/wxuploader.css?v=__APP_VERSION__" />
 <link type="text/css" rel="stylesheet" href="__CDN__admin/theme/simplex.min.css" /><!-- bootstrap.css -->
 <style>
 #upload_picture:hover{ cursor: pointer; }
 /*调整cosmo样式*/
 ul,ol,dl{ margin-bottom: 0; }
 dd{ line-height: inherit; }
-
 a:hover,a:focus{ text-decoration: none; }
-.admin-header .avatar {
-  height: 40px;
-  padding-top: 4px;
-}
-.admin-main {
-  margin-top: 40px;
-}
+.admin-header .avatar {  height: 40px;padding-top: 4px; }
+.admin-main {  margin-top: 40px; }
 .thumbnail{ padding: 0!important; }
-.img-selected:after{
-  width:117px !important;
-}
-.wxuploaderimg .img-preview img{
-  width:100px !important;
-}
+.img-selected:after{  width:117px !important; }
+.wxuploaderimg .img-preview img{  width:100px !important; }
 .wxuploaderimg .img-preview .edit_pic_wrp{
   background-color: rgba(229,229,229,0.2)!important;
   width:100px;height:100px;
@@ -51,8 +27,8 @@ a:hover,a:focus{ text-decoration: none; }
 <link type="text/css" rel="stylesheet" href="__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.css" />
 <script type="text/javascript" src="__PUBLIC__static/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
 
-<link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
-<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script>
+<!-- <link rel="stylesheet" type="text/css" media="all" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css">
+<script type="text/javascript" src="__CDN__jquery-datetimepicker/jquery.datetimepicker.js"></script> -->
 
 <!-- Modal -->
 <div class="modal " id="wxuploadimg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="padding-left: 200px!important;padding-top: 50px!important">
@@ -79,7 +55,7 @@ a:hover,a:focus{ text-decoration: none; }
           </div>
           <div class="imgs-container pull-left">
             <div class="loading">
-              <img src="__CDN__/common/loading.gif" />
+              <img src="__CDN__common/loading.gif" />
             </div>
             <div class="imgs-list clearfix"></div>
             <div class="pager"></div>
@@ -96,16 +72,19 @@ a:hover,a:focus{ text-decoration: none; }
 </div>
 
 <script type="text/javascript">
-Array.prototype.remove = function(val) {
-  var index = this.indexOf(val);
-  if (index > -1) {
-  this.splice(index, 1);
-  }
-};
-  var img_show_url = "{:config('picture_url')}";
-  function getImgUrl(id,size){
-    return img_show_url+'?id='+id+'&size='+size;
-  }
+  // 放到服务器端 2018-05-24 10:34:37
+  // appendImgList() 组装图片地址可能用到
+  // var img_show_url = "{ :config('picture_url') }";
+  // function getImgUrl(id,size){
+  //   return img_show_url+'?id='+id+'&size='+size;
+  // }
+
+  Array.prototype.remove = function(val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+    this.splice(index, 1);
+    }
+  };
   var imgIds = []; // 选中的图片 ids
   function getImg(d){
     var id = $(d).find('img').data('imageid');
@@ -165,10 +144,9 @@ Array.prototype.remove = function(val) {
         var $cont = $("#wxuploadimg .imgs-list").empty(),$item,item;
         for (var i = 0; i < list.length; i++) {
           item = list[i];
-          var imgsrc = getImgUrl(item.id,120);
+          var imgsrc = item.imgurl;//放到服务器端,getImgUrl(item.id,120);
           $item = $("<div class='img-item ' onclick='getImg(this)'><img class='img-responsive  thumbnail js_img_click' data-imageid='"+ item.id+"' src='" + imgsrc  + "' title='"+item.ori_name+"'/><p class='img-desc'>"+item.ori_name+"</p></div>");
           $cont.append($item);
-
         }
       }else{
         $("#wxuploadimg .imgs-list").html("");
@@ -285,29 +263,28 @@ Array.prototype.remove = function(val) {
         });
       });
       queryImgList();
-      // 预览图片
+      // 预览图片 选择
       $(".img-preview",window.wxuploadimg.cont).click(function(ev){
-          window.wxuploadimg.current = $(ev.target).parents(".wxuploaderimg");
-          //console.log("当前点击的是",$(ev.target));
-
-          if($(ev.target).hasClass("js_delete")){
-              //          console.log($(ev.target));
-              $(ev.target,window.wxuploadimg.current).parents(".img-item").remove();
-              var len = $(".img-preview img",window.wxuploadimg.current).length;
-              // console.log($(".img-preview img",window.wxuploadimg.current));
+          var obj = window.wxuploadimg.current;
+          var tar = ev.target;
+          window.wxuploadimg.current = $(tar).parents(".wxuploaderimg");
+          //console.log("当前点击的是",$(tar));
+          if($(tar).hasClass("js_delete")){
+              // console.log($(tar));
+              $(tar,obj).parents(".img-item").remove();
+              var len = $(".img-preview img",obj).length;
+              // console.log($(".img-preview img",obj));
               // console.log(len);
               //已全部选择
               if(len == 0){
-                  $(".img-preview",window.wxuploadimg.current).hide();
-                  $(window.wxuploadimg.current).removeClass("checked");
-                  $(".add",window.wxuploadimg.current).show();
+                  $(".img-preview",obj).hide();
+                  $(obj).removeClass("checked");
+                  $(".add",obj).show();
               }
-
               //还剩余
               if(len < wxuploadimg.setting.MaxChecked){
-                  $(".add",window.wxuploadimg.current).show();
+                  $(".add",obj).show();
               }
-
           }
           ev.preventDefault();
           ev.stopPropagation();
@@ -329,7 +306,12 @@ Array.prototype.remove = function(val) {
 
         //查找
         $(".js_search").click(function(){
-          queryImgList();
+          wxuploadimg.pager.index = 1;
+          imgIds.length = 0;
+          window.wxuploadimg.setChecked(0);
+          $("#wxuploadimg .js_checked").text(0);
+          $("#wxuploadimg .js_total").text(wxuploadimg.setting.MaxChecked);
+          window.wxuploadimg.queryImgList();
         });//END 查找
 
       }
@@ -405,25 +387,41 @@ Array.prototype.remove = function(val) {
       // $(".imgs-list").prepend($item);
 
       //重新查询第一页
+      window.wxuploadimg.pager.index = 1;
       window.wxuploadimg.queryImgList();
     } else {
       $.scojs_message(data.info, $.scojs_message.TYPE_ERROR);
     }
   }
   $(function(){
+    // .wxuploaderimg 触发区域
+    // #wxuploaderimg modal
+    $('.ajax-post').on('click','body',function(){
+      var flag = true,img;
+      $('.wxuploaderimg').each(function(index, el) {
+        $el = $(el);
+        img = $el.find('.img-preview img').map(function(i,el) { return el.getAttribute('data-imageid'); }).get().join(',');
+        $el.prev('input').val(img); // 修改图片表单域
+      });
+      return flag;
+    });
     // var init = '[autoinit]';
     // if(init == 'true'){
       wxuploadimg.init({cont:".wxuploaderimg"});
     // }
-
-    if($.fn.datetimepicker){
-      $("#wxuploadimg input.time").datetimepicker({
-        lang: 'ch',
-        timepicker:false,
-        format:'Y-m-d',
-        allowBlank : true,
-      });
-      console.log("日期初始化成功！");
-    }
   })
+
+  // 模块化 datetimepicker
+  layui.use(['datetimepicker'],function(){
+    var $ = layui.$;
+    if($.fn.datetimepicker){
+        $("#wxuploadimg input.time").datetimepicker({
+          lang: 'ch',
+          timepicker:false,
+          format:'Y-m-d',
+          allowBlank : true,
+        });
+        console.log("日期初始化成功！");
+    }
+  });
 </script>

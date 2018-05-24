@@ -13,6 +13,8 @@
 // | 模板设置
 // +----------------------------------------------------------------------
 
+const CDN = 'http://cdn.my/';
+const LIB_CSS    = 'http://test.my/learn-layui/';
 return [
     // 默认过滤方法 用于普通标签输出
     'default_filter' => '', //htmlspecialchars
@@ -31,9 +33,9 @@ return [
         '__JS__'     => __ROOT__ . '/static/default/' . BIND_MODULE . '/js/',
         '__CSS__'    => __ROOT__ . '/static/default/' . BIND_MODULE . '/css/',
         '__IMG__'    => __ROOT__ . '/static/default/' . BIND_MODULE . '/img/',
-        '__CDN__'    => ITBOYE_CDN,
+        '__CDN__'    => CDN,
         '__SELF__' => request()->url(),
-        '__SKIN__'   => 'http://test.my/learn-layui/',
+        '__SKIN__'   => LIB_CSS,
     ],
     // 模板引擎类型 支持 php think 支持扩展
     'type'         => 'Think',

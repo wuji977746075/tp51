@@ -236,6 +236,7 @@ class Base extends Controller{
     }
   }
 
+  // 主动报错时 自动回滚事务
   protected function ajaxRet($msg,$url='',$data = [],$count=0,$time=0,$code=0){
     if($this->trans){
       $this->trans = false;
@@ -265,6 +266,7 @@ class Base extends Controller{
   protected function suc($msg='',$url='',$data=[],$count=0,$time=1500){
     $msg = $msg ? $msg : LL('op suc');
     $url = $url ? $url : $this->suc_url;
+    $count = $count ? $count : count($data);
     $this->ajaxRet($msg,$url,$data,$count,$time);
   }
   protected function opSuc($msg='',$url='',$time=1500){
