@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 
 use src\user\UserLogic;
+use src\role\UserRoleLogic;
 
 class Login extends Base{
 
@@ -16,18 +17,16 @@ class Login extends Base{
       $d_type  = $this->_param('d_type','');
       $client_id = 'by571846d03009e1'; // admin端
       // ? user
-      $r = (new UserLogic)->checkUser($uname,$upass);
-      !$r['status'] && $this->error($r['info']);
-      $uinfo = $r['info'];
+      $uinfo = (new UserLogic)->checkUser($uname,$upass);
       $uid   = $uinfo['id'];
 
       // ? 超级管理员
       $ur = new UserRoleLogic;
       if(!$ur->isSuperUser($uid)){
         // todo : 查询用户角色id
-        $r = $ur->getRoleId($uid);
-        !$r['status'] && $this->error($r['info']);
-        $role_id = (int) $r['info'];
+        // $r = $ur->getRoleId($uid);
+        // !$r['status'] && $this->error($r['info']);
+        // $role_id = (int) $r['info'];
 
         // todo : 是否为此客户端角色
         // $r = (new AuthLogic)->checkRole($uid,$client_id);
@@ -39,8 +38,7 @@ class Login extends Base{
 
       }
       // 登陆
-      $r = (new UserLogic)->login($uid,$d_token,$d_type,true);
-      !$r['status'] && $this->error($r['info']);
+      $sid = (new UserLogic)->login($uid,$d_token,$d_type,true);
       $this->redirect(url('manager/index'));
     }
   }
