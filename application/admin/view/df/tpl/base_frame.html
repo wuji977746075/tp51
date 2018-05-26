@@ -61,7 +61,7 @@
   <!-- 左侧导航区域 -->
   <div class="layui-side side-menu">
     <div class="layui-side-scroll">
-      <ul class="layui-nav layui-nav-tree layui-nav-side" lay-filter="side-menu">
+      <ul class="layui-nav layui-nav-tree layui-nav-side" lay-filter="side-menu" lay-shrink="">
         <!--?php foreach ($left_menu as $v) { ?>
         <li class="layui-nav-item layui-nav-itemed">
           <a class="" href="javascript:;"><i class="layui-icon">&#xe620;</i> < ?=$v['name']?></a>
@@ -130,7 +130,6 @@ layui.use(['rb','element'], function(){
   var menus = JSON.parse('{$menu_json|raw}')
   ,site = "{:config('site_url')}";
 
-  el.render('tab','mainTab'); // tab init
   var welcome = {
     title:'<i class="fa fa-desktop"></i>',
     content:'<iframe id="iframe0" src="{:url('manager/welcome')}" frameborder="0" style="width:100%;height:100%;"></iframe>',
@@ -168,7 +167,7 @@ layui.use(['rb','element'], function(){
     // for (k in menus) {
       // item = menus[k];
       html = html
-      +'<li class="hvr-pulse layui-nav-item" data-id="'+item.id+'">'
+      +'<li class="hvr-pulse layui-nav-item " data-id="'+item.id+'">'
       +' <a href="javascript:;">'+item.name+'</a>'
       +'</li>';
     // };
@@ -209,7 +208,7 @@ layui.use(['rb','element'], function(){
         });
         // if(html){
           $('.layui-nav-tree.layui-nav-side').html(html);
-          // el.render('tab','mainTab'); // el.init();
+          el.render('nav');
           $('.layui-nav-tree.layui-nav-side').on('click','dd', function(e) {
             e.preventDefault();
             $this = $(this);

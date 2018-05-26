@@ -4,5 +4,6 @@
 
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_FILENAME} !-f
+  # 设置index模块隐藏入口文件
   RewriteRule ^(.*)$ index.php?s=/$1 [QSA,PT,L]
 </IfModule>

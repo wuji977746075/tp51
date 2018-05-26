@@ -18,9 +18,11 @@
 ##other
 - 安装参考 dolphinPhp的 install 模块
 - db bak
-- 用户登陆权限 菜单权限 控制
+- 文章采集
+- ueditor添加图片删除
 ##admin
 - 主题切换
-- 文章采集
-- jsf:ueditor/time-time选择
-- ueditor:升级1.4.3.3,修复ddos/添加图片删除
+- 用户登陆权限 菜单权限 控制
+- jsf:time-time选择
+- 一对一关联保存获取
+- dtpicker css延迟问题

@@ -236,7 +236,7 @@ class Base extends Controller{
     }
   }
 
-  // 主动报错时 自动回滚事务
+  // 报错自动回滚事务/成功提交事务
   protected function ajaxRet($msg,$url='',$data = [],$count=0,$time=0,$code=0){
     if($this->trans){
       $this->trans = false;

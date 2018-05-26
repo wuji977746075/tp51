@@ -354,7 +354,15 @@ function escapeEmoji($strText, $bool = false) {
   }
 }
 
-// 账号密码加密
+// 账号密码加密 - hash php5.5+
+function getPassHash($pass='',$alg=PASSWORD_DEFAULT,array $options=[]){
+  return password_hash($pass,$alg,$options);
+}
+// 账号密码验证 - hash php5.5+
+function checkPassHash($pass,$hash){
+  return password_verify($pass,$hash);
+}
+// 账号密码加密 - md5
 function think_ucenter_md5($str, $key = 'UCenter'){
   return '' === $str ? '' : md5(sha1($str) . $key);
 }
@@ -372,7 +380,7 @@ function addLog(){
  * add by zhouhou
  */
 function LL($str='',$dif=' ',$add = ''){
-    return implode($add,array_map('L',explode($dif, trim($str))));
+    return implode($add,array_map('lang',explode($dif, trim($str))));
 }
 
 function cslog($val){

@@ -26,8 +26,6 @@ layui.use(['rb','table2','element','form'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
-
-
   ,rb = layui.rb
   ,$ = layui.$;
   rb.log('page','init');
@@ -39,6 +37,9 @@ layui.use(['rb','table2','element','form'], function(){
     ,initSort: {
       field: 'sort',type: 'desc'
     }
+    ,skin: 'row' //行边框风格 line row nob
+    ,even: true //开启隔行背景
+    ,size: 'sm' //小尺寸的表格
     ,request: { pageName: 'page',limitName: 'size' }
     ,limits: [10,30]
     ,limit: 10

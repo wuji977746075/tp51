@@ -1,6 +1,10 @@
 {extend name="df/tpl/base" /}
 
 {block name="area_head"}
+<style>
+/*a{ color:#333 !important;cursor: pointer; }*/
+.tools-dir .layui-btn{ text-align: left !important; }
+</style>
 <!-- ueditor -->
 <script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.config.js"></script>
 <script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.all.min.js"> </script>
@@ -12,21 +16,12 @@
     文章 {$op}
   </div>
 </div>
-<form class="layui-form layui-form-pane post-form">
-  {volist name="jsf_tpl" id="v"}{$v}{/volist}
-  <div class="layui-form-item">
-    <label class="layui-form-label">标签</label>
-    <div class="layui-input-block">
-      <input type="checkbox" name="like[write]" title="写作">
-      <input type="checkbox" name="like[read]" title="阅读">
-    </div>
-  </div>
-  <div class="layui-form-item layui-input-block">
-      <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}" ><i class="layui-icon layui-icon-ok"></i>{$op}</button>
-      {$html_return|raw}
-  </div>
-</form>
-<!-- php是最好的语言吗? -->
+<!-- 工具箱 -->
+<ul class="tools-dir" style="display: none;">
+  <li><a id="js-build-kwords" class="layui-btn layui-btn-primary layui-btn-fluid">生成关键词<em>new</em></a></li>
+  <li><a id="js-build-excerpt" class="layui-btn layui-btn-primary layui-btn-fluid"><cite>生成摘要</cite><span class="layui-badge-dot"></span></a></li>
+</ul>
+{include file="df/tpl/set_form"}
 {include file="df/tpl/pic_select"}
 {/block}
 
@@ -41,6 +36,35 @@ layui.use(['rb','form','datetimepicker'], function(){
 
   rb.log('page','init');
 
+  // 工具箱
+  var siteDir = $('.tools-dir');
+  if(siteDir[0] && $(window).width() > 750){
+    layer.ready(function(){
+      layer.open({
+        type: 1
+        ,zIndex:3
+        ,content: siteDir
+        ,skin: 'layui-layer-lan'
+        ,area: 'auto'
+        ,maxHeight: $(window).height() - 250
+        ,title: '工具箱<span class="layui-badge-dot" style="left: 6px;"></span>'
+        //,closeBtn: false
+        ,offset: ['250px','750px']
+        // ,offset: 'r'
+        ,shade: false
+        ,success: function(layero, index){
+          layer.style(index, {
+            marginLeft: -15
+          });
+        }
+      });
+    });
+    // siteDir.find('li').on('click', function(){
+    //   var othis = $(this);
+    //   othis.find('a').addClass('layui-this');
+    //   othis.siblings().find('a').removeClass('layui-this');
+    // });
+  }
   // datetimepicker
   $(".js-datetime-picker").each(function(index, el) {
     var $el = $(el);
@@ -61,18 +85,33 @@ layui.use(['rb','form','datetimepicker'], function(){
      , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map', 'preview',  'drafts','forecolor','backcolor'
       ]
   ]});
-
-  var ajaxUrl = "{:url(CONTROLLER_NAME.'/ajax_scws')}",kword;
-  $('#jsf-title').change(function(e) {
-    rb.stope(e);
-    kword = $(this).val();
-    console.log(kword);
-    $.post(ajaxUrl, { kword: kword }, function(d) {
-      rb.ajaxErr(d,function(d){
-        $('#jsf-kwords').val(d.data);
-      });
-    });
+  // 自动生成简介
+  $('#js-build-excerpt').click(function(e) {
+    var con = ue.getContentTxt().trim();
+    //取内容的前50个字做简介
+    if(con){
+      $('#jsf-excerpt').val(con.substr(0,50));
+    }else{
+      rb.error('内容未填写');
+    }
   });
+  // 自动生成关键词
+  var ajaxUrl = "{:url(CONTROLLER_NAME.'/ajax_scws')}",kword;
+  $('#js-build-kwords').click(function(e) {
+    layui.stope(e);
+    var kword = $('#jsf-title').val();
+    if(kword){
+      // console.log(kword);
+      $.post(ajaxUrl, { kword: kword }, function(d) {
+        rb.ajaxErr(d,function(d){
+          $('#jsf-kwords').val(d.data);
+        });
+      });
+    }else{
+      rb.error('标题未填写!');
+    }
+  })
+
 });
 </script>
 {/block}

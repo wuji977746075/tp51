@@ -54,7 +54,7 @@ class CheckLogin extends Base{
     $hold = $need ? L('type-in').$name : ''; // 表单placeholder
     $jsf = str_replace('_', '-', $field); // 表单id
 
-    $tpl = ''; // 模板hrtml
+    $tpl = ''; // 模板html
     $tpl.= '<div class="layui-form-item '.$hide.'">';
     $tpl.=   '<label for="jsf-'.$jsf.'" class="layui-form-label">'.$need.' '.$name.'</label>';
     $tpl.=   '<div class="layui-input-inline '. $css.'">';
@@ -63,7 +63,7 @@ class CheckLogin extends Base{
     }else if($type == 'radio'){ // radio
       $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="0" '.($val ? 'checked' : '').' '.$extra.'>';
     }else if($type =='textarea'){ // textarea
-      $tpl.='<textarea name="desc" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
+      $tpl.='<textarea name="'.$field.'" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
     }else if($type == 'check'){ // check : todo
       $tpl.= '<div> todo ... </div>';
     }else if($type == 'time'){ // time
@@ -164,7 +164,7 @@ class CheckLogin extends Base{
         $jsf_tpl = [];
         foreach ($this->jsf_tpl as $v) {
           $v[1] = isset($v[1]) ? $v[1] : ''; // class
-          $v[2] = isset($v[2]) ? $v[2] : []; // extra
+          $v[2] = isset($v[2]) ? $v[2] : ''; // extra
           $v[3] = isset($v[3]) ? $v[3] : 0; // tip
           $vs = explode('|', $v[0]);
           $vs[1] = (isset($vs[1]) && $vs[1]) ? $vs[1] : 'text';

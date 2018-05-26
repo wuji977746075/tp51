@@ -151,13 +151,11 @@ abstract class BaseLogic {
      * @return integer 返回影响记录数 或 错误信息
      */
     public function setDec2($map, $field, $cnt = 1) {
-        $result = $this -> model ->where($map) ->find()->toArray();
-
-        if(!empty($result) && isset($result[$field])){
-            $fieldValue = $result[$field];
+        $r = $this -> model ->where($map) ->find();
+        if(!empty($r) && isset($r[$field])){
+            $fieldValue = $r[$field];
             if($fieldValue - $cnt < 0) $cnt = $fieldValue;
         }
-
         return $this->setDec($map,$field,$cnt);
 
     }
@@ -183,15 +181,50 @@ abstract class BaseLogic {
         $field && $query = $model->field($field);
         return $query -> save($entity,$map);
     }
-
+    // 多条件查单字段
     public function getField($map = [],$field=''){
         $r = $this->model->where($map)->field($field)->find();
-        $r = is_object($r) ? $r->toArray() : $r;
         return ($r && isset($r[$field])) ? $r[$field] : '';
     }
-
-    public function get($id=0){
-        return $this->model->get($id);
+    // 单条件查单字段
+    // ModelNotFoundException
+    public function get($id=0,$f=false){
+        if($f) $r = $this->model->getOrFail($id);
+        else $r = $this->model->get($id);
+        return $r;
+    }
+    // @throws ModelNotFoundException
+    function __call($method,$args){
+        if(substr($method, 0,5) == 'getBy'){
+            // 单条件查单数据 Model::getBy
+            $f = false;
+            if(count($args)>1){
+                $f = $args[1];unset($args[1]);
+            }
+            $r = call_user_func_array([$this->model,$method], $args);
+            $this->checkDbNull($r,$f);
+            return $r;
+        }else if(substr($method, 0,10) == 'getFieldBy'){
+            // 单条件查单字段 Model::getFieldBy
+            $f = false;
+            if(count($args)>2){
+                $f = $args[2];
+            }
+            $r = $this->model->$method($args[1],$args[0]);
+            $this->checkDbNull($r,$f);
+            return $r;
+        }else if(substr($method, 0,5) == 'where'){
+            // where 及where系方法 可连携
+            return call_user_func_array([$this->model,$method], $args);
+        }
+    }
+    // 检查数据返回空
+    // @throws ModelNotFoundException
+    public function checkDbNull($r,$f=false){
+        if($f && empty($r)){
+            $class = get_class($this->model);
+            throw new \think\db\exception\ModelNotFoundException('model data Not Found:' . $class, $class);
+        }
     }
     /**
      * 获取数据find
@@ -199,19 +232,15 @@ abstract class BaseLogic {
      * @param bool $order
      * @param bool/str/arr $field
      * @param bool $noNull
-     * @param bool $lock 锁表
      * @return array
      */
-    public function getInfo($map,$order=false,$field=false,$noNull=false,$lock=false) {
+    public function getInfo($map,$order=false,$field=false,$noNull=false) {
         $query = $this->model;
-
         $order && $query = $query->order($order);
         $field && $query = $query->field($field);
-        $lock  && $query = $query->lock(true);
+        // $lock  && $query = $query->lock(true);
         $r = $query->where($map)->find();
-        if (is_object($r) && method_exists($r,"toArray")) {
-            return $r->toArray();
-        }
+        $noNull && $this->checkDbNull($r,$noNull);
         return $r;
     }
 
@@ -275,7 +304,7 @@ abstract class BaseLogic {
         if(!empty($map))      $query = $query->where($map);
         if(false !== $order)  $query = $query->order($order);
         if(false !== $fields) $query = $query->field($fields);
-        $list = $query -> select();
+         $list = $query -> select(); //think\model\Collection
         return $list ? obj2Arr($list) : [];
 
     }
@@ -306,7 +335,6 @@ abstract class BaseLogic {
 
         // $count = $model -> where($map) -> count();
         return $list->toArray();
-
     }
 
     /**
@@ -367,7 +395,6 @@ abstract class BaseLogic {
                 $Page -> parameter[$key] = urlencode($val);
             }
         }
-
         // 实例化分页类 传入总记录数和每页显示的记录数
         $show = $Page -> show();
         $data = [];
@@ -376,7 +403,6 @@ abstract class BaseLogic {
                 array_push($data,$vo->toArray());
             }
         }
-
         return ["count"=>$count,"list" => $data ,"show" => $show];
     }
 }

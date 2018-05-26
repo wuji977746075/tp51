@@ -10,6 +10,8 @@
 // +----------------------------------------------------------------------
 // $Id$
 
+Route::rule('post/set/:id','admin.php/cms_post/set');
+
 if (is_file($_SERVER["DOCUMENT_ROOT"] . $_SERVER["REQUEST_URI"])) {
     return false;
 } else {

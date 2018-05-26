@@ -7,6 +7,7 @@
 
 namespace app\admin\controller;
 use src\cms\CmsCateLogic;
+use src\cms\CmsPostExtraLogic;
 
 class CmsPost extends CheckLogin {
   protected $banEditFields = ['author','id'];
@@ -31,7 +32,7 @@ class CmsPost extends CheckLogin {
 
   function set(){
     $this->jsf = array_merge($this->jsf,[
-      'cate'    => '分类',
+      'cid'     => '分类',
       'content' => '详情',
       'excerpt' => '摘要',
       'kwords'  => '关键词',
@@ -42,23 +43,40 @@ class CmsPost extends CheckLogin {
     if(IS_GET){ // view
       $cates = (new CmsCateLogic)->getAllMenu(false,3);
       $this->jsf_tpl = [
-        ['*cate|selects','',$cates],
+        ['*cid|selects','',$cates],
         ['*title','input-long'],
         ['kwords','input-long'], //默认标题分词
-        ['*content|textarea','input-long'],
+        ['*content|textarea','input-ueditor'],
         ['excerpt|textarea','input-long'], //默认内容前50字
         ['main_img|btimg','',1],
         ['status|radio','','lay-text="发布|草稿"'],
         ['publish_time|time','','Y-m-d H:i:s'],
       ];
+      return parent::set();
     }else{ // save
+      $extra = new CmsPostExtraLogic;
+      $paras = $this->_getPara('title,cid,content','excerpt,main_img,kwords,status|0,publish_time,dt_types');
+      // check cid/title add时(草稿时publish_time/0 author/UID)
       // todo: editor 分页 图片保存到本地
-      $this->jsf_field = ['title,cate,main_img,excerpt,content',',kwords,status|0,publish_time'];
-      // check cate add(草稿时publish_time/0 author/UID)
-      // save to post
-      // content 分词信息
-      // save to post_extra
+      $id             = $this->id;
+      $paras['title'] = $this->logic->checkTitle($this->logic->filter($paras['title']));
+      $content        = $this->logic->filter($paras['content']);
+      $content_kwords = $extra->getContentScws($content);
+
+      $this->trans();
+      $add = $paras;
+      unset($add['content']);unset($add['kwords']);
+      $add2 = ['content'=>$content,'kwords'=>$paras['kwords'],'content_kwords'=>$content_kwords];
+      if($id){  // edit
+        $this->logic->save(['id'=>$id],$add);
+        (new CmsPostExtraLogic)->save(['pid'=>$id],$add2);
+      }else{    // add
+        $add['author'] = UID;
+        $id = $this->logic->add($add);
+        $add2['pid'] = $id;
+        (new CmsPostExtraLogic)->add($add2);
+      }
+      $this->opSuc();
     }
-    return parent::set();
   }
 }
