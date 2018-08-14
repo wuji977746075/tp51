@@ -25,6 +25,21 @@
   <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
 </div>
 </script>
+<script type="text/html" id="statusTpl">
+  <form class="layui-form">
+  <input type="checkbox" data-id="{{ d.id }}"
+  {{# if(d.status>0){ }} checked  {{#  } }}
+  lay-skin="switch" value="1" lay-text="发布|草稿">
+  </form>
+</script>
+<script type="text/html" id="timeTpl">
+  {{# if(d.update_time>0){ }}
+  {{ new Date((d.update_time)*1000).format('yyyy/MM/dd hh:mm') }}
+  {{# } }}
+</script>
+<script type="text/html" id="imgTpl">
+  <img src="{:config('avatar_url')}?uid={{ d.author }}&size=60" layer-src="{:config('avatar_url')}?uid={{ d.author }}"  class="layui-nav-img js-view">  {{ d.author_name }}
+</script>
 {/block}
 
 {block name="area_foot"}
@@ -32,7 +47,7 @@
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','form'], function(){
+layui.use(['rb','table2','form','element'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
@@ -53,11 +68,11 @@ layui.use(['rb','table2','form'], function(){
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
       // ,{field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
-      ,{field: 'title', title: '名称 .', width: 100,edit: 'text'}
-      ,{field: 'uid', title: '作者', width: 100,edit: 'text'}
-      ,{field: 'excerpt', title: '摘要 .', width: 250,edit: 'text'}
-      ,{field: 'status', title: '状态', width: 100,edit: 'text'}
-      ,{field: 'update_time', title: '上次更新', width: 100,edit: 'text'}
+      ,{field: 'title', title: '名称 .', width: 250,edit: 'text'}
+      ,{field: 'author', title: '作者', width: 200,templet:"#imgTpl"}
+      ,{field: 'excerpt', title: '摘要 .',edit: 'text'}
+      ,{field: 'status', title: '状态', width: 100,templet:"#statusTpl"}
+      ,{field: 'update_time', title: '上次更新', width: 150,templet: '#timeTpl'}
       ,{align:'left',title: '操作',width:250,toolbar: '#barDemo'} //,fixed: 'right'
     ]]
     ,done: function(res, page, count){
@@ -69,7 +84,12 @@ layui.use(['rb','table2','form'], function(){
       // res.count = 100;
     }
   });
-
+  // 单选
+  form.on('switch', function(data){
+    // console.log(data); //elem elem.checked value othis
+    var el = data.elem;
+    rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'status',val: el.checked ? 1:0,id:parseInt(el.getAttribute('data-id')) },true);
+  });
   // 单元格编辑
   table.on('edit(fDemo)', function(obj){
     // console.log(obj); // value , field ,data

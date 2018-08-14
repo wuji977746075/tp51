@@ -75,7 +75,7 @@ return [
     // 'file_size'=>51200 //50M
 
     // 关闭日志写入
-    'type'  => 'test',
+    'close'  => true,
 
     // socketlog形式 bug:slow
     // 'type'                => 'socket',

@@ -13,6 +13,7 @@ define('POWER','rainbow');
 define('START_TIME', microtime(true));
 define('START_MEM', memory_get_usage());
 //环境变量
+if(!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
 define('IS_CGI',(0 === strpos(PHP_SAPI,'cgi') || false !== strpos(PHP_SAPI,'fcgi')) ? 1 : 0 );
 define('IS_CLI_', PHP_SAPI == 'cli' ? true : false);
 define('NOW_TIME', $_SERVER['REQUEST_TIME']);

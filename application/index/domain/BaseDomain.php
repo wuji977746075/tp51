@@ -115,35 +115,33 @@ class BaseDomain {
     }
 
     /**
-     * 仅适用 index模块
-     * @param $key
+     * @title 仅适用 index模块
+     * 兼容/模式 2018-07-26 13:53:47
+     * @param string $key
      * @param string $default
-     * @param string $emptyErrMsg 是否
+     * @param string $emptyErr 是否
      * @return mixed
      */
-    public function _post($key, $default = '', $emptyErrMsg = false) {
+    public function _post($key, $default = '', $emptyErr = false) {
+      $key = explode('',$key);
+      $key_type = isset($key[1]) ? $key[1] : 's'; // string
+      $key_data = "_data_" . $key ;
+      $key = $key[0]; // key has change
+      $v = isset($this->data[$key_data]) ? trim($this->data[$key_data]) : '';
 
-        $value = isset($this->data["_data_" . $key]) ? $this->data["_data_" . $key] : $default;
-
-        if ($default === $value){
-            if($emptyErrMsg) {
-                $emptyErrMsg = Llack($key);
-                $this->apiErr($emptyErrMsg, EC::Lack_Parameter);
-            }
-        }
-
-        $value = $this->escapeEmoji($value);
-
-        if ($default == $value && !empty($emptyErrMsg)) {
-            $emptyErrMsg = Llack($key);
-            $this->apiErr($emptyErrMsg, EC::Lack_Parameter);
-        }
-
-        return $value;
+      if($key_type == 's'){
+        $v = $v ? $this->escapeEmoji($v) : '';
+        !$emptyErr && $this->apiErr(Llack($key), EC::Lack_Parameter);
+      }elseif($key_type == 'f'){
+        $v = floatval( $v );
+      }elseif($key_type == 'd'){
+        $v = (int) $v;
+      }
+      return $v;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @param string $default
      * @param string $emptyErrMsg 为空时的报错
      * @return mixed

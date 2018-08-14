@@ -61,13 +61,13 @@ class CheckLogin extends Base{
     if(in_array($type,['text','hidden','number','password'])){
       $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.'>';
     }else if($type == 'radio'){ // radio
-      $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="0" '.($val ? 'checked' : '').' '.$extra.'>';
+      $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="1" '.($val ? 'checked' : '').' '.$extra.'>';
     }else if($type =='textarea'){ // textarea
       $tpl.='<textarea name="'.$field.'" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
     }else if($type == 'check'){ // check : todo
       $tpl.= '<div> todo ... </div>';
     }else if($type == 'time'){ // time
-      $val &&  $val = date($extra,$val);
+      $val &&  $val = date($extra,intval($val));
       $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-datetime-picker" data-format="'.$extra.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.'>';
     }else if($type == 'select'){ // select(k=>v)
       $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.' >';

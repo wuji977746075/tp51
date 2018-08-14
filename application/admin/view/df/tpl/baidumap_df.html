@@ -1,0 +1,238 @@
+<!--
+        作者：hebiduhebi@126.com
+        时间：2015-05-08
+        描述：百度地图-坐标拾取
+        查询关键词优化 rainbow 2018-04-08 09:16:05
+        显示优化 查询优化 rainbow 2018-04-25 10:26:56
+    -->
+<style>
+    .addr_value{ width:70px;width: 115px;height: 25px; }
+    .addr_value{ text-align: center; }
+</style>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak={:config('BAIDU_MAP_KEY')}"></script>
+<div class="modal fade" id="baidumap" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">百度地图-请选择经度纬度(须设置省份城市)</h4>
+            </div>
+            <div class="modal-body" style="height:560px;">
+                <div class="form form-inline">
+                    <div class="am-cf">
+                        <div class="am-fl">
+                            <td>
+                                <select id="province" name="province" class="addr_value"><option value="">== 省 ==</option></select><select id="city" name="city" class="addr_value"><option value="">== 先选省 ==</option></select><select id="area" name="area" class="addr_value"><option value="">== 先选市 ==</option></select>
+                            </td>
+                            <input type="text" class="js_val_key" id="hbd_suggestId" placeholder="输入关键词查询"/>
+                            <button class="btn-sm btn btn-primary js_search"><i class="icon-search"></i>搜索</button>
+                        </div>
+                        <div class="am-fr">
+                            <button type="button" class="btn btn-sm btn-primary js_choose_position">确定此坐标</button>
+                            <button type="button" class="btn btn-sm btn-default js_close" data-dismiss="modal">取消
+                            </button>
+                        </div>
+                    </div>
+                    <div class="">
+                        当前经纬度:<span class="lng"></span>,<span class="lat"></span>.<span
+              class="text-danger">注: 请确定跳动的红点必须在您选择的位置上。</span>
+                    </div>
+
+                </div>
+
+                <div id="hbd_baidu_map" style="width:100%;height:420px;overflow: hidden;float:left;"></div>
+                <div id="hbd_r_result" style="width:100%;height:420px;overflow: scroll;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        // plugin definition
+        $.fn.baidumap = function (options) {
+            var defaults = {
+                container: '.baidumap_position',
+            };
+
+            var that = this;
+            var opts = $.extend(defaults, options);
+
+            var tagname = $(".lng", opts.container).prop("tagName");
+            // lng = opts.initPoint[0];
+            // lat = opts.initPoint[1];
+            // if (tagname == "INPUT") {
+            //     $(".lng", opts.container).val(lng);
+            //     $(".lat", opts.container).val(lat);
+            // } else {
+            //     $(".lng", opts.container).text(lng);
+            //     $(".lat", opts.container).text(lat);
+            // }
+            // addMarker(lng, lat);
+            function addMarker(lng, lat) {
+                console.log('add_marker',lng+':'+lat);
+                map.clearOverlays();
+                $("#baidumap .lng").text(lng);
+                $("#baidumap .lat").text(lat);
+                point = new BMap.Point(lng, lat);
+                marker = new BMap.Marker(point); // 创建标注
+                map.addOverlay(marker); // 将标注添加到地图中
+                marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+                marker.enableDragging();
+            }
+            // console.log('f.fn.baidumap',that);
+            // dom准备好
+            $('#baidumap').on('shown.bs.modal', function () {
+                console.log('m-open');
+
+                // 开启 百度地图API功能
+                // map    = new BMap.Map("hbd_baidu_map");
+                local  = new BMap.LocalSearch(map, {
+                    renderOptions: { map: map, panel: "hbd_r_result" }
+                });
+                point  = new BMap.Point(lng, lat);
+                map.centerAndZoom(point, 18);
+                // map.clearOverlays();
+                // var marker = new BMap.Marker(point); // 创建标注
+                // map.addOverlay(marker); // 将标注添加到地图中
+                // marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+                // marker.enableDragging();
+                map.enableScrollWheelZoom(true);
+                addMarker(lng,lat);
+                map.addEventListener("click", function (e) {
+                // console.log('map_click',e);
+                    addMarker(e.point.lng, e.point.lat);
+                });
+            })
+
+            $("#baidumap .js_choose_position").click(function () {
+                var lng = $("#baidumap .lng").text();
+                var lat = $("#baidumap .lat").text();
+                if($("#baidumap #province").val()){
+                }else{
+                    $.scojs_message("必须设置省份");
+                    return false;
+                }
+                if($("#baidumap #city").val()){
+                }else{
+                    $.scojs_message("必须设置城市");
+                    return false;
+                }
+                var tagname = $(".lng", opts.container).prop("tagName");
+                console.log(tagname);
+                if (tagname == "INPUT") {
+                    $(".lng", opts.container).val(lng);
+                    $(".lat", opts.container).val(lat);
+                } else {
+                    $(".lng", opts.container).text(lng);
+                    $(".lat", opts.container).text(lat);
+                }
+
+                $("#baidumap .js_close").click();
+            })
+
+        };
+    var s_p = '',s_c='',s_a='',keyword='';
+    var lng=120.337985,lat=30.314933,map=new BMap.Map("hbd_baidu_map"),point,local;
+    $(function () {
+        console.log('lng'+lng,'lat'+lat);
+        function getPos(){
+            var k = $("#baidumap .js_val_key").val(),p,l;
+            if(s_a){
+                p = s_c+s_a;l=15;
+            }else if(s_c){
+                p = s_c;l=12;
+            }else if(s_p){
+                p = s_p;l=9;
+            }
+            console.log(l+'级定位: ' + p);
+            map.centerAndZoom(p, l);
+            k && console.log('搜索: '+ k);
+            k && local.search(k);
+        }
+        $("#baidumap .js_search").click(function () {
+            getPos();
+        });
+        $("#baidumap .addr_value").change(function () {
+            var val = $("#baidumap .js_val_key").val();
+            $this = $(this);
+            var v = $this.find("option:selected").text();
+            var vv = $this.val();
+            var id = $this.attr('id');
+            if(id=='province'){
+                s_p = vv ? v : '';//+'省';
+                s_c = '';
+                s_a = '';
+                getPos();
+                pac(vv,"city"); // 构造下及市
+                $('#area').html('<option value="">== 先选市 ==</option>');
+            }else if(id=='city'){
+                s_c = vv ? v : '';//+'市';
+                s_a = '';
+                getPos();
+                pac($("#city").val(),"area");// 构造下及区
+            }else if(id=='area'){
+                s_a = vv ? v : '';
+                getPos();
+            }
+        });
+        //建立一个自动完成的对象
+        //todo : 无效 一直定位为本地
+        var ac = new BMap.Autocomplete({
+            "input": "hbd_suggestId", "location": map
+        });
+  })
+</script>
+<script type="text/javascript">
+        var flag1= $("#PRO").val(),flag2= $("#CITY").val(),flag3= $("#AREA").val();
+        pac(1,"province",function(){
+            if($("#PRO").val()){
+                pac($("#PRO").val(),"city",function(){
+                    if($("#CITY").val()){
+                        pac($("#CITY").val(),"area");
+                    }
+                })
+            }
+        });
+        function pac(code, type) {
+            var callback = arguments[2] ? arguments[2] : function(){ };
+            $.ajax({
+                url: "{:url('PCA/pac')}",
+                type: "post",
+                data: {
+                    type: type,
+                    code: code
+                },
+                async: false,
+                dataType: "json",
+                success: function (data) {
+                    var html = '',init='';
+                    if(type == 'city'){
+                        init = flag2;flag2 = '';
+                        html = '<option value="">== 市 ==</option>';
+                        $('#area').html();
+                    }else if(type == 'province'){
+                        init = flag1;flag1 ='';
+                        html = '<option value="">== 省 ==</option>';
+                    }else if(type == 'area'){
+                        init = flag3;flag3='';
+                        html = '<option value="">== 区 ==</option>';
+                    }
+
+                    // var html = type == 'province' ? '' : '<option value=""></option>';
+                    var temp = '';
+                    for (var i = 0; i < data['info'].length; i++) {
+                        //2.追加option
+                        html = html + "<option value='" + data['info'][i][1] + "'>" + data['info'][i][2] + "</option>";
+                    }
+                    $("#" + type).html(html)
+                    init && $("#" + type).val(init);
+
+                    // init && $("#" + type).trigger('change');
+                    // console.log('pac'+type);
+                    callback();
+                }
+
+            })
+        }
+</script>
+<!-- END -->

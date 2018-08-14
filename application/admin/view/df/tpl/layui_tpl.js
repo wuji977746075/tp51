@@ -1,8 +1,8 @@
 <script type="text/html" id="showTpl">
   <form class="layui-form">
   <input type="checkbox" data-id="{{ d.id }}"
-  {{# if(d.show){ }} checked  {{#  } }}
-  lay-skin="switch">
+  {{# if(d.show>0){ }} checked  {{#  } }}
+  lay-skin="switch" value="1" lay-text="show|hide">
   </form>
 </script>
 

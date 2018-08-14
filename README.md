@@ -12,6 +12,19 @@
 
 #note
 ===============
+<!-- function alter(id) {
+    var str = "{:url('Index/detail',['id'=>'pid'])}";
+    var url=str.replace("pid",id);
+
+    layer.open({
+        title:"新增百度风云榜采集器(其它地址请勿添加)",
+        type: 2,
+        area: ['700px', '450px'],
+        fixed: false, //不固定
+        maxmin: true,
+        content: url
+    });
+} -->
 
 #TODO
 ===============
@@ -26,3 +39,4 @@
 - jsf:time-time选择
 - 一对一关联保存获取
 - dtpicker css延迟问题
+- cmspost checkbox无改变

@@ -22,23 +22,31 @@ class CmsPost extends CheckLogin {
     $r = scws($kword,$size,$arr);
     $this->suc('','',$r);
   }
+
   // todo :文章采集 : xx网站 分页规则 抓取文章
   function ajax_grab() {
-
   }
+
+  // logic ajax page-list
+  public function ajax() {
+    // $kword = $this->_get('kword',''); // 搜索关键词
+    $r = $this->logic->queryCountWithUser($this->where,$this->page,$this->sort);
+    $this->checkOp($r);
+  }
+
   function index() {
     return parent::index();
   }
 
-  function set(){
+  function set() {
     $this->jsf = array_merge($this->jsf,[
-      'cid'     => '分类',
-      'content' => '详情',
-      'excerpt' => '摘要',
-      'kwords'  => '关键词',
-      'main_img'=> '列表图',
-      'status'  => '发布',
-      'publish_time'  => '发布时间',
+      'cid'          => '分类',
+      'content'      => '详情',
+      'excerpt'      => '摘要',
+      'kwords'       => '关键词',
+      'main_img'     => '列表图',
+      'status'       => '发布',
+      'publish_time' => '发布时间',
     ]);
     if(IS_GET){ // view
       $cates = (new CmsCateLogic)->getAllMenu(false,3);
@@ -52,13 +60,14 @@ class CmsPost extends CheckLogin {
         ['status|radio','','lay-text="发布|草稿"'],
         ['publish_time|time','','Y-m-d H:i:s'],
       ];
+// $info =
       return parent::set();
     }else{ // save
       $extra = new CmsPostExtraLogic;
       $paras = $this->_getPara('title,cid,content','excerpt,main_img,kwords,status|0,publish_time,dt_types');
       // check cid/title add时(草稿时publish_time/0 author/UID)
       // todo: editor 分页 图片保存到本地
-      $id             = $this->id;
+      $id = $this->id;
       $paras['title'] = $this->logic->checkTitle($this->logic->filter($paras['title']));
       $content        = $this->logic->filter($paras['content']);
       $content_kwords = $extra->getContentScws($content);
