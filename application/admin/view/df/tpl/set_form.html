@@ -1,7 +1,7 @@
 <form class="layui-form layui-form-pane post-form">
   {volist name="jsf_tpl" id="v"}{$v}{/volist}
   <div class="layui-form-item layui-input-block">
-    <button target-form="post-form" class="layui-btn ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"><i class="layui-icon layui-icon-ok"></i>{$op}</button>
+    <button target-form="post-form" class="layui-btn layui-btn-sm ajax-post" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"><i class="layui-icon layui-icon-ok"></i>{$op}</button>
     {$html_return|raw}
   </div>
 </form>

@@ -12,10 +12,10 @@
         <li>用户资产</li>
         <li>用户订单</li>
       </ul>
-      <div class="layui-tab-content" style="height: 100px;">
+      <div class="layui-tab-content" style="min-height: 100px;">
         <div class="layui-tab-item layui-show">
           <!-- 信息 -->
-          <img src="{:avaUrl($info['id'],120)}">
+          <img src="{:avaUrl($info.id,120)}">
           {$info['name']} - {$info['nick']}
         </div>
         <div class="layui-tab-item">

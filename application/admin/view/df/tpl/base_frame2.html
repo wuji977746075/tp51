@@ -5,6 +5,7 @@
 <![endif]-->
 {block name="area_head"}
 <style>
+.layui-tab-title li{ padding:0 0 0 20px !important; }
 .layui-tab-content {
   background: url('__IMG__/bg.png') center center no-repeat;
 }
@@ -16,27 +17,26 @@
 <div class="layui-layout layui-layout-admin">
   <!-- 头部区域 -->
   <div class="layui-header">
-    <div class="header-left">
-      <a href="javascript:;" id="js-hide-menu" class="switch-menu-wrap" title="转换侧边栏"><i class="fa fa-bars"></i></a>
-      <!-- 显示/隐藏菜单 -->
-      <a href="javascript:;" class="iconfont hideMenu icon-menu1">
-      </a>
-      <!-- 搜索 -->
-      <!-- <div class="layui-form component">
-            <select name="modules" lay-verify="required" lay-search="">
-            <option value="">直接选择或搜索选择</option>
-             <option value="1">layer</option>
-            </select>
-            <i class="layui-icon">&#xe615;</i>
-        </div> -->
+    <div class="layui-logo hvr-pop js-tab" data-href="{:url('manager/welcome')}" data-tab="0">LOGO / SITENAME</div>
+    <a href="javascript:;" id="js-hide-menu" class="switch-menu-wrap" title="转换侧边栏"><i class="fa fa-bars"></i></a>
+    <!-- 显示/隐藏菜单 -->
+    <a href="javascript:;" class="iconfont hideMenu icon-menu1">
+    </a>
+    <!-- 搜索 -->
+    <!-- <div class="layui-form component">
+          <select name="modules" lay-verify="required" lay-search="">
+          <option value="">直接选择或搜索选择</option>
+           <option value="1">layer</option>
+          </select>
+          <i class="layui-icon">&#xe615;</i>
+      </div> -->
 
-      <ul class="layui-nav layui-layout-left">
-        <!--?php foreach ($menu_all as $v) { ?>
-        <li class="hvr-pulse layui-nav-item < ?php if($top_menu_id== $v['id']) echo 'layui-this';?>" data-id="< ?=$v['id']?>"><a href="javascript:;">< ?=$v['name']?></a></li>
-        < ?php }?-->
-      </ul>
-    </div>
-    <ul class="layui-nav layui-layout-right header-mid">
+    <ul class="layui-nav layui-layout-left">
+      <!--?php foreach ($menu_all as $v) { ?>
+      <li class="hvr-pulse layui-nav-item < ?php if($top_menu_id== $v['id']) echo 'layui-this';?>" data-id="< ?=$v['id']?>"><a href="javascript:;">< ?=$v['name']?></a></li>
+      < ?php }?-->
+    </ul>
+    <ul class="layui-nav layui-layout-right" style="right:90px">
       <li class="layui-nav-item">
         <a href="javascript:;">
           <img src="{:avaUrl($uinfo.id,60)}" class="layui-nav-img">
@@ -47,9 +47,9 @@
           <dd><a href="">安全设置</a></dd>
         </dl>
       </li>
-      <li class="layui-nav-item hvr-push"><a href="javascript:;" class=""> <i class="fa fa-bell" style=""></i><i class="layui-badge">5</i> </a></li>
+      <li class="layui-nav-item hvr-push"><a href="javascript:;" class=""> <i class="fa fa-bell" style="position: relative;top:3px;font-size: 22px;"></i><i class="layui-badge">5</i> </a></li>
     </ul>
-    <ul class="layui-nav layui-layout-right header-right">
+    <ul class="layui-nav layui-layout-right" style="padding-right:0px;overflow:hidden;padding-left:0px;">
       <li class="layui-nav-item"><a href="{:url('manager/logout')}" class="ajax-get pr10" title="退出"> <i class="fa fa-sign-out"></i></a></li>
       <li class="layui-nav-item"><a href="javascript:;" class="pl10 pr10 js-refresh" title="刷新"> <i class="fa fa-refresh layui-anim layui-anim-rotate layui-anim-loop"></i></a></li>
       <li class="layui-nav-item">
@@ -61,7 +61,6 @@
   <!-- 左侧导航区域 -->
   <div class="layui-side side-menu">
     <div class="layui-side-scroll">
-      <div class="layui-logo hvr-pop js-tab" data-href="{:url('manager/welcome')}" data-tab="0">LOGO / SITENAME</div>
       <ul class="layui-nav layui-nav-tree layui-nav-side" lay-filter="side-menu" lay-shrink="">
         <!--?php foreach ($left_menu as $v) { ?>
         <li class="layui-nav-item layui-nav-itemed">
@@ -94,7 +93,7 @@
   <!-- 底部固定区域 -->
   <div class="layui-footer  layui-anim layui-anim-up">
     <div>© layui.com - 底部固定区域</div>
-    <div class="layui-layout-right layui-nav-item weather" pc>
+    <div class="layui-layout-right layui-nav-item weather" pc  style="right:10px;">
       <div id="tp-weather-widget"><!-- 天气信息 --></div>
       <script>(function(T,h,i,n,k,P,a,g,e){g=function(){P=h.createElement(i);a=h.getElementsByTagName(i)[0];P.src=k;P.charset="utf-8";P.async=1;a.parentNode.insertBefore(P,a)};T["ThinkPageWeatherWidgetObject"]=n;T[n]||(T[n]=function(){(T[n].q=T[n].q||[]).push(arguments)});T[n].l=+new Date();if(T.attachEvent){T.attachEvent("onload",g)}else{T.addEventListener("load",g,false)}}(window,document,"script","tpwidget","//widget.seniverse.com/widget/chameleon.js"))</script>
       <script>tpwidget("init", {
@@ -232,26 +231,6 @@ layui.use(['rb','element'], function(){
       }).filter('[data-id='+_top_menu_id+']').addClass('layui-this').trigger('click');
     }
   }
-
-  // 获取scrollbar 宽度
-  function getScrollbarWidth() {
-    var odiv = document.createElement('div'),//创建一个div
-        styles = {
-            width: '100px',
-            height: '100px',
-            overflowY: 'scroll'//让他有滚动条
-        }, i, scrollbarWidth;
-    for (i in styles) odiv.style[i] = styles[i];
-    document.body.appendChild(odiv);//把div添加到body中
-    scrollbarWidth = odiv.offsetWidth - odiv.clientWidth;//相减
-    odiv.remove();//移除创建的div
-    return scrollbarWidth;//返回滚动条宽度
-  }
-  var sbw = getScrollbarWidth();
-  // $('.layui-layout-admin>.layui-body').animate({'left':'-='+getScrollbarWidth()});
-  $('.layui-layout-admin>.layui-body').css('left','-='+sbw);
-  $('.layui-layout-admin>.layui-header>.header-left').css('margin-left','-='+sbw);
-
   // 不写 关闭结构 自动绑定事件
   // $('.layui-tab').on('click','.layui-tab-close',function(){
   //   el.tabDelete('mainTab', $(this).parent().attr('lay-id'));

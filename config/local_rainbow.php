@@ -86,4 +86,19 @@ return [
     // 'force_client_ids'    => [],
     // 'allow_client_ids'    => [],
   ],
+  // session
+  'session' => [
+    // SESSION_ID的提交变量,解决flash上传跨域
+    'var_session_id' => 'tp5.1upload',
+    // 驱动方式 支持redis memcache memcached
+    'type'       => 'redis',
+    'prefix'     => 'module',
+    'auto_start' => true,
+     // redis主机
+    'host'       => '127.0.0.1',
+     // redis端口
+    'port'       => 6379,
+     // 密码
+    'password'   => '',
+  ],
 ];

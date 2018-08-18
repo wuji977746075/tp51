@@ -54,8 +54,8 @@
           <input type="text" name="q" class="layui-input" placeholder="文件名" />
         </div>
         <div class="layui-btn-group">
-          <button class="layui-btn js_search"><i class="layui-icon layui-icon-search"></i></button>
-          <button class="layui-btn layui-btn-danger" onclick="removeImg()"><i class="layui-icon layui-icon-delete"></i></button>
+          <button class="layui-btn js_search layui-btn-sm" title="搜索"><i class="layui-icon layui-icon-search"></i></button>
+          <button class="layui-btn layui-btn-danger  layui-btn-sm" onclick="removeImg()" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
         </div>
         <div class="layui-inline fr"><a id="upload_picture"></a></div>
       </div>
@@ -67,9 +67,9 @@
     <div class="modal-footer clearfix">
       <div class="fl">已选<span class="js_checked"></span>张,可选<span class="js_total"></span>张</div>
       <div class="fr">
-        <button class="layui-btn js_check_img">
+        <button class="layui-btn layui-btn-sm js_check_img" title="确定">
           <i class="layui-icon layui-icon-ok"></i></button>
-        <button class="layui-btn layui-btn-primary js_close_modal">
+        <button class="layui-btn  layui-btn-sm layui-btn-primary js_close_modal" title="取消">
           <i class="layui-icon layui-icon-close"></i></button>
       </div>
     </div>

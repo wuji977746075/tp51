@@ -4,12 +4,14 @@ namespace app\admin\controller;
 use src\session\SessionLogic;
 
 class CheckLogin extends Base{
-  protected $uid = null;
+  protected $uid = 0;
   protected $id  = 0;
+  protected $supers = [1];  // 超级管理员
+  protected $super = 0;  // 超级管理员
   protected $page = []; // extend
   protected $sort = []; // extend
   protected $banDelIds = [];         // 禁止删除的id
-  protected $banEditFields = ['id']; // 禁止编辑的字段
+  protected $banEditFields = ['id']; // 禁止单独编辑的字段
   protected $where     = [];         // where
   // set的字段 [必须,可选]
   protected $jsf_field = [
@@ -35,7 +37,7 @@ class CheckLogin extends Base{
       if(!defined('UID')) define('UID', $uid);
       $this->uid = $uid;
       $this->id  = $this->_param('id/d',0);
-
+      $this->super = in_array($uid,$this->supers) ? 1 : 0;
       // add return layui-btn
       $this->assign('html_return',html_return());
     }else{
@@ -148,7 +150,7 @@ class CheckLogin extends Base{
   public function set(){
     $id = $this->id;
     if(IS_GET){ // view
-      $this->assign('op',L($id ? 'edit' : 'add'));
+      $this->assign('op',L($id ? 'sure' : 'add'));
       $this->assign('id',$id);
       if($id){  // edit
         $info = isset($info) ? $info : $this->logic->getInfo(['id'=>$id]);
@@ -199,6 +201,7 @@ class CheckLogin extends Base{
   // 一个字段(id外)修改 , 由id标志
   public function editOne(){
     $field = htmlspecialchars($this->_param('field','',Llack('field')));
+    // ? 是否禁止编辑
     if(in_array($field,$this->banEditFields)) $this->err(L('ban-op-field').$field);
     $val   = htmlspecialchars(trim($this->_param('val','')));
 

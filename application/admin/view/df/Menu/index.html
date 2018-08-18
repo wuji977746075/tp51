@@ -7,13 +7,13 @@
     {:html_head_tip('最多3级菜单,点击带 .列单元格编辑')}
     <div class="block clearfix">
       <div class="layui-btn-group">
-        <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</a>
-        <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
+        <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+        <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
       </div>
       {gt name="parent" value="0"}
-      <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm" id="js-return"><i class="fa fa-reply"></i> 返回</a>
+      <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm"  title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
       {/gt}
-      <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary"><i class="fa fa-superpowers"></i> 高级模式</a>
+      <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary layui-btn-sm" title="高级模式"><i class="fa fa-superpowers"></i> 高级模式</a>
     </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
@@ -42,6 +42,7 @@ layui.use(['rb','table2','element','form'], function(){
     ,limit: 10
     ,loading: true
     ,page: true
+    ,size: 'sm'
     // ,text: {
     //   none: '暂无相关数据'
     // }
@@ -118,8 +119,8 @@ layui.use(['rb','table2','element','form'], function(){
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
 </div>
 </script>
 {/block}

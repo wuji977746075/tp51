@@ -12,6 +12,8 @@
 
 #note
 ===============
+#api-doc 路由需要修改(helper.php)
+
 <!-- function alter(id) {
     var str = "{:url('Index/detail',['id'=>'pid'])}";
     var url=str.replace("pid",id);

@@ -240,7 +240,7 @@ function html_head_tip($html='',$pre=true){
 
 function html_return($url='',$msg='返回'){
   $url = $url ? $url : 'javascript:history.go(-1)';
-    return '<a href="'.$url.'" class="layui-btn layui-btn-primary ml10">'.$msg.'</a>';
+    return '<a href="'.$url.'" class="layui-btn layui-btn-sm layui-btn-primary ml10">'.$msg.'</a>';
 }
 /**
  * @desc  im:十进制数转换成三十六机制数
