@@ -13,6 +13,8 @@
 todo
 
 ##icon
+iconlay
+iconfa
 <i class="layui-icon layui-icon-"></i>
 
 ##css3-animate

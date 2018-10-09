@@ -35,7 +35,16 @@
 - db bak
 - 文章采集
 - ueditor添加图片删除
+
 ##admin
+- tpl/ base_frame/set_form
+- edit/add/return => layer
+- user auth-wheretime
+- throws 由index外放
+- 顶部用户hover下拉z-index
+- 全模板 no-refresh fresh-table
+- query count=0 直接返回
+- iframe内部登陆问题
 - 主题切换
 - 用户登陆权限 菜单权限 控制
 - jsf:time-time选择
