@@ -1,17 +1,19 @@
 <?php
 return [
+  //sort(a-z)
   'ban-del'=>"禁止删除",
   'ban-op-field'=>"禁止操作字段",
+  'icon-class'=>'图标库class',
   'menu-over-level'=>'最多3级菜单',
   'need-del-down'=>'需要先删除下级',
+  'need-jsf-name' => '需设置表单显示名',
+  'no-data' => '暂无数据',
+  'no-query-data' => '暂无数据', //分页无数据
   'select-df' => '== 请选择 ==',
   'sort-asc'  => '越小越靠前',
   'sort-desc' => '越大越靠前',
-  'icon-class'=>'图标库class',
   'type-in' => '请输入',
-  'need-jsf-name' => '需设置表单显示名',
-
-  // 表单提示
+  // 表单提示 sort(a-z)
   'tip-area-code'=> '6位数字,注意(省市区各2位)',
   'tip-area-province'=> '省份名,省级时有效',
   'tip-area-city'=> '城市名,城市级时有效',
@@ -38,7 +40,8 @@ return [
   'tip-menu-params'=>'k=>v&k2=>v2形式',
   'tip-menu-show'=>'是否对用户隐藏,超管无效,一般开发用',
   'tip-role-name'=>'32字以内',
-  'tip-user-name'=>'32字以内',
+  'tip-user-name'=>'4-32位数字英文,不重复,添加后不可修改',
+  'tip-user-pass'=>'6-12位数字英文,加密保存,不改不填,登不了请重设',
   'tip-user-nick'=>'32字以内',
   'tip-user-avatar'=>'用户头像,建议1:1且不超过500K',
 ];

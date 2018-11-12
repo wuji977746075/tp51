@@ -276,10 +276,11 @@ layui.use(['rb','element','tabrightmenu'], function(){
     el.tabDelete('mainTab', id);
   }
   function closeOtherTab(id, title, currentNavGroup, dom) {
-    $.each(function(i, ele) {
+    var temp = initTabs.concat();
+    $.each(temp,function(i, ele) {
       if(ele != id){
-        initTabs.remove(id);
-        el.tabDelete('mainTab', id);
+        initTabs.remove(ele);
+        el.tabDelete('mainTab', ele);
       }
     });
   }
