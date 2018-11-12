@@ -1,0 +1,26 @@
+{include file="df/tpl/index_base"}
+// form switch
+form.on('switch', function(data){
+  //console.log(data); //elem elem.checked value othis
+  var el = data.elem;
+  var $el = $(el);
+  var fl = $el.data('field') || 'status';
+  var ff = $el.data('value') || '';
+  if(ff){
+    ff = ff.split('|');
+    var v1 = el.checked ? ff[0] : ff[1];
+  }else{
+    var vl = $el.hasClass('js-reverse') ? (el.checked ? 0:1) : (el.checked ? 1:0);
+  }
+  // console.log('todo :',el);
+  // console.log(fl,vl);
+  // return false;
+  rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: fl,val: vl,id:parseInt(el.getAttribute('data-id')) },true);
+});
+// table column edit
+table.on('edit(fDemo)', function(obj){
+  // console.log(obj); // value , field ,data
+  $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
+    rb.ajaxTip(data);
+  });
+});

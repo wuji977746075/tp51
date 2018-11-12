@@ -17,6 +17,7 @@ class Auth extends CheckLogin{
       ];
     }else{ // save
       $this->jsf_field = ['name,title','desc'];
+      // $this->suc_url   = url(CONTROLLER_NAME.'/index');
     }
     return parent::set();
   }

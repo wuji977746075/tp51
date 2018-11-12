@@ -1,0 +1,161 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header">淘宝客账号管理</div>
+  <div class="layui-card-body">
+    {:html_head_tip('淘宝客账户数据,点击 .单元格编辑
+    &nbsp;&nbsp;  Excel导入注意格式对号入座')}
+    <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
+      {:token()}
+
+      <div class="block clearfix">
+        <select name="uid" class="user_select2" id="js-set-uid" style="width:200px;" lay-ignore>
+          <!-- <option value="">UID/账号/昵称/手机号</option> -->
+        </select>
+        </span>
+        <a data-src="{:url(CONTROLLER_NAME.'/setUser')}" data-table="demo" class="layui-btn layui-btn-warm confirm layui-btn-sm sco-msg no-refresh js-ops fresh-table" id="js-set-user" title="批量分配" data-content="确定如此分配吗 ?"><i class="layui-icon layui-icon-link"></i>分配</a>
+      </div>    <hr>
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="PID|推广位" autofocus>
+        </div>
+      </div>
+      <!-- <div class="layui-inline">
+        <div class="layui-input-inline" style="width: 150px;">
+          <select name="send" id="jsf-send" lay-filter="jsf-send">
+            <option value=""> == 分配 == </option>
+            <option value="1"> 已分配 </option>
+            <option value="2"> 未分配 </option>
+          </select>
+        </div>
+      </div> -->
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">添加时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加" data-title="账号添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm sco-msg no-refresh fresh-table" title="批量删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改" data-title="账号修改"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-refresh fresh-table" title="删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','form','datetimepicker','picView','select2'], function() {
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+
+  var send =  "{$send ?? ''}";
+  // form init
+  form.val("js-form",{
+    send : send
+  });
+  // table init
+  rb.where = { send:send,field: 'id',order: 'desc' };
+  rb.setWhere = function () {
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.start = $('#jsf-start').val();
+    rb.where.end   = $('#jsf-end').val();
+    rb.where.send  = $('#jsf-send').val();
+  }
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajaxChild")}'
+    ,where: rb.where
+    // ,toolbar:false
+    ,cols:  [[
+      {type: 'checkbox'} //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 80,sort:true }
+      ,{field: 'name', title: '推广位 .',edit: 'text'}
+      ,{field: 'pid', title: 'PID',templet: '#pidTpl'}
+      ,{type: 'space', title: '推广码',width: 55,templet: '#inviteQrTpl'}
+      ,{field: 'invite_url', title: '长链接',templet: '#inviteUrlTpl'}
+      ,{type: 'space', title: '推广码',width: 55,templet: '#inviteSmQrTpl'}
+      ,{field: 'invite_url_sm', title: '短链接',templet: '#inviteUrlSmTpl'}
+      ,{field: 'token', title: '淘口令'}
+      ,{field: 'create_time', title: '导入时间',templet:'#timeTpl',sort:true}
+      ,{field: 'to_uid', title: '下级分销',templet:'#allotTpl'}
+      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+  form.on('select(jsf-send)', function(){
+    $('#js-search').trigger('click');
+  });
+
+  $(".user_select2").select2(rb.getSelect2Config({ },{ url:"{:url('user/ajax',['invite'=>$invite,'level'=>$level])}" }));
+  $('#js-set-user').click(function(event) {
+    if($(this).data('href')){
+    }else{
+      rb.alert('需要选择分配用户');
+      return false;
+    }
+  });
+  $('.user_select2').on('select2:select', function (e) {
+      var $tar = $('#js-set-user');
+      $tar.data('href',$tar.data('src')+'?uid='+e.params.data.id);
+  });
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="allotTpl">
+   {{# if(d.to_uid>0){ }}
+   {{ layui.rb.avaImg(d.to_uid,60) }}{{ d.to_name }}
+   {{# } }}
+</script>
+<script type="text/html" id="timeTpl">
+  {{ layui.rb.gettime2(d.create_time) }}
+</script>
+<script type="text/html" id="pidTpl">
+  {{# if( d.to_uid ){ }}  <i class="layui-icon layui-icon-password"></i> {{# } }} {{ d.pid }}
+</script>
+<script type="text/html" id="inviteQrTpl">
+  <img src="{:url(CONTROLLER_NAME.'/qrcode')}?size=1&text={{  d.invite_url }}"  layer-src="{:url(CONTROLLER_NAME.'/qrcode')}?size=8&text={{  d.invite_url }}" class="js-view" title="点击查看大图"/>
+</script>
+<script type="text/html" id="inviteUrlTpl">
+  <a href="{{ d.invite_url }}" class="layui-table-link" target="_blank" title="{{ d.invite_url }}">{{ d.invite_url }}</a>
+</script>
+<script type="text/html" id="inviteSmQrTpl">
+  <img src="{:url(CONTROLLER_NAME.'/qrcode')}?size=1&text={{  d.invite_url_sm }}"  layer-src="{:url(CONTROLLER_NAME.'/qrcode')}?size=8&text={{  d.invite_url_sm }}" class="js-view" title="点击查看大图"/>
+</script>
+<script type="text/html" id="inviteUrlSmTpl">
+  <a href="{{ d.invite_url_sm }}" class="layui-table-link" target="_blank"  title="{{ d.invite_url_sm }}">{{ d.invite_url_sm }}</a>
+</script>
+{/block}

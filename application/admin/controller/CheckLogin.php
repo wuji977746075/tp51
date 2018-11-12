@@ -2,22 +2,31 @@
 namespace app\admin\controller;
 
 use src\session\SessionLogic;
+use src\user\UserLogic;
+use src\role\UserRoleLogic;
+use src\role\RoleLogic;
+use \ErrorCode;
 
-class CheckLogin extends Base{
+class CheckLogin extends Base {
   protected $uid = 0;
   protected $id  = 0;
-  protected $supers = [1];  // 超级管理员
-  protected $super = 0;  // 超级管理员
   protected $page = []; // extend
   protected $sort = []; // extend
   protected $banDelIds = [];         // 禁止删除的id
   protected $banEditFields = ['id']; // 禁止单独编辑的字段
-  protected $where     = [];         // where
+  protected $where     = [];        // where
+  protected $isSuper   = 0;         // 是否为super
+  protected $isAdmin   = 0;         // 是否为admin
+  protected $isSaler   = 0;         // 是否为saler
+  protected $isTopSaler   = 0;      // 是否为level1 saler
   // set的字段 [必须,可选]
   protected $jsf_field = [
     '',''
   ];
   protected $jsf_tpl = []; //预定义模板
+  protected $queryField = '*'; //查询字段
+  protected $pagePara = []; //分页条件
+  protected $uinfo = null; //当前账户信息
   // 表单字段
   protected $jsf = []; //自定义表单字段
   protected $jsf_df = [ //默认表单字段
@@ -34,17 +43,82 @@ class CheckLogin extends Base{
     parent::initialize();
     $uid = SessionLogic::isAdminLogin(); // 是否登陆了后台
     if($uid > 0){
-      if(!defined('UID')) define('UID', $uid);
-      $this->uid = $uid;
+
+      // if(!defined('UID'))
+      define('UID', $uid);
+      $uinfo = (new UserLogic)->getAllInfo($uid);
+      define('UINFO',$uinfo);
+      $role = $uinfo['role_id'];
+      !$role && throws('用户角色异常',ErrorCode::Need_Login);
+      define('ROLE',$role);
+
+      $this->uid = $this->_param('uid/d',0);
+      $this->assign('uid',$this->uid);
       $this->id  = $this->_param('id/d',0);
-      $this->super = in_array($uid,$this->supers) ? 1 : 0;
+      $this->assign('id',$this->id);
+
+      $this->isSuper = $this->isSuper() ? 1 :0;
+      $this->isAdmin = $this->isAdmin() ? 1 :0;
+      $this->isSaler = $this->isSaler() ? 1 :0;
+      $this->isTopSaler = $this->isTopSaler() ? 1 :0;
+      $this->assign([
+        'isSuper'=>$this->isSuper,
+        'isAdmin'=>$this->isAdmin,
+        'isSaler'=>$this->isSaler,
+        'isTopSaler'=>$this->isTopSaler,
+      ]);
+      $this->uinfo = $this->uid ? ( $this->uid == $uid ? $uinfo : (new UserLogic)->getAllInfo($this->uid)) : [];
       // add return layui-btn
       $this->assign('html_return',html_return());
     }else{
-      $this->redirect('login/index');
+      if(IS_AJAX){
+        $this->err('请重新登录',url('login/index'),ErrorCode::Need_Login);
+      }else{
+        $this->redirect('login/index');
+      }
     }
   }
 
+  // todo : 根据user在admin的role 判断当前控制器的当前操作权限
+  // 暂时用MenuAuth + isSuper ...控制
+  protected function checkUserRight($uid=0,$op=''){
+    if($uid > 0){
+      $curr = $uid == UID ? 1 :0;
+    }else{
+      $uid = UID;
+      $curr = 1;
+    }
+    // 非超级管理员 检查权限
+    if(!$this->isSuper($uid)) {
+      if($op){ // 'user_add'
+        if(strpos('_',$op)===false){
+          $op = CONTROLLER_NAME.'_'.$op;
+        }
+      }else{
+        $op = CONTROLLER_NAME.'_'.ACTION_NAME;
+      }
+      if(!(new RoleLogic)->checkApiAuth($uid,$op,CLIENT_ID)){
+        $this->opErr(($curr ? '您': '用户'.$uid).'禁止此操作');
+      }
+    }
+  }
+  // uid 是否为超级用户
+  protected function isSuper($uid=0){
+    !$uid && $uid=UID;
+    return (new UserLogic)->isSuper($uid,CLIENT_ID);
+  }
+  // 当前用户角色 是否为管理员
+  protected function isAdmin(){
+    return $this->isSuper || RoleLogic::isAdmin(ROLE);
+  }
+  // 当前用户角色 是否为管理员
+  protected function isSaler(){
+    return $this->isSuper || RoleLogic::isSaler(ROLE);
+  }
+  // 当前用户角色 是否为管理员
+  protected function isTopSaler(){
+    return $this->isSuper || (new UserLogic)->isTopSaler(UID);
+  }
   // require
   function jsf_tpl($field,$type='text',$val='',$css='',$extra='',$tip=0){
     $need = (substr($field, 0,1)=='*' ? '*':'') ; // ? 必须字段
@@ -59,18 +133,21 @@ class CheckLogin extends Base{
     $tpl = ''; // 模板html
     $tpl.= '<div class="layui-form-item '.$hide.'">';
     $tpl.=   '<label for="jsf-'.$jsf.'" class="layui-form-label">'.$need.' '.$name.'</label>';
+    $csses = explode('|',$css);
+    $css   = $csses[0];
+    $css2  = isset($csses[1]) ? $csses[1] : '';
     $tpl.=   '<div class="layui-input-inline '. $css.'">';
     if(in_array($type,['text','hidden','number','password'])){
-      $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.'>';
+      $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input '.$css2.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.' title="'.$val.'" '.$extra.'>';
     }else if($type == 'radio'){ // radio
       $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="1" '.($val ? 'checked' : '').' '.$extra.'>';
     }else if($type =='textarea'){ // textarea
-      $tpl.='<textarea name="'.$field.'" id="jsf-'.$jsf.'" class="layui-textarea" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
+      $tpl.='<textarea name="'.$field.'" id="jsf-'.$jsf.'" class="layui-textarea '.$css2.'" placeholder="'.$hold.'" '.$need_ipt.'>'.$val.'</textarea>';
     }else if($type == 'check'){ // check : todo
       $tpl.= '<div> todo ... </div>';
     }else if($type == 'time'){ // time
       $val &&  $val = date($extra,intval($val));
-      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-datetime-picker" data-format="'.$extra.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.'>';
+      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-datetime-picker '.$css2.'" data-format="'.$extra.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.' >';
     }else if($type == 'select'){ // select(k=>v)
       $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.' >';
       $tpl.= '<option value="">'.L('select-df').'</option>';
@@ -78,7 +155,7 @@ class CheckLogin extends Base{
         $tpl.= '<option value="'.$k.'"'.($k==$val ? ' selected="selected"':'').'>'.$v.'</option>';
       }
       $tpl.= '</select>';
-    }else if($type =='selects'){ // select(id,name,child)
+    }else if($type =='selects'){ // select(id,name) / select(id,name,child)
       $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.'>';
       $tpl.= '<option value="">'.L('select-df').'</option>';
       foreach ($extra as $v) {// level1
@@ -96,7 +173,7 @@ class CheckLogin extends Base{
       }
       $tpl.= '</select>';
     }else if($type == 'icon'){ // icon 自定义图标选择
-      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-jsf-icon" placeholder="'.$hold.'"  autocomplete="off"  '.$need_ipt.'>';
+      $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-jsf-icon '.$css2.'" placeholder="'.$hold.'"  autocomplete="off"  '.$need_ipt.'>';
       $tpl .= '</div>'.($val ? '<div class="layui-input-inline"><i class="'.$val.'"></i></div>' : '').'<div>';
     }else if($type =='btimg'){ // btimg 自定义图片选择
       $show_add = false;
@@ -145,15 +222,19 @@ class CheckLogin extends Base{
   }
   // 首页
   public function index(){
+    // $this->checkUserRight();
     return $this->show();
   }
   public function set(){
     $id = $this->id;
     if(IS_GET){ // view
-      $this->assign('op',L($id ? 'sure' : 'add'));
+      // $this->checkUserRight(0,'index');
+
+      $this->assign('op',L($id ? 'edit' : 'add'));
       $this->assign('id',$id);
       if($id){  // edit
-        $info = isset($info) ? $info : $this->logic->getInfo(['id'=>$id]);
+        $info = $this->logic->getInfo(['id'=>$id]);
+        // todo : 判断不了重载的$info thinking...
         empty($info) && $this->error(Linvalid('id'));
         $this->assign('info',$info);
       }else{    // add
@@ -164,6 +245,9 @@ class CheckLogin extends Base{
       // 表单模板
       if($this->jsf_tpl){
         $jsf_tpl = [];
+        // *是否need input_name *是否设空
+        //    |input_type + |default_value
+        // class_name上次class
         foreach ($this->jsf_tpl as $v) {
           $v[1] = isset($v[1]) ? $v[1] : ''; // class
           $v[2] = isset($v[2]) ? $v[2] : ''; // extra
@@ -171,14 +255,17 @@ class CheckLogin extends Base{
           $vs = explode('|', $v[0]);
           $vs[1] = (isset($vs[1]) && $vs[1]) ? $vs[1] : 'text';
           $vs[2] = isset($vs[2]) ? $vs[2] : '';
-          $f=ltrim($vs[0],'*');$t=$vs[1];
-          $val = $id ? (isset($info[$f]) ? $info[$f] : $vs[2]) : '';
-          $jsf_tpl[$f] = $this->jsf_tpl($vs[0],$t,$val,$v[1],$v[2],$v[3]);
+          $f=ltrim($vs[0],'*');
+          $t=$vs[1];
+          $val = rtrim($vs[0],'*')==$vs[0] ? ($id ? (isset($info[$f]) ? $info[$f] : $vs[2]) : '') : $vs[2];
+          $jsf_tpl[$f] = $this->jsf_tpl(rtrim($vs[0],'*'),$t,$val,$v[1],$v[2],$v[3]);
         }
         $this->assign('jsf_tpl',$jsf_tpl);
       }
       return $this->show();
     }else{ // save
+      // $this->checkUserRight(0,$id ? 'edit' : 'add');
+
       $paras = $this->_getPara($this->jsf_field[0],$this->jsf_field[1]);
       if(isset($paras['id'])) unset($paras['id']);
       if($id){  // edit
@@ -192,25 +279,31 @@ class CheckLogin extends Base{
 
   // logic ajax page-list
   public function ajax(){
+    // $this->checkUserRight(0,'index');
+
     // $kword = $this->_get('kword',''); // 搜索关键词
-    $r = $this->logic->queryCount($this->where,$this->page,$this->sort);
+    $r = $this->logic->queryCount($this->where,$this->page,$this->sort,$this->pagePara,$this->queryField);
     $this->checkOp($r);
   }
 
 
   // 一个字段(id外)修改 , 由id标志
-  public function editOne(){
+  public function editOne() {
+    // $this->checkUserRight(0,'edit');
+
     $field = htmlspecialchars($this->_param('field','',Llack('field')));
     // ? 是否禁止编辑
     if(in_array($field,$this->banEditFields)) $this->err(L('ban-op-field').$field);
     $val   = htmlspecialchars(trim($this->_param('val','')));
-
-    $this->logic->save(['id'=>$this->id],[$field=>$val]);
-    $this->opSuc();
+    $where = $this->id ? ['id'=>$this->id] : [['id','in',$this->_param('ids/a',[])]];
+    $this->logic->save($where,[$field=>$val]);
+    $this->opSuc('','',0);
   }
 
   // 删除, 由id标志, check是检查是否含parent=id
   public function del(){
+    // $this->checkUserRight(0,'del');
+
     $id    = $this->id;
     $check = $this->_param('check/d',0);
     // ? id
@@ -226,6 +319,8 @@ class CheckLogin extends Base{
 
   // 批量删除, 由id标志
   public function dels(){
+    // $this->checkUserRight(0,'del');
+
     $ids   = $this->_param('ids/a',[]);
     $check = $this->_param('check/d',0);
     // ? id

@@ -1,0 +1,131 @@
+{extend name="df/tpl/base" /}}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>余额变动历史 </legend>
+  <div class="layui-field-box">
+    {:html_head_tip('余额变动历史')}
+    <!-- 余额变更 -->
+    <form class="layui-form layui-form-pane" lay-filter="js-form">
+      {:token()}
+      <div class="layui-inline layui-form-item mb0">
+        <!-- <label class="layui-form-label">变更时间</label> -->
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="PID" autofocus value="{$kword ?? ''}">
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <!-- <label class="layui-form-label">变更时间</label> -->
+        <div class="layui-input-inline" style="width: 130px;">
+          <select name="dt_type" id="jsf-dt-type" lay-filter="search">
+            <option value="">== 变动类型 ==</option>
+            {volist name="dtTypes" id="v"}
+            <option value="{$v.id}">{$v.title}</option>
+            {/volist}
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">变更时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start'class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+
+
+{/block}
+
+{block name="area_foot"}
+<script type="text/javascript">
+var dtTypes = {
+  {volist name="dtTypes" id="v"}
+  {$v.id} : "{$v.title}",
+  {/volist}
+};
+layui.use(['rb','form','table2','element','datetimepicker'],function(){
+  var $ = layui.$
+  ,rb = layui.rb
+  ,form = layui.form
+  ,element = layui.element
+  ,table = layui.table2;
+  var uid   = parseInt({$id ?? 0});
+  var dt_type = "{$dt_type ?? ''}";
+  var kword = "{$kword ?? ''}";
+  //form init
+  form.val("js-form", {
+    dt_type : dt_type
+    ,kword: kword
+  });
+  //table where
+  rb.where.uid = uid;
+  rb.where.dt_type = dt_type;
+  rb.where.kword = kword;
+  rb.setWhere = function() {
+    rb.where.start = $('#jsf-start').val() || '';
+    rb.where.end   = $('#jsf-end').val() || '';
+    rb.where.dt_type = $('#jsf-dt-type').val() || '';
+    rb.where.kword = $('#jsf-kword').val() || '';
+  };
+  //table render
+  rb.table = table.render($.extend(rb.table_config,{
+    where: rb.where
+    ,url: "{:url('wallet_his/ajax')}"
+    ,cols:[[
+      { field:'id',title:'ID',sort:true }
+      ,{ field:'dt_type',title:'变动类型',templet:'#dtTypeTpl' }
+      ,{ field:'before_money',align:'right',title:'变动前',templet:'#beforeTpl' }
+      ,{ field:'plus',align:'right',title:'增加',templet:'#plusTpl' }
+      ,{ field:'minus',align:'right',title:'减少',templet:'#minusTpl' }
+      ,{ field:'after_money',align:'right',title:'变动后',templet:'#afterTpl' }
+      ,{ field:'reason',title:'说明' }
+      ,{ field:'extra',title:'PID' }
+      ,{ field:'create_time',title:'变更时间',sort:true,templet:'#createTimeTpl' }
+      // ,{ title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+
+  {include file="df/tpl/index_extra"}
+});
+
+</script>
+<script type="text/html" id="createTimeTpl">
+  {{ layui.rb.gettime2(d.create_time) }}
+</script>
+<script type="text/html" id="minusTpl">
+  {{# if(d.minus > 0){ }}
+  - {{ layui.rb.toFloat(d.minus/100,2) }}
+  {{# } }}
+</script>
+<script type="text/html" id="plusTpl">
+  {{# if(d.plus > 0){ }}
+    {{ layui.rb.toFloat(d.plus/100,2) }}
+  {{# } }}
+</script>
+<script type="text/html" id="beforeTpl">
+  {{ layui.rb.toFloat(d.before_money/100,2) }}
+</script>
+<script type="text/html" id="afterTpl">
+  {{ layui.rb.toFloat(d.after_money/100,2) }}
+</script>
+<script type="text/html" id="dtTypeTpl">
+  {{ dtTypes[d.dt_type] || '未知..' }}
+</script>
+{/block}

@@ -1,0 +1,181 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header">下级管理</div>
+  <div class="layui-card-body">
+    {:html_head_tip('<span style="display:inline">下级用户管理,点击 .单元格编辑,分佣最多3位小数,最多返佣到99级;<br > 拉新Excel导入从左到右的列依次为: <em>注册时间,登陆时间,激活时间,首购时间,收货时间,新人手机,新人状态,订单类型,分享用户ID(可空),来源媒体ID,站点ID,推广位ID，推广位名字(可空),订单编号,活动(可空),实名时间</em></span>')}
+    <form class="layui-form layui-form-pane" lay-filter="js-form">
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="ID|昵称|账号|手机|邮箱">
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">注册时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加" ><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量删除" ><i class="layui-icon layui-icon-delete"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" data-table="demo" class="layui-btn confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量禁用" ><i class="fa fa-ban"></i></a>
+  </div>
+  <button type="button" class="layui-btn layui-btn-sm layui-btn-primary fr fix_2_toolbar" id="js-loadExcel">
+        <i class="layui-icon">&#xe67c;</i>拉新导入
+  </button>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="查看详情"><i class="layui-icon layui-icon-username"></i>详情</a>
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改" ><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm layer-msg no-refresh fresh-table"  title="删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+{include file="df/tpl/load_excel"}
+<!-- script -->
+<script>
+var roles = { {volist name="roles" id="v"}{$v.id}:'{$v.name}',{/volist} };
+// page init
+layui.use(['rb','table2','form','picView','datetimepicker'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  // load excel
+  window.excelData = null;
+  window.loading   = false;
+  $('#body').on('click','#js-loadExcel',function(e){
+    $('#js-file-input').trigger('click');
+    e.preventDefault();
+  });
+  $('#js-file-input').on('change',function(){
+    importf(this);
+  });
+  $('#js-excelData').on('loadData',function() {
+    var l = excel.length,e=0;
+    var html  = '';
+    window.excelData = [];
+    if(window.loading){
+      rb.msg(L('busy-now'),0);
+      return;
+    }
+    window.loading = true;
+    if(l){
+      // show title
+      html += ' <thead><tr><th>注册时间</th><th>登陆时间</th><th>激活时间</th><th>首购时间</th><th>收货时间</th><th>新人手机</th><th>新人状态</th><th>订单类型</th><th>分享用户ID(可空)</th><th>来源媒体ID</th><th>站点ID</th><th>推广位ID</th><th>推广位名字(可空)</th><th>订单编号</th><th>活动(可空)</th><th>实名时间</th><th>检查结果</th></tr><tr>';
+      for (var k in excel[0]) {
+        html += '<th>'+ k+'</th>';
+      }
+      html += '<th>检查结果</th></tr></thead><tbody>';
+      // show data
+      for (var i = 0; i < l; i++) {
+        html += '<tr>';var temp = [];
+        for (var k in excel[i]){
+          html += '<td>'+excel[i][k]+'</td>';
+          temp.push(excel[i][k]);
+        }
+        // console.log('temp'+i,temp);
+        temp.length && window.excelData.push(temp);
+        html += '<td></td></tr>';
+      }
+      html += '</tbody>';
+    }else{
+      html = '<tr class="js-no-data"><td>'+L('no-data')+'</td></tr>';
+    }
+    // console.log('excel',excel);
+    $('#js-excelData').html(html);
+    rb.openExcelLayer('{:url(CONTROLLER_NAME."/excel")}',html,this);
+  });
+
+  // table init
+  rb.where = {
+    field:'id'
+    ,order:'desc'
+  };
+  rb.setWhere = function() {
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.start = $('#jsf-start').val();
+    rb.where.end   = $('#jsf-end').val();
+  };
+  // table tender
+  rb.table = table.render($.extend(rb.table_config, {
+    url: '{:url(CONTROLLER_NAME."/ajaxChild")}'
+    ,cols:  [[
+      {type: 'checkbox'}
+      ,{field: 'id', title: 'ID', width: 50,sort:true}
+      ,{field: 'name', title: '用户名',templet:'#nameTpl'}
+      ,{field: 'email', title: '邮箱',templet:'#emailTpl'}
+      ,{field: 'phone', title: '手机',templet:'#phoneTpl'}
+      ,{field: 'role_id', title: '角色',templet:'#roleTpl'}
+      ,{field: 'rate',align:'right', title: '分佣 .',edit:true,templet:'#rateTpl'}
+      ,{field: 'fy_money',align:'right', title: '总佣金',templet:'#fyMoneyTpl'}
+      ,{field: 'status', title: '状态', width: 80,templet:'#statusTpl'}
+      ,{field: 'reg_time', title: '注册时间',templet:'#timeTpl',sort:true}
+      ,{align:'left',width:150,title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="nameTpl">
+  <div class=" tooltip" data-text="昵称: {{ d.nick }}">
+  <img src="{:config('avatar_url')}?uid={{ d.id }}&size=60" layer-src="{:config('avatar_url')}?uid={{ d.id }}"  class="layui-nav-img js-view">  {{ d.name }}
+  </div>
+</script>
+<script type="text/html" id="timeTpl">
+  {{ layui.rb.gettime2(d.reg_time) }}
+</script>
+<script type="text/html" id="phoneTpl">
+  {{# if(d.phone_auth){ }} <i class="layui-icon layui-icon-auz" title="已验证"></i>{{# } }} {{ d.phone }}
+</script>
+<script type="text/html" id="emailTpl">
+  {{# if(d.email_auth){ }} <i class="layui-icon layui-icon-auz" title="已验证"></i>{{# } }} {{ d.email }}
+</script>
+<script type="text/html" id="statusTpl">
+  <form class="layui-form">
+  <input type="checkbox" data-id="{{ d.id }}" class="no-refresh layer-msg" {{# if(d.status>-1){ }} checked  {{#  } }}
+  lay-skin="switch">
+  </form>
+</script>
+<script type="text/html" id="fyMoneyTpl">
+  <a href="{:url(CONTROLLER_NAME.'/detail')}?id={{ d.id }}&tab=3&dt_type=17" title="查看佣金明细" class="ajax-layer layui-table-link">{{ layui.rb.toFloat(d.fy_money/100,2) }}</a>
+</script>
+<script type="text/html" id="rateTpl">
+  {{ layui.rb.toFloat(d.rate*100,1) }}%
+</script>
+<script type="text/html" id="roleTpl">
+  <span class="layui-badge label-role-{{ d.role_id }}"> {{ roles[d.role_id] }} </span>
+  {{# if(d.level) { }}{{ d.level }}级{{# } }}
+</script>
+{/block}

@@ -22,6 +22,7 @@ class Client extends CheckLogin{
       ];
     }else{ // save
       $this->jsf_field = ['client_name,client_id,client_secret,api_alg|md5','desc'];
+      // $this->suc_url   = url(CONTROLLER_NAME.'/index');
     }
     return parent::set();
   }

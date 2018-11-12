@@ -16,15 +16,6 @@ use think\Exception;
 class UserPictureLogic extends BaseLogic
 {
     private $error;
-
-    /**
-     * @return mixed
-     */
-    protected function _init()
-    {
-        $this->setModel(new UserPicture());
-    }
-
     public function getError(){
         return $this->error;
     }

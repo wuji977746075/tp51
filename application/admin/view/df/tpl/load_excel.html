@@ -1,0 +1,79 @@
+<!--[if lte IE 9]>
+<script type="text/javascript" src="__CDN__sheet.js/shim.min.js"></script>
+<![endif]-->
+<script type="text/javascript" src="__CDN__sheet.js/xlsx.full.min.js"></script>
+<input type="file" id="js-file-input" style="display: none;" accept=".xls,.xlsx"/>
+<!--  onchange="importf(this)" -->
+<table id="js-excelData" style="display: none;"></table>
+<script>
+  // excel read
+  /*
+  FileReader共有4种读取方法：
+  1.readAsArrayBuffer(file)：将文件读取为ArrayBuffer。
+  2.readAsBinaryString(file)：将文件读取为二进制字符串
+  3.readAsDataURL(file)：将文件读取为Data URL
+  4.readAsText(file, [encoding])：将文件读取为文本，encoding缺省值为'UTF-8'
+  */
+  var wb = null;//读取完成的数据
+  // var rABS  = false; //是否将文件读取为二进制字符串
+  var excel = null;
+  function importf(obj) { //导入
+    if(!obj.files) {
+        return;
+    }
+    var f = obj.files[0];
+    if(/\.(xls|xlsx)$/i.test(f.name) && /(application\/vnd\.ms-excel|application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet)$/i.test(f.type)){
+    }else{
+      obj.value = '';
+      layer.alert('只能上传xls/xlsx 文件',{ title:'文件类型错误', icon:0,shade:.3 });
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      excel = null;
+      var data = e.target.result;
+      // if(rABS) {
+      //     wb = XLSX.read(btoa(fixdata(data)), {//手动转化
+      //         type: 'base64'
+      //     });
+      // } else {
+          wb = XLSX.read(data, {
+              type: 'binary'
+              ,skipHeader:true
+          });
+      // }
+      //  // 遍历每张表读取
+      // var fromTo = '';
+      // console.log('wb',wb);
+      // for (var sheet in wb.Sheets) {
+      //   if (wb.Sheets.hasOwnProperty(sheet)) {
+          // fromTo = wb.Sheets[sheet]['!ref'];
+          // console.log('fromTo',fromTo);
+          // excel = XLSX.utils.sheet_to_json(wb.Sheets[sheet]);
+          // persons = persons.concat(XLSX.utils.sheet_to_json(wb.Sheets[sheet]));
+          // break; // 如果只取第一张表，就取消注释这行
+      //   }
+      // }
+      ////wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
+      ////wb.Sheets[Sheet名]获取第一个Sheet的数据
+      //// document.getElementById("js-excelData").innerHTML= JSON.stringify( XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]) );
+      excel = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{ defval: '' });
+      $('#js-excelData').trigger('loadData');
+    };
+    // if(rABS) {
+    //     reader.readAsArrayBuffer(f);
+    // } else {
+        reader.readAsBinaryString(f);
+    // }
+    obj.value = "";
+  }
+  // function fixdata(data) { //文件流转BinaryString
+  //   var o = "",
+  //       l = 0,
+  //       w = 10240;
+  //   for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+  //   o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+  //   return o;
+  // }
+</script>
+<!-- need handle js -->

@@ -1,49 +1,7 @@
-<link type="text/css" rel="stylesheet" href="__CDN__comp/wxuploader.css?v=__APP_VERSION__" />
-<style>
-  #upload_picture:hover{ cursor: pointer; }
-  /*调整cosmo样式*/
-  ul,ol,dl{ margin-bottom: 0; }
-  dd{ line-height: inherit; }
-  .modal * { box-sizing:border-box !important; }
-  .modal-dialog{ width:100% !important;}
-  .modal-content{ padding:20px !important; }
-  a:hover,a:focus{ text-decoration: none; }
-  .admin-header .avatar {  height: 40px;padding-top: 4px; }
-  .admin-main {  margin-top: 40px; }
-  .thumbnail{ padding: 0!important; }
-  .img-selected:after{  width:117px !important; }
-  .wxuploaderimg .img-preview img{  width:100px !important; }
-  .wxuploaderimg .img-preview .edit_pic_wrp{
-    background-color: rgba(229,229,229,0.2)!important;
-    width:100px;height:100px;
-  }
-  .imgs-container .imgs-list .img-item img {
-    border:1px solid #ddd;
-    width:115px !important;
-  }
-  .wxuploaderimg .img-preview .edit_pic_wrp a{
-    width:100px;height:100px;left:0;top:0;margin-left: 0;padding-top: 40px;
-  }
-  .modal-footer{
-    padding: 10px 0px 5px;
-    text-align: right;
-    line-height: 37px;
-    border-top: 1px solid #E9E7E7;
-  }
-  .pager{
-    padding-left: 0;
-    margin: 18px 0;
-    list-style: none;
-    text-align: center;
-  }
-  @media (min-width: 768px) { }
-  @media (min-width: 992px) { }
-  @media (min-width: 1200px) {  }
-</style>
-<link type="text/css" rel="stylesheet" href="__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.css" />
-<script type="text/javascript" src="__PUBLIC__static/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<!-- layui(theme + upload)  -->
+<link type="text/css" rel="stylesheet" href="__CDN__comp/uploader.ui.css?v=__VERSION__" />
 <!-- Modal -->
-<div class="modal hide" id="wxuploadimg">
+<div class="modal" id="js_pic_select_wrap" style="display: none;">
   <div class="modal-content">
     <div class="modal-body">
       <div class="layui-row">
@@ -57,11 +15,14 @@
           <button class="layui-btn js_search layui-btn-sm" title="搜索"><i class="layui-icon layui-icon-search"></i></button>
           <button class="layui-btn layui-btn-danger  layui-btn-sm" onclick="removeImg()" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
         </div>
-        <div class="layui-inline fr"><a id="upload_picture"></a></div>
+        <div class="layui-inline fr"><a class="layui-btn layui-btn-sm" id="upload_picture"><i class="fa fa-upload"></i> 点击/拖拽 </a></div>
+        <hr />
+        <div class="layui-progress progress-hide" lay-filter="progress-1" id="js-progress-progress-1"><div class="layui-progress-bar"></div>
+        </div>
       </div>
       <div class="imgs-container">
         <div class="imgs-list clearfix"></div>
-        <div class="pager"></div>
+        <div class="pager" id="js-pager"></div>
       </div>
     </div>
     <div class="modal-footer clearfix">
@@ -76,20 +37,14 @@
   </div>
 </div>
 
-<script type="text/javascript">
-  // 放到服务器端 2018-05-24 10:34:37
-  // appendImgList() 组装图片地址可能用到
-  // var img_show_url = "{ :config('picture_url') }";
-  // function getImgUrl(id,size){
-  //   return img_show_url+'?id='+id+'&size='+size;
-  // }
-
-  if(!Array.prototype.remove){
-    Array.prototype.remove = function(val) {
-      var index = this.indexOf(val);
-      if (index > -1) {  this.splice(index, 1); }
-    };
+<script type="text/javascript">//页面一打开就执行弹层if(!Array.prototype.remove){
+if(!Array.prototype.remove){
+Array.prototype.remove = function(val) {
+  var index = this.indexOf(val);
+  if (index > -1) {
+  this.splice(index, 1);
   }
+};}
   var imgIds = []; // 选中的图片 ids
   function getImg(d){
     var id = $(d).find('img').data('imageid');
@@ -135,278 +90,286 @@
 
   // 初始化前需加载 layer
   window.wxuploadimg = (function() {
-    var pager = { index: 0,size: 10 };
+    var pager   = { index: 0,size: 10 };
     var checked = 0;
     var index   = 0; //modal layer index
-    var load    = 0;//load layer index
+    var loadi   = 0; //load layer index
     var hadBind = false;
+
+    var wr  = null; // alter/options img-list warp selector : '#wx'
+    var $wr = null; // alter/options img-list warp selector : '#wx'
+    var sl  = null; // selected img-list selector
+    var $sl = null; // selected img-list wrap $obj
+    var max = 0;
+    var setting = { };
+    var imgIds  = [ ];
+    var that    = window.wxuploadimg;
     /**
      * callback
-     * @param {Object} cont 触发模态框的选择器
+     * @param {Object} sl       触发模态框的选择器
      * @param {Object} callback 选中图片后的触发器
      */
     // self:初始化
-    function init(setting){
-      // console.log(setting);
-      if(setting.callback){
-        wxuploadimg.callBack = setting.callback;
-      }
-      if(setting.reinit) {
-          wxuploadimg.setting.reinit = false;
-      }
-      wxuploadimg.setting = $.extend({ },wxuploadimg.setting, setting);
+    function init(setting) {
+      // console.log('ops',setting);
+      setting.callback || (callBack = setting.callback);
+      setting.reinit   || (setting.reinit = false);
+      setting = $.extend({ },this.setting, setting);
       pager.size = setting.size || pager.size;
-      //上传按钮点击处理
-      $(".add",wxuploadimg.setting.cont).each(function(index,item){
+      // init : fix for history reason
+      sl  = setting.sl || setting.cont || ".wxuploaderimg";
+      wr  = setting.wr || "#js_pic_select_wrap";
+      $sl = $(sl),$wr = $(wr);
+      max    = setting.max || $wr.data('maxitems') || 1;
+      imgIds = setting.imgIds; // 初始化图片id
+      var that  = this;//.that;
+
+      // 打开 选择模态框
+      $(".add",sl).each(function(index,item){
         $(item).click(function(ev){
-          $ele = $(this);
+          // $ele = $(this);
           // if($ele.hasClass('add')){
-            window.wxuploadimg.current =  $ele.parent();
-            open($(window.wxuploadimg.current).attr("data-maxitems"));
+            open(max);
             clearSelected();
           // }
         });
       });
       queryImgList();
-      // 预览图片 选择
-      $(".img-preview",window.wxuploadimg.cont).click(function(ev){
-          var tar = ev.target;
-          window.wxuploadimg.current = $(tar).parents(".wxuploaderimg");
-          var obj = window.wxuploadimg.current;
-          //console.log("当前点击的是",$(tar));
-          if($(tar).hasClass("js_delete")){
-              // console.log($(tar));
-              $(tar,obj).parents(".img-item").remove();
-              var len = $(".img-preview img",obj).length;
-              // console.log($(".img-preview img",obj));
-              // console.log(len);
-              //已全部选择
-              if(len == 0){
-                  $(".img-preview",obj).hide();
-                  $(obj).removeClass("checked");
-                  $(".add",obj).show();
-              }
-              //还剩余
-              if(len < wxuploadimg.setting.MaxChecked){
-                  $(".add",obj).show();
-              }
+      // 已选图片 事件综合
+      $(".img-preview",sl).click(function(ev){
+        var tar  = ev.target;
+        var $tar = $(tar);
+        //console.log("当前点击的是",$tar);
+        if($tar.hasClass("js_delete")){
+          $(tar,sl).parents(".img-item").remove();
+          var len = $(".img-preview img",sl).length;
+          // console.log(len);
+          if(len == 0){ //已全部选择
+            $(".img-preview",sl).hide();
+            $sl.removeClass("checked");
+            $(".add",sl).show();
           }
-          ev.preventDefault();
-          ev.stopPropagation();
+          len < max && $(".add",sl).show();
+        }
+        ev.preventDefault();
+        ev.stopPropagation();
       });
 
-      if(!hadBind){
-        //使用此标志来防止 当调用多次init方法来初始化时，#wxuploadimg绑定了多次click监听器
+      if(!hadBind){ //防止 多次init,wrap 绑定了多次click
         pagerClick();
-        // 关闭模态框
-        $("#wxuploadimg .js_close_modal").click(function(){
-           layer.close(window.wxuploadimg.index);
+        // 取消按钮 关闭模态框
+        $(".js_close_modal",wr).click(function(){
+           layer.close(index);
         });
-        //选中图片
-        $("#wxuploadimg .js_check_img").click(function(){
-          window.wxuploadimg.setting.callback = wxuploadimg.setting.callback || callback;
-          window.wxuploadimg.setting.callback.apply(this,$("#wxuploadimg .img-selected img"));
-          if(checked == wxuploadimg.setting.MaxChecked){
-            $(".add",window.wxuploadimg.current).hide();
+        // 确定按钮(选中图片)
+        $(".js_check_img",wr).click(function(){
+          callback.apply(that,$(".img-selected img",wr));
+          if(checked == max){
+            $(".add",sl).hide();
           }
           // $('#wxuploadimg').modal("hide");
-          layer.close(window.wxuploadimg.index);
+          layer.close(index);
         });
-
-        //查找
-        $(".js_search").click(function(){
-          wxuploadimg.pager.index = 1;
+        // 搜索查找
+        $(".js_search",wr).click(function(){
+          pager.index   = 1;
           imgIds.length = 0;
-          window.wxuploadimg.setChecked(0);
-          $("#wxuploadimg .js_checked").text(0);
-          $("#wxuploadimg .js_total").text(wxuploadimg.setting.MaxChecked);
-          window.wxuploadimg.queryImgList();
-        });//END 查找
-
+          setChecked(0);
+          $(".js_checked",wr).text(0);
+          $(".js_total",wr).text(max);
+          queryImgList();
+        });
       }
       hadBind = true;
-    }
+    } // end init
 
     /**
-     * 显示图片列表
+     * 添加图片列表
      */
     function appendImgList(list) {
       if (list) {
-        var $cont = $("#wxuploadimg .imgs-list").empty(),$item,item;
+        var item,temp='';
         for (var i = 0; i < list.length; i++) {
           item = list[i];
-          var imgsrc = item.imgurl;//放到服务器端,getImgUrl(item.id,120);
-          $item = $("<div class='img-item ' onclick='getImg(this)'><img class='img-responsive  thumbnail js_img_click' data-imageid='"+ item.id+"' src='" + imgsrc  + "' title='"+item.ori_name+"'/><p class='img-desc'>"+item.ori_name+"</p></div>");
-          $cont.append($item);
+          var imgsrc = layui.rb.imgUrl(item.id,240); // item.imgurl;
+          temp = temp + "<div class='img-item ' onclick='getImg(this)'><img class='img-responsive  thumbnail js_img_click' data-imageid='"+ item.id+"' src='" + imgsrc  + "' title='"+item.ori_name+"'/><p class='img-desc'>"+item.ori_name+"</p></div>";
         }
+        $(".imgs-list",wr).html(temp);
       }else{
-        $("#wxuploadimg .imgs-list").html("");
+        $(".imgs-list",wr).html("");
       }
     }
     /**
-     * 分页点击事件
+     * 模态框点击事件
+     * 图片点击 / 翻页
      */
     function pagerClick(){
-      $("#wxuploadimg .imgs-container").click(function(ev){
-        var max = window.wxuploadimg.setting.MaxChecked;
-        $target = $(ev.target);
-        if($target.hasClass("img-selected")){
-          $target.removeClass("img-selected");
+      var that = window.wxuploadimg;
+      $(".imgs-container",wr).click(function(ev){
+        var $tar = $(ev.target)
+        ,$chk = $('.js_checked',wr);
+        if($tar.hasClass("img-selected")){
+          $tar.removeClass("img-selected");
           checked--;
-          $("#wxuploadimg .js_checked").text(parseInt($("#wxuploadimg .js_checked").text())-1);
+          $chk.text(parseInt($chk.text())-1);
+          return false;
         }
-        if($target.hasClass("js_img_click")){
+        if($tar.hasClass("js_img_click")){ // 图片点击列表
           console.log("*******************************************");
           console.log(checked,max);
           console.log("*******************************************");
           if(checked == max){
-            var len = $(".img-preview img",window.wxuploadimg.current).length;
+            var len = $(".img-preview img",wr).length;
             $.scojs_message('最多可选'+(max-len)+'张!', $.scojs_message.TYPE_ERROR);
           }
           if(checked < max){
-            $target.parent().addClass("img-selected");
+            $tar.parent().addClass("img-selected");
             checked++;
-            $("#wxuploadimg .js_checked").text(parseInt($("#wxuploadimg .js_checked").text())+1);
+            $chk.text(parseInt($chk.text())+1);
+          }
+          return false;
+        }
+        if($tar.hasClass("num")){
+          that.pager.index = parseInt($tar.text());
+          queryImgList();
+        }else if($tar.hasClass("next")){
+          that.pager.index = that.pager.index+1;
+          queryImgList();
+        }else if($tar.hasClass("prev")){
+          that.pager.index = that.pager.index-1;
+          if(that.pager.index <0) that.pager.index = 0;
+          queryImgList();
+        }else{
+          if($tar.parent('.layui-laypage').length){ // laypage
+            that.pager.index = $tar.data('page');
+            queryImgList();
           }
         }
         ev.preventDefault();
-        if($target.hasClass("num")){
-          pager.index = parseInt($target.text());
-          queryImgList();
-          ev.preventDefault();
-        }else if($target.hasClass("next")){
-          pager.index = pager.index+1;
-          queryImgList();
-          ev.preventDefault();
-        }else if($target.hasClass("prev")){
-          pager.index = pager.index-1;
-          if(pager.index <0 ){
-            pager.index = 0;
-          }
-          queryImgList();
-          ev.preventDefault();
-        }
       });
     }
     /**
      * 向服务器请求数据
      */
     function queryImgList() {
-      var q = $("#wxuploadimg input[name='q']").val();
-      var time = $("#wxuploadimg input[name='time']").val();
+      var q    = $("input[name='q']",wr).val();
+      var time = $("input[name='time']",wr).val();
+      // console.log('that',that); // null ?
+      // console.log('this',this); // window
+      var that = window.wxuploadimg;
       $.ajax({
         type: "post",
-        url: "{:url('file/picturelist')}?p="+wxuploadimg.pager.index,
+        url: "{:url('file/picturelist')}?p="+that.pager.index,
         data: {
           time:time,
           q:q,
-          size: wxuploadimg.pager.size
+          size: that.pager.size
         },
         dataType: "json",
         beforeSend: function() {
-          window.wxuploadimg.load = layer.load();
+          that.load = layer.load();
         }
       }).done(function(data) {
         if (data.status) {
           var info = data.info;
           var list = info.list;
-          var show = info.show;
-          appendImgList(list);
-          $("#wxuploadimg .imgs-container .pager").html(show);
+          // 服务器组装 css在css中
+          // var show = info.show;
+          // $(".imgs-container .pager",wr).html(show);
+          that.appendImgList(list);
+          // console.log('info',info);
+          var ops =  {
+            elem: $('.pager',wr)
+            ,count: info.count
+            ,curr : that.pager.index
+            ,jump: function(obj, first){
+              //obj包含了当前分页的所有参数，比如：
+              // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+              // console.log(obj.limit); //得到每页显示的条数
+              //首次不执行
+              if(!first){
+                //do something
+              }
+            }
+          }
+          layui.rb.getPager(ops);
         }
       }).always(function() {
-        layer.close(window.wxuploadimg.load);
+        layer.close(that.load);
       });
     }
 
     // 清空图片显示css 和 imgids
     function clearSelected(){
-      $("#wxuploadimg .img-item.img-selected").removeClass("img-selected");
+      $(".img-item.img-selected",wr).removeClass("img-selected");
       imgIds = [];
     }
 
     function open(maxchecked){
-      checked = $("#wxuploadimg .img-preview img",wxuploadimg.current).length ;
-      wxuploadimg.setting.MaxChecked = maxchecked || wxuploadimg.setting.MaxChecked;
-      $("#wxuploadimg .js_checked").text(0);
-      $("#wxuploadimg .js_total").text(wxuploadimg.setting.MaxChecked - checked);
-      // $('#wxuploadimg').modal("show");
-      wxuploadimg.index = layer.open({
+      checked = $(".img-preview img",wr).length ;
+      max = maxchecked || max;
+      $(".js_checked",wr).text(0);
+      $(".js_total",wr).text(max - checked);
+      // $wr.modal("show");
+      index = layer.open({
         type:1
-        ,content: $('#wxuploadimg')
+        ,content: $wr
         ,skin:'layui-layer-lan'
-        ,area:'705px'
+        ,area:['705px']
         // ,anim:2
         ,title:'<strong>选择图片</strong> (善用搜索,上传不了可尝试改名上传)'
         ,shade:0.1
         ,shadeClose:true
+        ,yes: function(index, layero){
+          //do something
+          layer.close(index);
+        },cancel: function(index, layero){
+          // if(confirm('确定要关闭么')){
+            layer.close(index)
+          // }
+          // return false;
+        }
       });
     }
     function callback(){
       var data = arguments;
       for(var i=0;i<data.length;i++){
         var $ele = $('<div class="pull-left clearfix img-item"><div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div></div>');
-        $(".img-preview",wxuploadimg.current).append($ele).css("display","inline-block");//.show();
+        $(".img-preview",sl).append($ele).css("display","inline-block");//.show();
         $ele.prepend($(data[i]).clone());
-
       }
     }
-
     //self:设置选中的数量
     function setChecked(newchecked){
-        checked = newchecked;
+      checked = newchecked;
     }
     return {
       setting: {
-        MaxChecked:1,//最多可选图片数
+        max :1,//最多可选图片数
         size: 10, //每页图片数
         callback:null //默认回调函数
       },
-
       setChecked:setChecked,
-      current:null,
       pager: pager,
       appendImgList:appendImgList,
       pagerClick:pagerClick,
       queryImgList:queryImgList,
-      init:init,
+      init:init
     };
-
   })();
-
   // 模块化 datetimepicker
-  layui.use(['jquery','form','datetimepicker'],function(){
+  layui.use(['jquery','rb','form','datetimepicker','upload','element'],function(){
     var layer = layui.layer
     ,form = layui.form
+    ,ele = layui.element
+    ,rb = layui.rb
+    ,upload = layui.upload
     ,$ = layui.$;
 
-    /* 初始化上传插件  */
-    $("#wxuploadimg #upload_picture").uploadify({
-      'buttonClass': 'layui-btn layui-btn-primary layui-btn-sm',
-      "height": "30px",
-      "swf": "__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.swf",
-      "fileObjName": "wxshop", //wxshop
-      "buttonText": "<i class='layui-icon layui-icon-upload'></i>本地上传",
-      "uploader": "{:url('file/uploadUserPicture',['session_id'=>session_id()])}",
-      "width": 120,
-      'removeTimeout': 1,
-      'fileTypeExts': '*.jpg; *.png; *.gif;*.jpeg',
-      "onUploadSuccess": uploadPicture
-    });
-    // 上传成功回调
-    function uploadPicture(file, data) {
-      var data = $.parseJSON(data);
-      if (data.status) { //重新查询第一页
-        window.wxuploadimg.pager.index = 1;
-        window.wxuploadimg.queryImgList();
-      } else {
-        msg(data.info, 5);
-      }
-    }
     // 图片选择初始化
-    wxuploadimg.init({cont:".wxuploaderimg"});
+    wxuploadimg.init({ cont:".wxuploaderimg" });
     // 表单提交处理图片ids
-    $('.ajax-post').on('click','body',function(){
+    $('#body').on('click','.ajax-post',function(){
       var flag = true,img;
       $('.wxuploaderimg').each(function(index, el) {
         $el = $(el);
@@ -415,9 +378,30 @@
       });
       return flag;
     });
+
+    var uploadInst = upload.render({
+      elem: '#upload_picture'
+      ,url: "{:url('file/uploadUserPicture',['session_id'=>session_id()])}"
+      //,accept: 'file' //允许上传的文件类型
+      ,multiple: true // ie9+
+      ,drag:true
+      ,size: 500 //ie9+
+      ,accept: 'images' // images、file（所有）、video、audio
+      ,field: 'wxshop'
+      ,before: function(obj){
+        rb.progress('progress-1'); //上传loading
+      }
+      ,done: function(res, index, upload){
+        rb.progress('progress-1',100);
+        rb.uploadSuccess(index,res);
+      }
+      ,error: function(index, upload){
+        rb.msg('上传失败',5);
+      }
+    });
     // 日期控件初始化
     if($.fn.datetimepicker){
-      $("#wxuploadimg input.time").datetimepicker({
+      $("#js_pic_select_wrap input.time").datetimepicker({
         lang: 'ch',
         timepicker:false,
         format:'Y-m-d',

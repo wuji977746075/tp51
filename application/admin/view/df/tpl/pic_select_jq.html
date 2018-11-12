@@ -1,0 +1,437 @@
+<link type="text/css" rel="stylesheet" href="__CDN__comp/wxuploader.css?v=__APP_VERSION__" />
+<!-- jquery.uploader+layui(theme)  -->
+<style>
+  #upload_picture:hover{ cursor: pointer; }
+  /*调整cosmo样式*/
+  ul,ol,dl{ margin-bottom: 0; }
+  dd{ line-height: inherit; }
+  .modal * { box-sizing:border-box !important; }
+  .modal-dialog{ width:100% !important;}
+  .modal-content{ padding:20px !important; }
+  a:hover,a:focus{ text-decoration: none; }
+  .admin-header .avatar {  height: 40px;padding-top: 4px; }
+  .admin-main {  margin-top: 40px; }
+  .thumbnail{ padding: 0!important; }
+  .img-selected:after{  width:calc(100% - 10px); }
+  .wxuploaderimg .img-preview img{  width:100px !important; }
+  .wxuploaderimg .img-preview .edit_pic_wrp{
+    background-color: rgba(229,229,229,0.2)!important;
+    width:100px;height:100px;
+  }
+  .imgs-container .imgs-list .img-item img {
+    border:1px solid #ddd;
+    width:100%;
+    /* 115px !important; */
+  }
+  .wxuploaderimg .img-preview .edit_pic_wrp a{
+    width:100px;height:100px;left:0;top:0;margin-left: 0;padding-top: 40px;
+  }
+  .modal-footer{
+    padding: 10px 0px 5px;
+    text-align: right;
+    line-height: 37px;
+    border-top: 1px solid #E9E7E7;
+  }
+  .pager{
+    padding-left: 0;
+    margin: 18px 0;
+    list-style: none;
+    text-align: center;
+  }
+  .uploadify-button{
+    /* cursor: pointer; *bug */
+    padding-top: 7px;
+    border: none !important;
+    background-image: -webkit-gradient(linear,left bottom,left top,    color-stop(0, #277d39),color-stop(1, #78c195)) !important;
+  }
+  @media (min-width: 768px) { }
+  @media (min-width: 992px) { }
+  @media (min-width: 1200px) {  }
+</style>
+<link type="text/css" rel="stylesheet" href="__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.css" />
+<script type="text/javascript" src="__PUBLIC__static/jquery-uploadify/3.2.1/jquery.uploadify.min.js"></script>
+<!-- Modal -->
+<div class="modal hide" id="wxuploadimg">
+  <div class="modal-content">
+    <div class="modal-body">
+      <div class="layui-row">
+        <div class="layui-inline">
+          <input type="text" name="time" class="time layui-input" placeholder="哪一天">
+        </div>
+        <div class="layui-inline">
+          <input type="text" name="q" class="layui-input" placeholder="文件名" />
+        </div>
+        <div class="layui-btn-group">
+          <button class="layui-btn js_search layui-btn-sm" title="搜索"><i class="layui-icon layui-icon-search"></i></button>
+          <button class="layui-btn layui-btn-danger  layui-btn-sm" onclick="removeImg()" title="删除"><i class="layui-icon layui-icon-delete"></i></button>
+        </div>
+        <div class="layui-inline fr"><a class="layui-btn layui-btn-sm" id="upload_picture"><i class="fa fa-upload"></i> 请允许FLASH </a></div>
+      </div>
+      <div class="imgs-container">
+        <div class="imgs-list clearfix"></div>
+        <div class="pager"></div>
+      </div>
+    </div>
+    <div class="modal-footer clearfix">
+      <div class="fl">已选<span class="js_checked"></span>张,可选<span class="js_total"></span>张</div>
+      <div class="fr">
+        <button class="layui-btn layui-btn-sm js_check_img" title="确定">
+          <i class="layui-icon layui-icon-ok"></i></button>
+        <button class="layui-btn  layui-btn-sm layui-btn-primary js_close_modal" title="取消">
+          <i class="layui-icon layui-icon-close"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  // 放到服务器端 2018-05-24 10:34:37
+  // appendImgList() 组装图片地址可能用到
+  // var img_show_url = "{ :config('picture_url') }";
+  // function getImgUrl(id,size){
+  //   return img_show_url+'?id='+id+'&size='+size;
+  // }
+
+  if(!Array.prototype.remove){
+    Array.prototype.remove = function(val) {
+      var index = this.indexOf(val);
+      if (index > -1) {  this.splice(index, 1); }
+    };
+  }
+  var imgIds = []; // 选中的图片 ids
+  function getImg(d){
+    var id = $(d).find('img').data('imageid');
+    if(!$(d).hasClass("img-selected")){
+      if($.inArray(id,imgIds) == -1){
+        imgIds.push(id);
+      }
+    }else{
+      if($.inArray(id,imgIds) != -1) {
+        imgIds.remove(id);
+      }
+    }
+  }
+  function msg(d='',icon=5){
+    layer.msg(d,{ icon:icon });
+  }
+  // 删除图片
+  function removeImg(){
+    //console.log(imgIds);
+    var warning = '你真的要删除图片吗？如果有商品正在使用将无法正常显示！！！';
+    layer.confirm(warning,{ icon: 3, title:'提示' },function(index){
+      $.ajax({
+        type:"POST",
+        url:"{:url('file/del')}",
+        data:{ imgIds:imgIds },
+        context:window,
+        dataType: "json",
+        success:function(data){
+          //console.log(data);
+          if(data.code == 1){
+            imgIds.length = 0;
+            window.wxuploadimg.setChecked(0);
+            window.wxuploadimg.queryImgList();
+          }else{
+            msg(data.msg);
+          }
+        }
+      })
+      layer.close(index);
+    });
+    return false;
+  }
+
+  // 初始化前需加载 layer
+  window.wxuploadimg = (function() {
+    var pager = { index: 0,size: 10 };
+    var checked = 0;
+    var index   = 0; //modal layer index
+    var load    = 0;//load layer index
+    var hadBind = false;
+    /**
+     * callback
+     * @param {Object} cont 触发模态框的选择器
+     * @param {Object} callback 选中图片后的触发器
+     */
+    // self:初始化
+    function init(setting){
+      // console.log(setting);
+      if(setting.callback){
+        wxuploadimg.callBack = setting.callback;
+      }
+      if(setting.reinit) {
+          wxuploadimg.setting.reinit = false;
+      }
+      wxuploadimg.setting = $.extend({ },wxuploadimg.setting, setting);
+      pager.size = setting.size || pager.size;
+      //上传按钮点击处理
+      $(".add",wxuploadimg.setting.cont).each(function(index,item){
+        $(item).click(function(ev){
+          $ele = $(this);
+          // if($ele.hasClass('add')){
+            window.wxuploadimg.current =  $ele.parent();
+            open($(window.wxuploadimg.current).attr("data-maxitems"));
+            clearSelected();
+          // }
+        });
+      });
+      queryImgList();
+      // 预览图片 选择
+      $(".img-preview",window.wxuploadimg.cont).click(function(ev){
+          var tar = ev.target;
+          window.wxuploadimg.current = $(tar).parents(".wxuploaderimg");
+          var obj = window.wxuploadimg.current;
+          //console.log("当前点击的是",$(tar));
+          if($(tar).hasClass("js_delete")){
+              // console.log($(tar));
+              $(tar,obj).parents(".img-item").remove();
+              var len = $(".img-preview img",obj).length;
+              // console.log($(".img-preview img",obj));
+              // console.log(len);
+              //已全部选择
+              if(len == 0){
+                  $(".img-preview",obj).hide();
+                  $(obj).removeClass("checked");
+                  $(".add",obj).show();
+              }
+              //还剩余
+              if(len < wxuploadimg.setting.MaxChecked){
+                  $(".add",obj).show();
+              }
+          }
+          ev.preventDefault();
+          ev.stopPropagation();
+      });
+
+      if(!hadBind){
+        //使用此标志来防止 当调用多次init方法来初始化时，#wxuploadimg绑定了多次click监听器
+        pagerClick();
+        // 关闭模态框
+        $("#wxuploadimg .js_close_modal").click(function(){
+           layer.close(window.wxuploadimg.index);
+        });
+        //选中图片
+        $("#wxuploadimg .js_check_img").click(function(){
+          window.wxuploadimg.setting.callback = wxuploadimg.setting.callback || callback;
+          window.wxuploadimg.setting.callback.apply(this,$("#wxuploadimg .img-selected img"));
+          if(checked == wxuploadimg.setting.MaxChecked){
+            $(".add",window.wxuploadimg.current).hide();
+          }
+          // $('#wxuploadimg').modal("hide");
+          layer.close(window.wxuploadimg.index);
+        });
+
+        //查找
+        $(".js_search").click(function(){
+          wxuploadimg.pager.index = 1;
+          imgIds.length = 0;
+          window.wxuploadimg.setChecked(0);
+          $("#wxuploadimg .js_checked").text(0);
+          $("#wxuploadimg .js_total").text(wxuploadimg.setting.MaxChecked);
+          window.wxuploadimg.queryImgList();
+        });//END 查找
+
+      }
+      hadBind = true;
+    }
+
+    /**
+     * 显示图片列表
+     */
+    function appendImgList(list) {
+      if (list) {
+        var $cont = $("#wxuploadimg .imgs-list").empty(),$item,item;
+        for (var i = 0; i < list.length; i++) {
+          item = list[i];
+          var imgsrc = item.imgurl;//放到服务器端,getImgUrl(item.id,120);
+          $item = $("<div class='img-item ' onclick='getImg(this)'><img class='img-responsive  thumbnail js_img_click' data-imageid='"+ item.id+"' src='" + imgsrc  + "' title='"+item.ori_name+"'/><p class='img-desc'>"+item.ori_name+"</p></div>");
+          $cont.append($item);
+        }
+      }else{
+        $("#wxuploadimg .imgs-list").html("");
+      }
+    }
+    /**
+     * 分页点击事件
+     */
+    function pagerClick(){
+      $("#wxuploadimg .imgs-container").click(function(ev){
+        var max = window.wxuploadimg.setting.MaxChecked;
+        $target = $(ev.target);
+        if($target.hasClass("img-selected")){
+          $target.removeClass("img-selected");
+          checked--;
+          $("#wxuploadimg .js_checked").text(parseInt($("#wxuploadimg .js_checked").text())-1);
+        }
+        if($target.hasClass("js_img_click")){
+          console.log("*******************************************");
+          console.log(checked,max);
+          console.log("*******************************************");
+          if(checked == max){
+            var len = $(".img-preview img",window.wxuploadimg.current).length;
+            $.scojs_message('最多可选'+(max-len)+'张!', $.scojs_message.TYPE_ERROR);
+          }
+          if(checked < max){
+            $target.parent().addClass("img-selected");
+            checked++;
+            $("#wxuploadimg .js_checked").text(parseInt($("#wxuploadimg .js_checked").text())+1);
+          }
+        }
+        ev.preventDefault();
+        if($target.hasClass("num")){
+          pager.index = parseInt($target.text());
+          queryImgList();
+          ev.preventDefault();
+        }else if($target.hasClass("next")){
+          pager.index = pager.index+1;
+          queryImgList();
+          ev.preventDefault();
+        }else if($target.hasClass("prev")){
+          pager.index = pager.index-1;
+          if(pager.index <0 ){
+            pager.index = 0;
+          }
+          queryImgList();
+          ev.preventDefault();
+        }
+      });
+    }
+    /**
+     * 向服务器请求数据
+     */
+    function queryImgList() {
+      var q = $("#wxuploadimg input[name='q']").val();
+      var time = $("#wxuploadimg input[name='time']").val();
+      $.ajax({
+        type: "post",
+        url: "{:url('file/picturelist')}?p="+wxuploadimg.pager.index,
+        data: {
+          time:time,
+          q:q,
+          size: wxuploadimg.pager.size
+        },
+        dataType: "json",
+        beforeSend: function() {
+          window.wxuploadimg.load = layer.load();
+        }
+      }).done(function(data) {
+        if (data.status) {
+          var info = data.info;
+          var list = info.list;
+          var show = info.show;
+          appendImgList(list);
+          $("#wxuploadimg .imgs-container .pager").html(show);
+        }
+      }).always(function() {
+        layer.close(window.wxuploadimg.load);
+      });
+    }
+
+    // 清空图片显示css 和 imgids
+    function clearSelected(){
+      $("#wxuploadimg .img-item.img-selected").removeClass("img-selected");
+      imgIds = [];
+    }
+
+    function open(maxchecked){
+      checked = $("#wxuploadimg .img-preview img",wxuploadimg.current).length ;
+      wxuploadimg.setting.MaxChecked = maxchecked || wxuploadimg.setting.MaxChecked;
+      $("#wxuploadimg .js_checked").text(0);
+      $("#wxuploadimg .js_total").text(wxuploadimg.setting.MaxChecked - checked);
+      // $('#wxuploadimg').modal("show");
+      wxuploadimg.index = layer.open({
+        type:1
+        ,content: $('#wxuploadimg')
+        ,skin:'layui-layer-lan'
+        ,area:'705px'
+        // ,anim:2
+        ,title:'<strong>选择图片</strong> (善用搜索,上传不了可尝试改名上传)'
+        ,shade:0.1
+        ,shadeClose:true
+      });
+    }
+    function callback(){
+      var data = arguments;
+      for(var i=0;i<data.length;i++){
+        var $ele = $('<div class="pull-left clearfix img-item"><div class="edit_pic_wrp"><a href="javascript:;" class="fa fa-lg fa-trash js_delete"></a></div></div>');
+        $(".img-preview",wxuploadimg.current).append($ele).css("display","inline-block");//.show();
+        $ele.prepend($(data[i]).clone());
+
+      }
+    }
+
+    //self:设置选中的数量
+    function setChecked(newchecked){
+        checked = newchecked;
+    }
+    return {
+      setting: {
+        MaxChecked:1,//最多可选图片数
+        size: 10, //每页图片数
+        callback:null //默认回调函数
+      },
+
+      setChecked:setChecked,
+      current:null,
+      pager: pager,
+      appendImgList:appendImgList,
+      pagerClick:pagerClick,
+      queryImgList:queryImgList,
+      init:init,
+    };
+
+  })();
+
+  // 模块化 datetimepicker
+  layui.use(['jquery','form','datetimepicker'],function(){
+    var layer = layui.layer
+    ,form = layui.form
+    ,$ = layui.$;
+
+    /* 初始化上传插件  */
+    $("#wxuploadimg #upload_picture").uploadify({
+      'buttonClass': 'layui-btn layui-btn-primary layui-btn-sm',
+      "height": "30px",
+      "swf": "__PUBLIC__static/jquery-uploadify/3.2.1/uploadify.swf",
+      "fileObjName": "wxshop", //wxshop
+      "buttonText": "<i class='layui-icon layui-icon-upload'></i>本地上传",
+      "uploader": "{:url('file/uploadUserPicture',['session_id'=>session_id()])}",
+      "width": 120,
+      'removeTimeout': 1,
+      'fileTypeExts': '*.jpg; *.png; *.gif;*.jpeg',
+      "onUploadSuccess": uploadPicture
+    });
+    // 上传成功回调
+    function uploadPicture(file, data) {
+      var data = $.parseJSON(data);
+      if (data.status) { //重新查询第一页
+        window.wxuploadimg.pager.index = 1;
+        window.wxuploadimg.queryImgList();
+      } else {
+        msg(data.info, 5);
+      }
+    }
+    // 图片选择初始化
+    wxuploadimg.init({ cont:".wxuploaderimg" });
+    // 表单提交处理图片ids
+    $('#body').on('click','.ajax-post',function(){
+      var flag = true,img;
+      $('.wxuploaderimg').each(function(index, el) {
+        $el = $(el);
+        img = $el.find('.img-preview img').map(function(i,el) { return el.getAttribute('data-imageid'); }).get().join(',');
+        $el.prev('input').val(img); // 修改图片表单域
+      });
+      return flag;
+    });
+    // 日期控件初始化
+    if($.fn.datetimepicker){
+      $("#wxuploadimg input.time").datetimepicker({
+        lang: 'ch',
+        timepicker:false,
+        format:'Y-m-d',
+        allowBlank : true,
+      });
+      console.log("日期初始化成功！");
+    }
+  });
+</script>

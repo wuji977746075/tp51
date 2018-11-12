@@ -4,41 +4,62 @@ namespace src\config;
 use  src\base\BaseLogic;
 
 class ConfigLogic extends BaseLogic{
+  const CACHE_KEY = 'cache_config';
+  const SYSTEM    = 1;
 
-  const SYSTEM = 1;
+  // 每个访问再 base那已经clear了
+  // rebuild config cache
+  function clearCache() {
+    $sysConfig_new = $this->queryGroup(self::SYSTEM,false);
+    \Config::set(['app'=>array_merge($sysConfig_new,config('app.'))]);
+  }
 
-  public function queryGroup($gid=0,$time=600){
-    $cacheKey = 'config_query_group';
-    $list = cache($cacheKey,'');
-    if($list && $time>0) {
+  function queryCache($cache=true) {
+    $key  = self::CACHE_KEY;
+    $time = self::CACHE_TIME;
+    if($cache){
+      $list = cache($key);
+      if($list){
+        return $list;
+      }
+    }
+    $list = parent::query([],false,'value,name,type,group');
+    cache($key,$list,$time);
+    return $list;
+  }
+  // 启动时已经 无缓存全查
+  // 后面有需要的地方尽可能缓存取(不带参数time)
+  function queryGroup($gid=0,$cache=true){
+    $cacheKey  = self::CACHE_KEY.'_group';
+    $cacheTime = self::CACHE_TIME;
+    $ret  = [];
+    $list = [];
+    if($cache){
+      $list = cache($cacheKey);
     }else{
-      $r = parent::query([],false,'value,name,type,group');
-      $list = [];
+      $r = $this->queryCache($cache);
       foreach ($r as $v) {
         $v['value'] = self::_parse($v['value'],$v['type']);
-        $list[$v['name']] = [$v['value'],$v['group']];
+        $ret[$v['name']] = [$v['value'],$v['group']];
       } unset($v);
-      // $list = array_column($list,false,'name'); // php5.5+
-      $time>0 && cache($cacheKey,$list,$time);
-    }
-    $ret = [];
-    foreach ($list as $k=>$v) {
-      if(isset($v[1])){
-        if($gid>0){
-          $v[1] == $gid && $ret[$k] = $v[0];
+      cache($cacheKey,$ret,$cacheTime);
+      foreach ($ret as $k=>$v) {
+        if(isset($v[1])){
+          $list[$v[1]][$k] = $v[0];
         }else{
-          $ret[$k] = $v[0];
+          $list[$v[1]] = [$k=>$v[0]];
         }
       }
     }
-    return $ret;
+    return $gid ? $list[$gid] : $list;
   }
 
-  public function getConfig($key=''){
-    if(config($key)){
-      return config($key);
+  // todo : time
+  public function getConfig($name='',$time=0) {
+    if(config($name)) {
+      return config($name);
     }else{
-      $r = $this->getInfo(['name'=>$key]);
+      $r = $this->getInfo(['name'=>$name],'id asc','value,type');
       return $r ? self::_parse($r['value'],$r['type']) : '';
     }
   }

@@ -152,14 +152,14 @@ class File extends Base
                 $cur=$this->_param('p',0);
             }
             $size = $this->_param('size',10);
-            $map  = ['status'=>1];//array('uid'=>UID,'status'=>1);
+            $map  = [['status','=',1]];//array('uid'=>UID,'status'=>1);
             $page = [ 'page'=>$cur,'size'=>$size];
             $order  = 'create_time desc';
             $params = [
                 'p'    =>$cur,
                 'size' =>$size,
             ];
-            if(!empty($q)){
+            if($q){
                 $params['q'] = $q;
                 $map[] = ['ori_name',"like",'%'.$q.'%'];
             }
@@ -171,7 +171,6 @@ class File extends Base
 
             $fields = 'id,create_time,status,path,url,md5,imgurl,ori_name,save_name,size';
             $list = (new UserPictureLogic)->queryPage($map,$page,$order,$params,$fields);
-
             $this->ajaxReturnSuc($list);
 
         // }
@@ -267,8 +266,13 @@ class File extends Base
                 /* 记录图片信息 */
                 if (is_array($info)) {
                     $return['status'] = 1;
-                    $return['info'] = $info[0];
-                    // $return = array_merge($info, $return);
+                    if($info[0]['new']){
+                        $return['info'] = $info[0];
+                        // $return = array_merge($info, $return);
+                    }else{
+                        $return['status'] = 0;
+                        $return['info'] = '重复上传';
+                    }
                 } else {
                     $return['status'] = 0;
                     $return['info'] = $info;

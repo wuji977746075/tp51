@@ -10,6 +10,7 @@ use Exception;
  * Logic 基类 , 出错请抛出错误
  */
 abstract class BaseLogic {
+    const CACHE_TIME = 600;
     /**
      * API调用模型实例
      * @access  protected
@@ -34,6 +35,15 @@ abstract class BaseLogic {
 
     }
 
+    public function trans(){
+        Db::startTrans();
+    }
+    public function back(){
+        Db::rollback();
+    }
+    public function commit(){
+        Db::commit();
+    }
     /**
      * get model
      * @return Model
@@ -150,7 +160,7 @@ abstract class BaseLogic {
      * @param $cnt int 减少的值
      * @return integer 返回影响记录数 或 错误信息
      */
-    public function setDec2($map, $field, $cnt = 1) {
+    public function setDecUnsigned($map, $field, $cnt = 1) {
         $r = $this -> model ->where($map) ->find();
         if(!empty($r) && isset($r[$field])){
             $fieldValue = $r[$field];
@@ -182,8 +192,11 @@ abstract class BaseLogic {
         return $query -> save($entity,$map);
     }
     // 多条件查单字段
-    public function getField($map = [],$field=''){
+    public function getField($map = [],$field='',$nullErr=false){
         $r = $this->model->where($map)->field($field)->find();
+        if($nullErr && (empty($r) || !isset($r[$field])) ){
+            throws(is_string($nullErr) ? $nullErr : $field.'或条件非法');
+        }
         return ($r && isset($r[$field])) ? $r[$field] : '';
     }
     // 单条件查单字段
@@ -223,11 +236,12 @@ abstract class BaseLogic {
     public function checkDbNull($r,$f=false){
         if($f && empty($r)){
             $class = get_class($this->model);
-            throw new \think\db\exception\ModelNotFoundException('model data Not Found:' . $class, $class);
+            throw new \think\db\exception\ModelNotFoundException(is_string($f) ? $f : 'model data Not Found:' . $class, $class);
         }
     }
     /**
      * 获取数据find
+     * 填写max()等field 返回 bug : ['level'=>null,..] 2018-10-29 14:55:42
      * @param $map
      * @param bool $order
      * @param bool/str/arr $field
@@ -240,6 +254,7 @@ abstract class BaseLogic {
         $field && $query = $query->field($field);
         // $lock  && $query = $query->lock(true);
         $r = $query->where($map)->find();
+        // $r = $r ? $r->toArray() : [];
         $noNull && $this->checkDbNull($r,$noNull);
         return $r;
     }
@@ -278,6 +293,7 @@ abstract class BaseLogic {
      * @return bool
      */
     public function add($entity,$pk='id',$field=false) {
+        // $r = $this -> model -> data($entity,true) -> save();
         $r = $this -> model -> data($entity) ->isUpdate(false) -> save();
         return $pk ? $this->getInsertId($pk) : $r;
     }
@@ -352,15 +368,19 @@ abstract class BaseLogic {
      */
     public function queryCount($map = null, $page = false, $order = false, $params = false, $fields = false) {
         empty($page) && $page = ['page'=>1,'size'=>10];
-        $query = $this->model;
-        if(!empty($map)) $query = $query->where($map);
-        if(false !== $order) $query = $query->order($order);
-        if(false !== $fields) $query = $query->field($fields);
-
-        $start = isset($page['start']) ? $page['start'] : max(0,(intval($page['page'])-1)*intval($page['size']));
-        $list = $query -> limit($start,$page['size']) -> select();
         $count = $this -> model -> where($map) -> count();
-        return ["count" => $count, "list" => $list->toArray()];
+        $list  = [];
+        if($count){
+            $query = $this->model;
+            if(!empty($map)) $query = $query->where($map);
+            if(false !== $order) $query = $query->order($order);
+            if(false !== $fields) $query = $query->field($fields);
+
+            $start = isset($page['start']) ? $page['start'] : max(0,(intval($page['page'])-1)*intval($page['size']));
+            $list = $query -> limit($start,$page['size']) -> select();
+            $list = $list->toArray();
+        }
+        return ["count" => $count, "list" => $list];
 
     }
 
@@ -378,29 +398,32 @@ abstract class BaseLogic {
      * @internal param 点击分页时带参数 $params
      */
     public function queryPage($map = null, $page = false, $order = false, $params = false, $fields = false) {
-        empty($page) && $page = ['page'=>1,'size'=>10];
-        $query = $this->model;
-        if(!is_null($map)) $query = $query->where($map);
-        if(false !== $order) $query = $query->order($order);
-        if(false !== $fields) $query = $query->field($fields);
-        $start = max(intval($page['page'])-1,0)*intval($page['size']);
-        $list = $query -> limit($start,$page['size']) -> select();
-
         $count = $this -> model -> where($map) -> count();
-        // 查询满足要求的总记录数
-        $Page = new \Page($count, $page['size']);
-        //分页跳转的时候保证查询条件
-        if ($params !== false) {
-            foreach ($params as $key => $val) {
-                $Page -> parameter[$key] = urlencode($val);
-            }
-        }
-        // 实例化分页类 传入总记录数和每页显示的记录数
-        $show = $Page -> show();
+        $list  = [];$show = L('no-query-data');
         $data = [];
-        foreach ($list as $vo){
-            if(method_exists($vo,"toArray")){
-                array_push($data,$vo->toArray());
+        if($count){
+            empty($page) && $page = ['page'=>1,'size'=>10];
+
+            $query = $this->model;
+            if(!is_null($map)) $query = $query->where($map);
+            if(false !== $order) $query = $query->order($order);
+            if(false !== $fields) $query = $query->field($fields);
+            $start = max(intval($page['page'])-1,0)*intval($page['size']);
+            $list = $query -> limit($start,$page['size']) -> select();
+            // 查询满足要求的总记录数
+            $Page = new \Page($count, $page['size']);
+            //分页跳转的时候保证查询条件
+            if ($params !== false) {
+                foreach ($params as $key => $val) {
+                    $Page -> parameter[$key] = urlencode($val);
+                }
+            }
+            // 实例化分页类 传入总记录数和每页显示的记录数
+            $show = $Page -> show();
+            foreach ($list as $vo){
+                if(method_exists($vo,"toArray")){
+                    array_push($data,$vo->toArray());
+                }
             }
         }
         return ["count"=>$count,"list" => $data ,"show" => $show];

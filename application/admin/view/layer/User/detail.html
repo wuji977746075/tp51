@@ -1,0 +1,280 @@
+{extend name="df/tpl/base" /}}
+
+{block name="area_body"}
+<fieldset class="layui-elem-field">
+  <legend>用户管理</legend>
+  <div class="layui-field-box">
+    {:html_head_tip('用户单个查看和管理')}
+    <div class="layui-tab layui-tab-card" lay-filter="usertab">
+      <ul class="layui-tab-title">
+        <li class="layui-this" lay-id="usertab1">用户信息</li>
+        <li lay-id="usertab2">用户角色</li>
+        <li lay-id="usertab3">余额变更</li>
+        <li lay-id="usertab4">拉新邀请</li>
+      </ul>
+      <div class="layui-tab-content" style="min-height: 100px;">
+        <div class="layui-tab-item">
+          <from class="layui-form">
+          <table class="layui-table">
+            <tr>
+              <th>用户名</th>
+              <td>{$info.name}</td>
+            </tr>
+            <tr>
+              <th style="text-align:top;width:150px;">头像</th>
+              <td>
+                <div class="wxuploaderimg clearfix" data-maxitems="1">
+                  <div class="img-preview clearfix " style="display:inline-block">
+                    <div class="pull-left clearfix img-item">
+                      <img class="img-responsive thumbnail js-view" src="{:avaUrl($info.id,90)}" layer-src="{:avaUrl($info.id)}" style="width:90px;border-radius:50%" alt="image" data-imageid="7">
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>昵称</th>
+              <td>{$info.nick}</td>
+            </tr>
+            <tr>
+              <th>邮箱</th>
+              <td>{$info.email}</td>
+            </tr>
+            <tr>
+              <th>注册时间</th>
+              <td>
+                {gt name="$info.reg_time" value="0"}
+                {:date('Y-m-d H:i:s',$info.reg_time)}
+              {/gt}</td>
+            </tr>
+          </table>
+          </from>
+        </div>
+        <div class="layui-tab-item">
+          <!-- 角色 -->
+          {volist name="roles" id="v"}
+            <input type="checkbox" value="{$v.id}" name="roles[]" {eq name="v.check" value="1"} checked {/eq}> {$v.name}
+          {/volist}
+        </div>
+        <div class="layui-tab-item">
+          <!-- 余额变更 -->
+          <form class="layui-form layui-form-pane" lay-filter="js-form">
+            {:token()}
+            <div class="layui-inline layui-form-item mb0">
+              <!-- <label class="layui-form-label">变更时间</label> -->
+              <div class="layui-input-inline" style="width: 130px;">
+                <select name="dt_type" id="jsf-dt-type" lay-filter="search">
+                  <option value="">== 变动类型 ==</option>
+                  {volist name="dtTypes" id="v"}
+                  <option value="{$v.id}">{$v.title}</option>
+                  {/volist}
+                </select>
+              </div>
+            </div>
+            <div class="layui-inline layui-form-item mb0">
+              <label class="layui-form-label">变更时间</label>
+              <div class="layui-input-inline" style="width: 130px;">
+                <input type="text" id='jsf-start'class="layui-input">
+              </div>
+              <div class="layui-form-mid">-</div>
+              <div class="layui-input-inline" style="width: 130px;">
+                <input type="text" id='jsf-end' class="layui-input">
+              </div>
+            </div>
+            <div class="layui-inline">
+              <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+              <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+            </div>
+          </form>
+<table id="demo" lay-filter="fDemo"></table>
+        </div>
+        <div class="layui-tab-item">
+          <!-- 邀请 -->
+          <form class="layui-form layui-form-pane" lay-filter="js-form2">
+            {:token()}
+            <div class="layui-inline layui-form-item mb0">
+              <label class="layui-form-label">变更时间</label>
+              <div class="layui-input-inline" style="width: 130px;">
+                <input type="text" id='jsf-start2' class="layui-input">
+              </div>
+              <div class="layui-form-mid">-</div>
+              <div class="layui-input-inline" style="width: 130px;">
+                <input type="text" id='jsf-end2' class="layui-input">
+              </div>
+            </div>
+            <div class="layui-inline">
+              <a class="layui-btn layui-btn-sm" id="js-search2" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+              <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+            </div>
+          </form>
+<table id="invite" lay-filter="fInvite"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</fieldset>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="查看详情"><i class="layui-icon layui-icon-username"></i>详情</a>
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改" ><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm layer-msg no-refresh fresh-table"  title="删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<script type="text/javascript">
+var dtTypes = {
+  {volist name="dtTypes" id="v"}
+  {$v.id} : "{$v.title}",
+  {/volist}
+};
+var orderTypes = ['','未完成首购','淘客订单','非淘客订单'];
+var userStatus = ['','已激活','以首购'];
+layui.use(['rb','form','table2','element','datetimepicker','picView'],function(){
+  var $ = layui.$
+  ,rb = layui.rb
+  ,form = layui.form
+  ,element = layui.element
+  ,table = layui.table2;
+  var uid   = parseInt({$id ?? 0});
+  var dt_type = "{$dt_type ?? ''}";
+  //form init
+  form.val("js-form", {
+    dt_type : dt_type
+  });
+  //table where
+  rb.where.uid = uid;
+  rb.where.dt_type = dt_type;
+  rb.setWhere = function() {
+    rb.where.start = $('#jsf-start').val() || '';
+    rb.where.end   = $('#jsf-end').val() || '';
+    rb.where.dt_type = $('#jsf-dt-type').val() || '';
+  };
+  //table render
+  rb.table = table.render($.extend(rb.table_config,{
+    where: rb.where
+    ,toolbar: false
+    ,url: "{:url('wallet_his/ajax')}"
+    ,cols:[[
+      { field:'id',title:'ID',sort:true }
+      ,{ field:'dt_type',title:'变动类型',templet:'#dtTypeTpl' }
+      ,{ field:'before_money',align:'right',title:'变动前',templet:'#beforeTpl' }
+      ,{ field:'plus',align:'right',title:'增加',templet:'#plusTpl' }
+      ,{ field:'minus',align:'right',title:'减少',templet:'#minusTpl' }
+      ,{ field:'after_money',align:'right',title:'变动后',templet:'#afterTpl' }
+      ,{ field:'reason',title:'说明' }
+      ,{ field:'create_time',title:'变更时间',sort:true,templet:'#createTimeTpl' }
+      // ,{ title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  $('#jsf-start,#jsf-end,#jsf-start2,#jsf-end2').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+  var where2 = {
+    uid : uid
+    ,field:'id'
+    ,order:'desc'
+  };
+  function setWhere2() {
+    where2.start = $('#jsf-start2').val() || '';
+    where2.end   = $('#jsf-end2').val() || '';
+  };
+
+  var table2 = table.render($.extend(rb.table_config,{
+    elem:'#invite'
+    ,url: "{:url('fy_invite/ajax')}"
+    ,where: where2
+    ,toolbar: false
+    ,cols:[[
+      { field:'id',title:'ID',sort:true }
+      ,{ field:'pid',title:'推广位' }
+      ,{ field:'reg_time',title:'注册时间',templet:'#regTimeTpl' }
+      ,{ field:'login_time',title:'登陆时间',templet:'#loginTimeTpl' }
+      ,{ field:'first_buy_time',title:'首购时间',templet:'#firstBuyTimeTpl' }
+      ,{ field:'active_time',title:'激活时间',templet:'#activeTimeTpl' }
+      ,{ field:'receive_time',title:'收货时间',templet:'#receiveTimeTpl' }
+      ,{ field:'user_mobile',title:'用户手机' }
+      ,{ field:'user_status',title:'新人状态',templet:'#userStatusTpl' }
+      ,{ field:'create_time',title:'添加时间',templet:'#createTimeTpl' }
+      ,{ field:'order_type',title:'订单类型',templet:'#orderTypeTpl' }
+      ,{ field:'order_code',title:'订单编号' }
+      ,{ field:'act_name',title:'活动名字' }
+    ]]
+  }));
+  $('body').on('click', '#js-search2', function(e) {
+    setWhere2();
+    table2.reload({
+      where: where2,
+      page: {
+        curr : 1
+      }
+    });
+    layui.stope();
+    return false;
+  });
+
+  // tab init
+  var tabid = "usertab{$tab ? $tab : 1}";
+  // tabid &&
+  element.tabChange('usertab', tabid);
+  element.on('tab(usertab)', function(data){
+    // console.log(data);
+    if(data.index == 2){
+      $('#js-search').trigger('click');
+    }else if(data.index==3 ){
+      $('#js-search2').trigger('click');
+    }
+  });
+  {include file="df/tpl/index_extra"}
+  // var layid = location.hash.replace(/^#usertab=/, '');
+  // element.on('tab(usertab)', function(){
+  //   location.hash = 'usertab='+ this.getAttribute('lay-id');
+  // });
+});
+
+</script>
+<!--  tpl -->
+<script type="text/html" id="userStatusTpl">
+  {{ userStatus[d.user_status] || '未知..' }}
+</script>
+<script type="text/html" id="orderTypeTpl">
+  {{ orderTypes[d.order_type] || '未知..' }}
+</script>
+<script type="text/html" id="createTimeTpl">
+  {{ layui.rb.gettime2(d.create_time) }}
+</script>
+<script type="text/html" id="regTimeTpl">
+  {{ layui.rb.gettime2(d.reg_time) }}
+</script>
+<script type="text/html" id="loginTimeTpl">
+  {{ layui.rb.gettime2(d.login_time) }}
+</script>
+<script type="text/html" id="activeTimeTpl">
+  {{ layui.rb.gettime2(d.active_time) }}
+</script>
+<script type="text/html" id="receiveTimeTpl">
+  {{ layui.rb.gettime2(d.receive_time) }}
+</script>
+<script type="text/html" id="firstBuyTimeTpl">
+  {{ layui.rb.gettime2(d.first_but_time) }}
+</script>
+<script type="text/html" id="minusTpl">
+  {{ layui.rb.toFloat(d.minus/100,2) }}
+</script>
+<script type="text/html" id="plusTpl">
+  {{ layui.rb.toFloat(d.plus/100,2) }}
+</script>
+<script type="text/html" id="beforeTpl">
+  {{ layui.rb.toFloat(d.before_money/100,2,0) }}
+</script>
+<script type="text/html" id="afterTpl">
+  {{ layui.rb.toFloat(d.after_money/100,2,0) }}
+</script>
+<script type="text/html" id="dtTypeTpl">
+  {{ dtTypes[d.dt_type] || '未知..' }}
+</script>
+{/block}

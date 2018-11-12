@@ -63,22 +63,22 @@
     {:html_head_tip('按住表头可拖动节点，调整后点击【保存节点】。')}
     <div class="block clearfix">
       <div class="layui-btn-group">
-        <a class="layui-btn layui-btn-normal" href="{:url(CONTROLLER_NAME.'/set')}">
+        <a class="layui-btn layui-btn-normal layui-btn-sm" href="{:url(CONTROLLER_NAME.'/set')}">
           <i class="fa fa-plus-circle"></i>   新增</a>
-        <button class="layui-btn layui-btn-disabled" id="js-save">
-          <i class="fa fa-check-circle-o"></i>    保存节点</button>
+        <button class="layui-btn layui-btn-disabled layui-btn-sm" id="js-save">
+          <i class="fa fa-check-circle-o"></i>    保存</button>
       </div>
       <div class="layui-btn-group">
-        <button class="layui-btn layui-btn-normal" id="expand-all">
+        <button class="layui-btn layui-btn-normal layui-btn-sm" id="expand-all">
           <i class="fa fa-plus"></i>   展开所有</button>
-        <button class="layui-btn" id="collapse-all">
+        <button class="layui-btn layui-btn-sm" id="collapse-all">
           <i class="fa fa-minus"></i>   收起所有</button>
-        <button class="layui-btn layui-btn-normal" id="hide_disable">
+        <button class="layui-btn layui-btn-normal layui-btn-sm" id="hide_disable">
           <i class="fa fa-eye-slash"></i>    隐藏禁用</button>
-        <button class="layui-btn" id="show_disable">
+        <button class="layui-btn layui-btn-sm" id="show_disable">
           <i class="fa fa-eye"></i>   显示禁用</button>
       </div>
-      <a class="layui-btn fr layui-btn-primary" href="{:url(CONTROLLER_NAME.'/index')}">
+      <a class="layui-btn fr layui-btn-primary layui-btn-sm" href="{:url(CONTROLLER_NAME.'/index')}">
         <i class="fa fa-superpowers"></i>   简洁模式</a>
     </div>
     <div class="dd" id="menu_list">

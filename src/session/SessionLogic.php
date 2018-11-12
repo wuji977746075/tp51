@@ -18,8 +18,9 @@ class SessionLogic extends BaseLogic{
    * api登陆  sid , check sid
   */
   public static function adminLogout(){
-    session(null);
-    session("[destroy]");
+    // session(null);
+    // session("[destroy]");
+    session(self::ADMIN_KEY,0);
   }
   // return
   public static function isAdminLogin(){

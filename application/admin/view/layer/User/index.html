@@ -1,0 +1,145 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<!-- <link type="text/css" rel="stylesheet" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css?v=__VERSION__" /> -->
+<div class="layui-card">
+  <div class="layui-card-header">用户管理</div>
+  <div class="layui-card-body">
+    {:html_head_tip('用户基础数据,点击 .单元格编辑')}
+    <form class="layui-form layui-form-pane" lay-filter="js-form">
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="ID|昵称|账号|手机|邮箱">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <!-- <label for="jsf-role" class="layui-form-label">角色</label> -->
+        <div class="layui-input-inline" style="width: 150px;">
+          <select name="role" id="jsf-role" lay-filter="search">
+            <option value="0"> 全部角色 </option>
+            {volist name="roles" id="v"}
+            <option value="{$v.id}">{$v.name}</option>
+            {/volist}
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">注册时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="block clearfix">
+    <div class="layui-btn-group">
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加" ><i class="layui-icon layui-icon-add-1"></i></a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量删除" ><i class="layui-icon layui-icon-delete"></i></a>
+      <a data-href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" data-table="demo" class="layui-btn confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量禁用" ><i class="fa fa-ban"></i></a>
+    </div>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="查看详情"><i class="layui-icon layui-icon-username"></i>详情</a>
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改" ><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm layer-msg no-refresh fresh-table"  title="删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+var roles = { {volist name="roles" id="v"}{$v.id}:'{$v.name}',{/volist} };
+// page init
+layui.use(['rb','table2','form','element','picView','datetimepicker'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+  var role  = parseInt({$role ?: 0});
+  // form init
+  form.val("js-form", {
+    "role": role
+  });
+  // table init
+  rb.where = {
+    role:role
+    ,field:'id'
+    ,order:'desc'
+  };
+  rb.setWhere = function() {
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.start = $('#jsf-start').val();
+    rb.where.end   = $('#jsf-end').val();
+    rb.where.role  = parseInt($('#jsf-role').prop('value') || 0);
+  };
+  // table tender
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: rb.where
+    ,cols:  [[
+      {type: 'checkbox'}
+      ,{field: 'id',align: 'left',title: 'ID', width: 80,sort:true,hideDisable:true }
+      ,{field: 'nick', title: "昵称(用户名) .",templet:'#nameTpl'}
+      ,{field: 'email', title: '邮箱 .',edit: 'text',templet:'#emailTpl' }
+      ,{field: 'phone', title: '手机 .',edit: 'text',templet:'#phoneTpl'}
+      ,{field: 'role_id', title: '角色',templet:'#roleTpl'}
+      ,{field: 'rate', title: '分佣',templet:'#rateTpl'}
+      ,{field: 'status', title: '状态', width: 80,templet:'#statusTpl',hide:true}
+      ,{field: 'reg_time', title: '注册时间',templet:'#timeTpl',sort:true,hide:true }
+      ,{align:'left',align: 'right',width:150,title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank: true,
+    // timepicker:false,
+  });
+
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="nameTpl">
+  {{ layui.rb.avaImg(d.id,60) }}
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-table-link ajax-layer tooltip" data-text="[{{ d.id }}] {{ d.name }}" title='用户 {{ d.name }} 详情'> {{ d.nick }}</a>
+</script>
+<script type="text/html" id="timeTpl">
+  {{ layui.rb.gettime2(d.reg_time) }}
+</script>
+<script type="text/html" id="phoneTpl">
+  {{# if(d.phone_auth){ }} <i class="layui-icon layui-icon-auz" title="已验证"></i>{{# } }} {{ d.phone }}
+</script>
+<script type="text/html" id="emailTpl">
+  {{# if(d.email_auth){ }} <i class="layui-icon layui-icon-auz" title="已验证"></i>{{# } }} {{ d.email }}
+</script>
+<script type="text/html" id="statusTpl">
+  <form class="layui-form">
+    <input type="checkbox" data-id="{{ d.id }}" class="no-refresh layer-msg" {{# if(d.status > -1){ }} checked  {{#  } }} lay-skin="switch">
+  </form>
+</script>
+<script type="text/html" id="roleTpl">
+  <span class="layui-badge label-role-{{ d.role_id }}"> {{ roles[d.role_id] }}</span>
+  {{# if(d.level) { }}{{ d.level }}级{{# } }}
+</script>
+<script type="text/html" id="rateTpl">
+  {{ layui.rb.toFloat(d.rate*100,1) }}%
+</script>
+{/block}

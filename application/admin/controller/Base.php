@@ -4,30 +4,40 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Db;
 use src\config\ConfigLogic;
+use src\datatree\DatatreeLogic;
 
 class Base extends Controller{
-
   protected $logic = null;
   protected $module_id = 2;
   protected $session_id;
-  protected $trans = false;
+  protected $trans = 0;
   protected $suc_url = '';
   protected $err_url = '';
+  protected $delay = true; // 是否延迟 一次性
   protected $page = ['page'=>1,'size'=>10];
   protected $sort = 'id desc';
-  protected $seo  = [
-    'title'       =>'',
-    'keywords'    =>'',
-    'description' =>'',
-  ];
-  protected $cfg = [
-    'owner'=>'rainbow',
-    'theme'=>'df'
-  ];
+  protected $business = '';
+  protected $seo = null;
+  protected $cfg = null;
+  protected $ip = null;
 
-  protected function trans(){
-    $this->trans = true;
+  protected function trans() {
+    $this->trans = intval($this->trans) + 1;
     Db::startTrans();
+  }
+  // ajaxRet : $this->trans >0
+  // suc err opSuc opErr 等ajax操作自动提交
+  protected function commit() {
+    $this->trans = intval($this->trans) - 1;
+    // $this->trans = 0 ;
+    Db::commit();
+  }
+  // ajaxRet : $this->trans >0
+  // suc err opSuc opErr 等ajax操作自动提交
+  protected function rollback() {
+    $this->trans = intval($this->trans) - 1;
+    // $this->trans = 0 ;
+    Db::rollback();
   }
   //初始化
   protected function initialize(){
@@ -36,24 +46,38 @@ class Base extends Controller{
     $this->session_id = session_id();
     empty($this->session_id) && $this->error("Session 未初始化");
 
-    // 查询设置系统配置
-    $sysConfig = (new ConfigLogic)->queryGroup(ConfigLogic::SYSTEM,0);
-    \Config::set(['app'=>array_merge($sysConfig,config('app.'))]);
+    // 缓存最新 config(app.)
+    (new ConfigLogic)->clearCache();
+    // get datatrees
+    (new DatatreeLogic)->clearCache();
 
+
+    $this->_checkIp();
+    !defined('PRE') && define('PRE',config('table_df_pre'));
     //设置程序版本 - test
-    $this->_assignVars(['title'=>config('site_title'),'keywords'=>config('site_keyword'),'description'=>config('site_desc')],['theme'=>config('admin_theme')]);
+    $this->seo = [
+      'title'       => config('site_title'),
+      'keywords'    => config('site_keyword'),
+      'description' => config('site_desc'),
+    ];
+    $this->cfg = [
+      'theme'    => config('admin_theme'),
+      'template' => 'df',
+      'business' => $this->business,
+    ];
+    $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
     $this->_defined();
 
     // set page and sort
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
-    $this->sort = $this->_get('field','id').' '.$this->_get('sort','desc');
+    $this->sort = $this->_get('field','id').' '.$this->_get('order','desc');
     // set main logic
-    $this->setLogic();
+    $this->_setLogic();
     $this->init();
     // !$this->logic && $this->error('需要配置主logic');
   }
   // set main login if possible
-  protected function setLogic($dir='') {
+  protected function _setLogic($dir='') {
     $logic_dir = $dir ? $dir : lcfirst(CONTROLLER_NAME);
     $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
     if(class_exists($logicPath)){
@@ -65,6 +89,7 @@ class Base extends Controller{
         $this->logic = new $logicPath;
       }
     }
+    $this->business = $logic_dir;
   }
 
   protected function init(){
@@ -78,7 +103,7 @@ class Base extends Controller{
   // }
 
   protected function show($file='',$theme=''){
-    if(false !== $theme) $theme = 'df';
+    $theme = $theme ? $theme : $this->cfg['theme'];
     if(!empty($file)){
       return $this->fetch($theme.'/'.$file);
     }else{
@@ -119,15 +144,19 @@ class Base extends Controller{
   }
 
   /**
-   * 检测IP是否在运行访问的IP里
+   * 检测IP访问
    */
-  public function checkAllowIP() {
-    $allowIP = C('ADMIN_ALLOW_IP');
-    if (!IS_ROOT && $allowIP) {
-      // 检查IP地址访问
-      if (!in_array(get_client_ip(), explode(',', $allowIP))) {
-        $this -> error('403:禁止访问');
-      }
+  protected function _checkIp() {
+    $this->ip = get_client_ip();
+    $allowIp  = config('admin_allow_ips');
+    $banIp    = config('admin_ban_ips');
+    // ? 允许访问
+    if ($allowIp && !in_array($this->ip, explode(',', $allowIp))) {
+      retCode(403);
+    }
+    // ? 拒绝访问
+    if ($banIp && in_array($this->ip, explode(',', $banIp))) {
+      retCode(403);
     }
   }
   //构建分页条字符串
@@ -165,32 +194,18 @@ class Base extends Controller{
     if($checkStatus && !$r['status']) $this->error($r['info']);
     return $r;
   }
-
-  protected function assignVars($seo=['title'=>'标题','keywords'=>'关键词','description'=>'描述',],  $cfg=['owner'=>''])
-  {
-    $this->_assignVars($seo);
-  }
-  /*
-   * Seo 配置
-   * */
-  protected function _assignVars($seo=['title'=>'标题','keywords'=>'关键词','description'=>'描述',],  $cfg=['owner'=>'']){
-    $this->seo = array_merge($this->seo,$seo);
-    $this->cfg = array_merge($this->cfg,$cfg);
-
-    $this->assign("seo",$this->seo);
-    $this->assign("cfg",$this->cfg);
-  }
   /**
    * 赋值页面标题值
    */
   protected function assignTitle($title){
-    $this->seo = array_merge($this->seo,array('title'=>$title));
+    $this->seo['title'] = $title;
     $this->assign("seo",$this->seo);
   }
   protected function _setAjax(){
     header('Access-Control-Allow-Origin:*');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, sessionId");
+    header('X-POWER_BY:'.POWER);
 
     $header = $this->request->header();
     $sessionId = isset($header['sessionid']) ? $header['sessionid'] : null;
@@ -239,11 +254,13 @@ class Base extends Controller{
   // 报错自动回滚事务/成功提交事务
   protected function ajaxRet($msg,$url='',$data = [],$count=0,$time=0,$code=0){
     if($this->trans){
-      $this->trans = false;
-      if($code) Db::rollback();
-      else Db::commit();
+      if($code){ $this->rollback();
+      }else{     $this->commit();
+      }
     }
     $r = [];
+    $time = $this->delay ? $time : 0;
+    $this->delay = true;
     $r['code']  = intval($code); // 0:success,1+:error_code
     $r['msg']   = $msg ? $msg : LL('op '.($r['code'] ?'err':'suc'));
     $r['url']   = $url;   //跳转地址
@@ -259,23 +276,34 @@ class Base extends Controller{
     $url = $url ? $url : $this->err_url;
     $this->ajaxRet($msg,$url,[],0,0,$code);
   }
-  protected function opErr($msg=''){
-    $this->err($msg);
+  protected function opErr($msg='',$url='',$data=[],$time=0,$ajax=false){
+    // echo $msg; echo $url;
+    if(IS_AJAX || $ajax){
+      $this->err($msg,$url);
+    }else{
+      if($this->trans) $this->rollback();
+      $this->error($msg,$url,$data,ceil($time/1000));
+    }
   }
   // 成功 有跳转则延时
-  protected function suc($msg='',$url='',$data=[],$count=0,$time=1500){
+  protected function suc($msg='',$url='',$data=[],$count=0,$time=3000){
     $msg = $msg ? $msg : LL('op suc');
     $url = $url ? $url : $this->suc_url;
     $count = $count ? $count : count($data);
     $this->ajaxRet($msg,$url,$data,$count,$time);
   }
-  protected function opSuc($msg='',$url='',$time=1500){
-    $this->suc($msg,$url,[],0,$time);
+  protected function opSuc($msg='',$url='',$time=3000){
+    if(IS_AJAX){
+      $this->suc($msg,$url,[],0,$time);
+    }else{
+      if($this->trans) $this->commit();
+      $this->success($msg,$url,[],ceil($time/1000));
+    }
   }
 
   // 数据库返回 / apiReturn
-  protected function checkOp($r,$suc='',$err='',$time=1500){
-    if($r){
+  protected function checkOp($r,$suc='',$err='',$time=3000){
+    if(is_array($r)){
       if(isset($r['count']) && isset($r['list'])){
         $this->suc($suc,'',$r['list'],$r['count'],$time);
       }elseif(isset($r['status'])){
@@ -355,8 +383,11 @@ class Base extends Controller{
   // 推荐
   protected function _param($key,$df='',$emptyErr=''){
       $val = input('param.'.$key,$df);
-      if($df == $val && !empty($emptyErr)){
-          $this->err($emptyErr);
+      if(is_string($val)){
+        $val = trim($val);
+        if($df == $val && !empty($emptyErr)){
+            $this->err($emptyErr);
+        }
       }
       return $val;
   }
@@ -369,8 +400,11 @@ class Base extends Controller{
    */
   protected function _post($key,$df='',$emptyErr=''){
     $val = input('post.'.$key,$df);
-    if($df == $val && !empty($emptyErr)){
-      $this->err($emptyErr);
+    if(is_string($val)){
+      $val = trim($val);
+      if($df == $val && !empty($emptyErr)){
+        $this->err($emptyErr);
+      }
     }
     return $val;
   }
@@ -384,8 +418,11 @@ class Base extends Controller{
    */
   protected function _get($key,$df='',$emptyErr=''){
     $val = input('get.'.$key,$df);
-    if($df == $val && !empty($emptyErr)){
-      $this->err($emptyErr);
+    if(is_string($val)){
+      $val = trim($val);
+      if($df == $val && !empty($emptyErr)){
+        $this->err($emptyErr);
+      }
     }
     return $val;
   }

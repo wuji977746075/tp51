@@ -1,0 +1,121 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header"></div>
+  <div class="layui-card-body">
+    {:html_head_tip('')}
+    <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <select name="uid" id="jsf-uid" class="layui-input">
+            <option value="">== 选择分销商 ==</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <label class="layui-form-label">时间区间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input">
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+    <hr >
+    <!-- <div class="block clearfix"></div> -->
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改" data-title="账号修改"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<script>
+// page init
+layui.use(['rb','table2','form','datetimepicker'], function() {
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  var uid = {$uid ?? 0};
+  // form init
+  form.val("js-form",{
+    uid : uid
+  });
+  // table init
+  rb.where.uid = uid;
+  rb.setWhere = function () {
+    rb.where.uid   = $('#jsf-uid').val();
+    rb.where.start = $('#jsf-start').val();
+    rb.where.end   = $('#jsf-end').val();
+  }
+  // table render
+  rb.table = table.render($.extend(rb.table_config, {
+    url: '{:url(CONTROLLER_NAME."/ajaxCount")}'
+    ,where:rb.where
+    ,toolbar:false
+    ,cols:  [[
+      {type: 'checkbox'} //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 80,sort:true }
+      ,{field: 'name', title: '推广位 .',edit: 'text' }
+      ,{field: 'pid', title: 'PID',templet: '#pidTpl'}
+      ,{type: 'space', title: '推广码',width: 55,templet: '#inviteQrTpl'}
+      ,{field: 'invite_url', title: '长链接',templet: '#inviteUrlTpl'}
+      ,{type: 'space', title: '推广码',width: 55,templet: '#inviteSmQrTpl'}
+      ,{field: 'invite_url_sm', title: '短链接',templet: '#inviteUrlSmTpl'}
+      ,{field: 'token', title: '淘口令'}
+      ,{field: 'create_time', title: '导入时间',templet:'#timeTpl',sort:true}
+      // ,{field: 'to_uid', title: '分配', width: 80}
+      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  $('#jsf-start,#jsf-end').datetimepicker({
+    lang: 'ch',
+    format:'Y-m-d H:i',
+    allowBlank : true,
+    // timepicker:false,
+  });
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="nameTpl">
+  <img src="{:config('avatar_url')}?uid={{ d.id }}&size=60" layer-src="{:config('avatar_url')}?uid={{ d.id }}"  class="layui-nav-img js-view">  {{ d.name }}
+</script>
+<script type="text/html" id="timeTpl">
+  {{# if(d.create_time>0){ }}
+  {{ new Date((d.create_time)*1000).format('yyyy/MM/dd hh:mm') }}
+  {{# } }}
+</script>
+<script type="text/html" id="pidTpl">
+  <a href="{:url('wallet_his/index')}?pid={{ d.pid }}&dt_type=17" title="PID({{ d.pid }})的分佣详情" data-width="95%" class="ajax-layer layui-table-link">{{# if( d.to_uid ){ }}  <i class="layui-icon layui-icon-password"></i> {{# } }} {{ d.pid }}</a>
+</script>
+<script type="text/html" id="inviteQrTpl">
+  <img src="{:url(CONTROLLER_NAME.'/qrcode')}?size=1&text={{  d.invite_url }}"  layer-src="{:url(CONTROLLER_NAME.'/qrcode')}?size=8&text={{  d.invite_url }}" class="js-view" title="点击查看大图"/>
+</script>
+<script type="text/html" id="inviteUrlTpl">
+  <a href="{{ d.invite_url }}" class="layui-table-link" target="_blank" title="{{ d.invite_url }}">{{ d.invite_url }}</a>
+</script>
+<script type="text/html" id="inviteSmQrTpl">
+  <img src="{:url(CONTROLLER_NAME.'/qrcode')}?size=1&text={{  d.invite_url_sm }}" layer-src="{:url(CONTROLLER_NAME.'/qrcode')}?size=8&text={{  d.invite_url_sm }}" class="js-view" title="点击查看大图"/>
+</script>
+<script type="text/html" id="inviteUrlSmTpl">
+  <a href="{{ d.invite_url_sm }}" class="layui-table-link" target="_blank" title="{{ d.invite_url_sm }}">{{ d.invite_url_sm }}</a>
+</script>
+{/block}

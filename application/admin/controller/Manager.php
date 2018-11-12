@@ -13,21 +13,17 @@ class Manager extends CheckLogin{
     parent::initialize();
     $this->lang = 'zh';
     $this->module_id = 0;
-
-    $this->menu = (new MenuLogic)->getUserMenu($this->module_id,$this->uid,false);
-    // $this->userMenuIds = $this->getUserAuthMenuIds($this->uid);
+    $this->menu = (new MenuLogic)->getUserMenu($this->module_id,UID,false);
     // 查询用户顶级菜单
     $top_menu_id = input('menu_id/d',0);
-    $menu_id  = 0;
-    $menu_all = $this->menu;
-    // dump($menu_all);die();
-    $uinfo = (new UserLogic)->getAllInfo($this->uid);
-
+    $menu_id   = 0;
+    $menu_all  = $this->menu;
     $menu_json = json_encode($menu_all);
+
     $this->assign('top_menu_id',$top_menu_id);
     $this->assign('menu_id',$menu_id);
     $this->assign('menu_json',$menu_json);
-    $this->assign('uinfo',$uinfo);
+    $this->assign('uinfo',UINFO);// 当前登录用户信息 , 用户模块使用info
     $this->assign('skin','df');
     $this->assign('lang',$this->lang);
   }

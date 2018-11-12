@@ -46,8 +46,8 @@ class Datatree extends CheckLogin{
       }
       $this->assign('parent',$parent);
       $this->jsf_tpl = [
-        ['name'],
         ['title'],
+        ['name'],
         ['icon|icon'],
         ['is_sys|radio','','',3],
         ['desc|textarea','input-long'],
@@ -68,7 +68,8 @@ class Datatree extends CheckLogin{
         }
         $id = $this->logic->add($paras);
       }
-      $this->suc('',url(CONTROLLER_NAME.'/index',['parent'=>$parent]));
+      $this->suc_url = url(CONTROLLER_NAME.'/index',['parent'=>$parent]);
+      $this->suc();
     }
 
   }

@@ -29,6 +29,7 @@ class Role extends CheckLogin{
 
   // 权限管理
   public function auth($id=0){
+    $this->checkUserRight();
     $info = $this->logic->get($id);
     if(IS_GET){ // view
       // ? id
@@ -42,34 +43,38 @@ class Role extends CheckLogin{
       $mAuth  = $info['menu_auth'];
       $mAuths = explode(',', $mAuth);
       // 全部节点
-      $nodes = (new AuthLogic)->query();
+      $nodes = (new AuthLogic)->queryByGroup('model_id');
       $auths = [];
       // 查询客户端 (admin可以除外)
       $clients =  (new ClientLogic)->query([]);
       foreach ($clients as $v) {
         // 客户端开启的节点
-        $cAuth  = $v['api_auth'];
-        $cAuths = explode(',', $mAuth);
+        // $cAuth  = $v['api_auth'];
+        // $cAuths = explode(',', $mAuth);
         $v['nodes'] = $nodes;
         if($rAuths && array_key_exists($v['id'],$rAuths)){
           $ids = $rAuths[$v['id']];
           // 设置节点选中
-          foreach ($v['nodes'] as &$v2) {
-            $v2['sel']  = in_array($v2['id'],$ids) ? 1:0;
-            $v2['open'] = in_array($v2['id'],$cAuths) ? 1:0;
-          } unset($v2);
+          foreach ($v['nodes'] as &$v3) {
+            foreach ($v3 as &$v2) {
+              $v2['sel']  = in_array($v2['id'],$ids) ? 1:0;
+              // $v2['open'] = in_array($v2['id'],$cAuths) ? 1:0;
+            } unset($v2);
+          } unset($v3);
         }else{
-          foreach ($v['nodes'] as &$v2) {
-            $v2['sel']  = 0;
-            $v2['open'] = 0;
-          } unset($v2);
+          foreach ($v['nodes'] as &$v3) {
+            foreach ($v3 as &$v2) {
+              $v2['sel']  = 0;
+              // $v2['open'] = 0;
+            } unset($v2);
+          } unset($v3);
         }
         $auths[] = $v;
       }
       $this->assign('auths',$auths);
 
       // 查询所有3级以内分级菜单
-      $menus = (new MenuLogic)->getUserMenu(0,$this->uid,false);
+      $menus = (new MenuLogic)->getUserMenu(0,UID,false);
       // 设置菜单选中
       foreach ($menus as &$v) {
         $v['sel'] = in_array($v['id'],$mAuths) ? 1:0;
@@ -108,8 +113,8 @@ class Role extends CheckLogin{
         $this->err(Linvalid('type'));
       }
 
-      $r = $this->logic->saveById($id,$save);
-      $this->checkOp($r);
+      $this->logic->saveById($id,$save);
+      $this->suc('操作成功');
     }
   }
 }

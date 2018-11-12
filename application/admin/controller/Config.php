@@ -20,7 +20,7 @@ class Config extends CheckLogin{
 
     $map = [];
     if($group >=0) $map[] = ['group','=',$group];
-    if($kword) $map[] = ['name|title','like','%'.$kword.'%'];
+    if($kword) $map[] = ['name|title','like',$kword.'%'];
     $this->where = $map;
     return parent::ajax();
   }
@@ -35,8 +35,8 @@ class Config extends CheckLogin{
     ]);
     if(IS_GET){ // view
       $this->jsf_tpl = [
-        ['name'],
         ['title'],
+        ['name'],
         ['type|select','',config('config_type_list')],
         ['group|select','',config('config_group_list')],
         ['value|textarea','input-long'],

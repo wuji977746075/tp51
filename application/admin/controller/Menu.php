@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 class Menu extends CheckLogin{
-
+  protected $business = '菜单';
   // 递进型菜单首页
   public function index(){
     $parent = $this->_param('parent/d',0);
@@ -102,7 +102,6 @@ class Menu extends CheckLogin{
       return parent::set();
     }else{ //save
       $paras = $this->_getPara('name','url,icon,params,show|0|int,desc,sort|0|int,parent|0|int');
-
       if($id){ // edit
         $info = $this->logic->getInfo(['id'=>$id]);
         empty($info) && $this->err(Linvalid('id'));

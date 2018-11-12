@@ -1,0 +1,77 @@
+// require : layui:rb,tabl2,form rb.table
+rb.log('page','init');
+// search
+$('body').on('click', '#js-search', function(e) {
+  rb.setWhere();
+  rb.table.reload({
+    where: rb.where,
+    page: {
+      curr : 1
+    }
+  });
+  <!-- e.preventDefault(); -->
+  layui.stope();
+  return false;
+});
+form.on('select(search)', function(){
+  $('#js-search').trigger('click');
+});
+// table a go
+table.on('tool(fDemo)', function(obj){
+  // console.log(obj);
+  var data = obj.data;
+  if(obj.event === 'go'){
+    rb.goTo(obj.tr.find('a').attr('href'));
+  }
+});
+
+// table sort
+table.on('sort(fDemo)', function(obj){
+  rb.setWhere();
+  rb.where.field = obj.field;
+  rb.where.order = obj.type;
+  rb.table.reload({
+    where:rb.where
+    ,initSort: obj
+  });
+});
+
+//table top toolbar
+// table.on('toolbar(test)', function(obj){
+//   var checkStatus = table.checkStatus(obj.config.id);
+//   switch(obj.event){
+//     case 'getCheckData':
+//       var data = checkStatus.data;
+//       layer.alert(JSON.stringify(data));
+//     break;
+//     case 'getCheckLength':
+//       var data = checkStatus.data;
+//       layer.msg('选中了：'+ data.length + ' 个');
+//     break;
+//     case 'isAll':
+//       layer.msg(checkStatus.isAll ? '全选': '未全选');
+//     break;
+//   };
+// });
+
+// table top toolbar event
+// table.on('tool(test)', function(obj){
+//   var data = obj.data;
+//   //console.log(obj)
+//   if(obj.event === 'del'){
+//     layer.confirm('真的删除行么', function(index){
+//       obj.del();
+//       layer.close(index);
+//     });
+//   } else if(obj.event === 'edit'){
+//     layer.prompt({
+//       formType: 2
+//       ,value: data.email
+//     }, function(value, index){
+//       obj.update({
+//         email: value
+//       });
+//       layer.close(index);
+//     });
+//   }
+// });
