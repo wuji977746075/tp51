@@ -6,18 +6,17 @@
   <div class="layui-field-box">
     {:html_head_tip('点击带 .列单元格编辑')}
     <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
     </div>
     {gt name="parent" value="0"}
-    <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm" id="js-return"><i class="fa fa-reply"></i> 返回</a>
+    <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm" title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
     {/gt}
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </fieldset>
 <!-- script -->
 <script>
-var parent = parseInt({$parent|default=0});
 // page init
 layui.use(['rb','table2','element','form'], function(){
   var layer = layui.layer
@@ -26,47 +25,43 @@ layui.use(['rb','table2','element','form'], function(){
   ,rb = layui.rb
   ,$ = layui.$;
   rb.log('page','init');
+  rb.where = {
+    parent: parseInt({$parent|default=0})
+    ,field:'sort'
+    ,order:'desc'
+  }
   //执行渲染
-  table.render({ elem: '#demo'
+  rb.table = table.render({ elem: '#demo'
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,where: { parent : parent }
+    ,where: rb.where
     ,method: 'get'
     ,request: { pageName: 'page',limitName: 'size' }
-    ,limits: [10,30]
-    ,limit: 10
     ,loading: true
-    ,page: true
-    ,cols:  [[
-      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl', style:'cursor: pointer;',sort:true,event:'go'}//,fixed: 'left'
-      ,{field: 'title', title: '字典名 .', width: 200,edit: 'text'}
-      ,{field: 'name', title: '系统名 .', width: 150,edit: 'text'}
-      ,{field: 'icon', title: '图标 .', width: 120,edit: 'text',templet: '#iconTpl'}
-      ,{field: 'desc', title: '描述 .', width: 150,edit: 'text'}
-      ,{field: 'is_sys', title: '系统字典', width: 120,templet:'#isSysTpl'}
-      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',width:200,toolbar: '#barDemo'} //,fixed: 'right'
-    ]]
-    ,done: function(res, page, count){
-      // 转换数据
-      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
-      // console.log(res);
-      // res.data[0].username = 'done-edit';
-      // console.log(page,count);
-      // res.count = 100;
+    ,page: {
+      limits: [10,30]
+      ,limit: 10
     }
+    ,initSort: {
+      field:'sort'
+      ,type:'desc'
+    }
+    ,cols:  [[
+      {checkbox: true} //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl', style:'cursor: pointer;',sort:true,event:'go',sort:true}
+      ,{field: 'title', title: '字典名 .',edit: 'text'}
+      ,{field: 'name', title: '系统名 .',edit: 'text'}
+      ,{field: 'icon', title: '图标 .', width: 120,edit: 'text',templet: '#iconTpl'}
+      ,{field: 'desc', title: '描述 .',edit: 'text'}
+      ,{field: 'is_sys', title: '系统字典',templet:'#isSysTpl'}
+      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
+      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+    ]]
   });
   // 单元格排序
   table.on('sort(fDemo)', function(obj){
-    //this 当前排序的 th 对象
-    //desc（降序）、asc（升序）、null（空对象，默认排序）
-    tb2.reload({
-      initSort: obj
-      ,where: {
-        field: obj.field
-        ,order: obj.type
-        ,parent: parent
-      }
+    rb.table.reload({
+      where: rb.where
+      ,initSort: obj
     });
   });
   // 单元格自定义编辑
@@ -108,8 +103,8 @@ layui.use(['rb','table2','element','form'], function(){
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
 </div>
 </script>
 {/block}

@@ -7,13 +7,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
-<link rel="stylesheet" href="__CDN__layui/2.3.0rc1/css/layui.css" media="all">
+<link rel="stylesheet" href="__CDN__layui/2.4.5/css/layui.css" media="all">
     <style type="text/css">
       body{ width:100%;min-height:100%;background-color: rgba(0,0,0,0.5); }
         .system-message{ padding: 0 0 20px;margin: 100px auto;max-width: 400px;background-color:#f8f8f8; }
         .system-message h3{ font-size: 50px; font-weight: normal; line-height: 120px; margin-bottom: 12px;border:1px solid #ccc; }
         .system-message .jump{ padding-top: 10px; }
-        .system-message .jump a{ color: #333; }
+        .system-message .jump a{ color: #333 !important; }
         .system-message .success,.system-message .error{ padding: 24px; line-height: 1.8em; font-size: 23px ;text-align: center; }
         .system-message .error{color: #F93434; }
         .system-message .detail{ font-size: 12px; line-height: 20px; margin-top: 12px; display:none; }
@@ -25,7 +25,7 @@
     <?php if($code == 1){ echo $msg; ?>
     <?php }else{ ?>
       <?php echo $code;?> : <span style="padding-top:0px;"><?php echo($msg); ?></span>
-      <p><?php echo($data); ?> </p>
+      <p><?php if($data) dump($data); ?> </p>
     <?php } ?>
     </p></div>
     <p class="detail"></p>

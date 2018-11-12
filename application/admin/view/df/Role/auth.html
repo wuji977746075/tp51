@@ -67,7 +67,7 @@
         {/volist}
       </div>
       {/volist}
-      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'menu'])}" class="layui-btn ajax-post" target-form="menuForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'menu'])}" class="layui-btn ajax-post layer-msg layui-btn-sm" target-form="menuForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
       {$html_return|raw}
       </form>
     </div>
@@ -80,16 +80,18 @@
           <input type="checkbox" name="api_auth[]" data-parent="0" value="{$v.id}" title="{$v.client_name} [{$v.client_id}]" lay-skin="primary" data-icon="fa fa-fw fa-home" lay-filter="av1">
         </div>
         <div class="block-content p20">
-          <div class="auth-node-parent">
-            {volist name="v.nodes" id="v2"}
+          {volist name="v.nodes" id="v3"}
+          <div class="auth-node-parent" style="line-height:30px;">
+            {volist name="v3" id="v2"}
             <input type="checkbox" name="api_auth[]" data-parent="{$v.id}" value="{$v.id},{$v2.id}" data-icon="fa fa-fw fa-folder-open-o" title="{$v2.title} [{$v2.name}]" lay-skin="primary" lay-filter="av2" {eq name="v2.sel" value="1"}checked{/eq}>
             {/volist}
           </div>
+          {/volist}
         </div>
       </div>
       {/volist}
       <div class="mb20"></div>
-      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'api'])}" class="layui-btn ajax-post" target-form="apiForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
+      <button href="{:url(CONTROLLER_NAME.'/auth',['id'=>$id,'type'=>'api'])}" class="layui-btn ajax-post layer-msg layui-btn-sm" target-form="apiForm"><i class="layui-icon layui-icon-ok"></i>确定</button>
       {$html_return|raw}
       </form>
     </div>

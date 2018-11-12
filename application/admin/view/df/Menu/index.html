@@ -1,9 +1,9 @@
-{extend name="df/tpl/base" /}
+{extend name="df/tpl/base_index" /}
 
 {block name="area_body"}
-<fieldset class="layui-elem-field">
-  <legend>菜单管理</legend>
-  <div class="layui-field-box">
+<div class="layui-card">
+  <div class="layui-card-header">菜单管理</div>
+  <div class="layui-card-body">
     {:html_head_tip('最多3级菜单,点击带 .列单元格编辑')}
     <div class="block clearfix">
       <div class="layui-btn-group">
@@ -17,93 +17,58 @@
     </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
-</fieldset>
+</div>
+{/block}
+
+{block name="area_foot"}
 <!-- script -->
 <script>
-var parent = parseInt({$parent|default=0});
 // page init
-layui.use(['rb','table2','element','form'], function(){
+layui.use(['rb','table2','form','element'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
   ,rb = layui.rb
   ,$ = layui.$;
-  rb.log('page','init');
-  //执行渲染
-  var tb2 = table.render({ elem: '#demo'
+  // form init
+  // table init
+  rb.where = {
+    parent : parseInt({$parent|default=0})
+    ,field: 'sort'
+    ,order: 'asc'
+  }
+  // table render
+  rb.table = table.render({ elem: '#demo'
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,where: { parent : parent }
+    ,where: rb.where
     ,method: 'get'
     ,initSort: {
       field: 'sort',type: 'asc'
     }
     ,request: { pageName: 'page',limitName: 'size' }
-    ,limits: [10,30]
-    ,limit: 10
     ,loading: true
-    ,page: true
+    ,page: {
+      limits: [10,30]
+      ,limit: 10
+    }
     ,size: 'sm'
-    // ,text: {
-    //   none: '暂无相关数据'
-    // }
     ,cols:  [[
-      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,templet: '#nameTpl', style:'cursor: pointer;',event:'go'}//fixed: 'left'
-      ,{field: 'name', title: '菜单 .', width: 150,edit: 'text'}
-      ,{field: 'icon', title: '图标 .', width: 150,edit: 'text',templet: '#iconTpl'}
-      ,{field: 'url', title: '链接 .', width: 150,edit: 'text'}
-      ,{field: 'params', title: '链接参数 .', width: 150,edit: 'text'}
+      {checkbox: true} //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 50,templet: '#nameTpl', style:'cursor: pointer;',event:'go',sort:true}
+      ,{field: 'name', title: '菜单 .',edit: 'text'}
+      ,{field: 'icon', title: '图标 .',edit: 'text',templet: '#iconTpl'}
+      ,{field: 'url', title: '链接 .',edit: 'text'}
+      ,{field: 'params', title: '链接参数 .',edit: 'text'}
       ,{field: 'show', title: '显示', width: 80,templet:'#showTpl'}
       ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',width:200,toolbar: '#barDemo'} //,fixed: 'right'
+      ,{align:'left',title: '操作',toolbar: '#barDemo'}
     ]]
-    ,done: function(res, page, count){
-      // 转换数据
-      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
-      // console.log(res);
-      // res.data[0].username = 'done-edit';
-      // console.log(page,count);
-      // res.count = 100;
-    }
   });
 
-  // 单元格自定义编辑
-  table.on('tool(fDemo)', function(obj){
-    console.log(obj);
-    var data = obj.data;
-    if(obj.event === 'go'){
-      rb.goTo(obj.tr.find('a').attr('href'));
-    }
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    //this 当前排序的 th 对象
-    //desc（降序）、asc（升序）、null（空对象，默认排序）
-    tb2.reload({
-      initSort: obj
-      ,where: {
-        field: obj.field
-        ,order: obj.type
-        ,parent: parent
-      }
-    });
-  });
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
-  // 单选
-  form.on('switch', function(data){
-    // console.log(data); //elem elem.checked value othis
-    var el = data.elem;
-    var id = parseInt(el.getAttribute('data-id'));
-    rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'show',val: el.checked ? 1:0,id:id },true);
-  });
+  {include file="df/tpl/index_extra"}
 });
 </script>
+<!-- tpl -->
 <script type="text/html" id="iconTpl">
   <i class="{{ d.icon }}"></i>
 </script>
@@ -112,8 +77,7 @@ layui.use(['rb','table2','element','form'], function(){
 </script>
 <script type="text/html" id="showTpl">
   <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}"
-  {{# if(d.show){ }} checked  {{#  } }}
+  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="show" {{# if(d.show){ }} checked  {{#  } }}
   lay-skin="switch">
   </form>
 </script>

@@ -3,9 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title> 登陆页面 </title>
-  <link rel="stylesheet" href="__CDN__layui/2.2.4/css/layui.css" media="all">
+  <link rel="stylesheet" href="__CDN__layui/2.4.5/dist/css/layui.css" media="all">
+  <script>
+    if(self!=top){
+      top.location.href="{:url(CONTROLLER_NAME.'/index')}";
+    }
+  </script>
   {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css"}
-  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.2.4/layui.all.js,__CDN__nprogress/nprogress.js"}
+  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.4.5/dist/layui.js,__CDN__nprogress/nprogress.js"}
   <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
@@ -75,7 +80,7 @@ input{ text-indent: 2em; }
     <button type="submit" class="layui-btn w-full" lay-submit lay-filter="formDemo">登陆</button>
   </div>
 </form>
-<script src="http://test.my/tiandan/js/particles.js"></script>
+<script src="__CDN__particles/particles.js"></script>
 <script>
 $(function(){
   var mw = $(window).width(),num=50,dis=100;

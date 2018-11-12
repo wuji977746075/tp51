@@ -25,14 +25,14 @@
         </div>
       </div>
       <div class="layui-inline">
-        <a class="layui-btn " id="js-search">搜索</a>
-        <button class="layui-btn" type="reset">重置</button>
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" type="reset" title="重置">重置</button>
       </div>
     </form>
     <hr >
     <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn"><i class="layui-icon layui-icon-add-1"></i>添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
+      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
     </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
@@ -48,42 +48,54 @@ layui.use(['rb','table2','form'], function(){
   ,rb = layui.rb
   ,$ = layui.$;
 
-  var group = parseInt({$group ?: -1}),kword = "{$kword ?: ''}";
+  rb.where = {
+    group:parseInt({$group ?: -1})
+    ,kword:"{$kword ?: ''}"
+    ,field:'sort'
+    ,order:'desc'
+  }
   rb.log('page','init');
   //执行渲染
-  var Ltable = table.render({ elem: '#demo'
+  rb.table = table.render({ elem: '#demo'
     ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,where: { group : group,kword: kword }
+    ,where: rb.where
     ,initSort: {
       field: 'sort',type: 'desc'
     }
     ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size', }
-    ,limits: [10,30]
-    ,limit: 10
+    ,request: { pageName: 'page',limitName: 'size' }
     ,loading: true
-    ,page: true
-    ,cols:  [[
-      {checkbox: true}, //,fixed: 'left',LAY_CHECKED: true
-      {field: 'id', title: 'ID', width: 50}//,sort:true,fixed: 'left'
-      ,{field: 'title', title: '配置名 .', width: 150,edit: 'text'}
-      ,{field: 'name', title: '系统名 .', width: 150,edit: 'text'}
-      ,{field: 'value', title: '值 .', width: 150,edit: 'text',templet:'#valueTpl'}
-      ,{field: 'desc', title: '描述 .', width: 200,edit: 'text'}
-      ,{field: 'group', title: '分组 .', width: 80,edit: 'text',templet:'#groupTpl'}
-      // ,{field: 'status', title: '状态', width: 80}
-      ,{align:'left',title: '操作',width:150,toolbar: '#barDemo'} //,fixed: 'right'
-    ]]
-    ,done: function(res, page, count){
-      // 转换数据
-      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
-      // console.log(res);
-      // res.data[0].username = 'done-edit';
-      // console.log(page,count);
-      // res.count = 100;
+    ,page: {
+      limits: [10,30]
+      ,limit: 10
     }
+    ,cols:  [[
+      {checkbox: true}, //,LAY_CHECKED: true
+      {field: 'id', title: 'ID', width: 50,sort:true}
+      ,{field: 'title', title: '配置名 .',edit: 'text'}
+      ,{field: 'name', title: '系统名 .',edit: 'text'}
+      ,{field: 'value', title: '值 .',edit: 'text',templet:'#valueTpl'}
+      ,{field: 'desc', title: '描述 .',edit: 'text'}
+      ,{field: 'group', title: '分组 .', width: 80,edit: 'text',templet:'#groupTpl'}
+      ,{field: 'sort', title: '排序 .', width: 80,sort:true,edit: 'text'}
+      // ,{field: 'status', title: '状态', width: 80}
+      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+    ]]
   });
-
+  // 单元格排序
+  table.on('sort(fDemo)', function(obj){
+    setWhere();
+    rb.where.field = obj.field;
+    rb.where.order = obj.type;
+    rb.table.reload({
+      where:rb.where
+      ,initSort: obj
+    });
+  });
+  function setWhere(){
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.group = $('#jsf-group').val();
+  }
   // 单元格编辑
   table.on('edit(fDemo)', function(obj){
     // console.log(obj); // value , field ,data
@@ -92,11 +104,9 @@ layui.use(['rb','table2','form'], function(){
     });
   });
   $('body').on('click', '#js-search', function(event) {
-    var kword = $('#jsf-kword').val();
-    var group = $('#jsf-group').val();
-    var where = { kword: kword,group: group };
-    Ltable.reload({
-      where: where,
+    setWhere();
+    rb.table.reload({
+      where: rb.where,
       page: {
         curr : 1
       }
@@ -109,8 +119,6 @@ layui.use(['rb','table2','form'], function(){
   });
 });
 
-
-
 </script>
 <script type="text/html" id="valueTpl">
 {{# if(d.type == 3) { }} 数组 => {{# } }}
@@ -121,8 +129,8 @@ layui.use(['rb','table2','form'], function(){
 </script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
 </div>
 </script>
 {/block}

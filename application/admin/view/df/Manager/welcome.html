@@ -16,7 +16,8 @@
   #admHome .homeRght .time{ font-size: 15px;text-align: center;color: #FF5722;}
   #admHome .homeRght .time i{ color: #464646;margin-right: 10px;font-size: 14px;}
   #admHome .homeRght .time span{ /*text-shadow: 2px 2px 2px #FF5722;*/}
-  #admHome .homeRght .bline{ position: relative;height: 32px;line-height: 32px;padding: 10px 15px 1px;border-bottom: 1px solid #E2E2E2;}
+  #admHome .homeRght .bline{ position: relative;
+    /* height: 32px; */line-height: 32px;padding: 10px 15px 1px;border-bottom: 1px solid #E2E2E2;}
   #admHome .homeRght .bline span.c{ font-size: 13px;}
   #admHome .homeRght .notice,#admHome .homeRght .quick{ height: 38px;margin: 15px 4px 0;}
   #admHome .homeRght .notice .layui-btn-group,#admHome .homeRght .quick .layui-btn-group{ width: 100%;margin: 0;}
@@ -69,25 +70,22 @@
   <a href="#" class="skin layui-nav-img" data-skin="gray" data-ref="eeeeee"></a>
 </div>
 
-<!-- <div class="layui-elem-quote">
-  <p>这样有木有觉得更方便些</p>
-</div> -->
-
 <div id="admHome">
   <div class="homeRght">
       <div class="headimg">
-          <a href="{:url('user/set',['id'=>$uinfo.id])}" data-icon="fa-user" data-title="修改信息" class="new_tab"><img src="{:avaUrl($uinfo.id,60)}" alt=""></a>
+          <!-- <a href="{:url('user/detail',['id'=>$uinfo.id])}" data-icon="fa-user" data-title="修改信息" class="js-tab" data-tab="userd-{$uinfo.id}"><img src="{:avaUrl($uinfo.id,60)}" alt=""></a> -->
+          <a href="{:url('user/detail',['id'=>$uinfo.id])}" data-icon="fa-user" data-title="修改信息" class="ajax-layer"><img src="{:avaUrl($uinfo.id,60)}" alt=""></a>
       </div>
       <div class="welcome en-font">
           您好！<span>{$uinfo.nick}</span>
-          <a href="ajax.php?op=logout" class="ajax-get"><i style="color: red;" class="fa fa-sign-out" aria-hidden="true"></i></a>
+          <a href="{:url(CONTROLLER_NAME.'/logout')}" class="layer-msg ajax-get js-logout"><i style="color: red;" class="fa fa-sign-out"  aria-hidden="true"></i></a>
       </div>
       <div class="time bline en-font">
           <b></b>
           <i class="fa fa-clock-o" aria-hidden="true"></i><span class="showtime"></span>
       </div>
       <div class="info bline en-font">
-          真实姓名：<span class="c">{$uinfo.name}(昵称:{$uinfo.nick})</span>
+          真实姓名：<span class="c">{$uinfo.name})</span>
       </div>
       <div class="info bline en-font">
           上次登录：<span class="c">{:date('Y-m-d H:i:s',$uinfo.extra.last_login_time)}</span>
@@ -99,7 +97,7 @@
       <div class="notice">
           <div class="con">
               <div class="layui-btn-group skin">
-                  <a href="/run/feedback/lists.html" class="layui-btn new_tab" data-title="留言列表" data-icon="fa-pencil-square-o">留言<span class="layui-badge layui-bg-gray">0</span></a>
+                  <a href="/run/feedback/lists.html" class="layui-btn js-new-tab" data-title="留言列表" data-icon="fa-pencil-square-o">留言<span class="layui-badge layui-bg-gray">0</span></a>
                   <a class="layui-btn" onclick="layer.msg('敬请期待')">订单<span class="layui-badge layui-bg-gray">0</span></a>
                   <a class="layui-btn" onclick="layer.msg('敬请期待')">消息<span class="layui-badge layui-bg-gray">0</span></a>
               </div>
@@ -127,9 +125,9 @@
       <ul class="grid">
           <li class="li-1">
               <div class="info">
-                  <a href="#" class="new_tab" data-title="文章列表" data-icon="fa-file-text">
+                  <a href="#" class="js-new-tab" data-title="文章列表" data-icon="fa-file-text">
                   <i class="icon"><img src="__SKIN__/img/article.png" alt=""></i>
-                  <span class="number en-font">21</span>
+                  <span class="number en-font">t21</span>
                   <span class="name">文章</span>
                   </a>
               </div>
@@ -137,25 +135,25 @@
           </li>
           <li class="li-2">
               <div class="info">
-                  <a href="#" class="new_tab" data-title="产品列表" data-icon="fa-camera">
+                  <a href="#" class="js-new-tab" data-title="产品列表" data-icon="fa-camera">
                   <i class="icon"><img src="__SKIN__/img/product.png" alt=""></i>
-                  <span class="number en-font">15</span>
+                  <span class="number en-font">t15</span>
                   <span class="name">产品</span>
                   </a>
               </div>
           </li>
           <li class="li-3">
               <div class="info">
-                  <a href="#" class="new_tab" data-title="图集列表" data-icon="fa-image">
+                  <a href="#" class="js-new-tab" data-title="图集列表" data-icon="fa-image">
                   <i class="icon"><img src="__SKIN__/img/album.png" alt=""></i>
-                  <span class="number en-font">1</span>
+                  <span class="number en-font">t1</span>
                   <span class="name">图集</span>
                   </a>
               </div>
           </li>
           <li class="li-4">
               <div class="info">
-                  <a href="{:url('user/index')}" class="new_tab" data-title="会员列表" data-icon="fa-users">
+                  <a href="{:url('user/index')}" class="js-new-tab" data-title="会员列表" data-icon="fa-users">
                   <i class="icon"><img src="__SKIN__/img/user.png" alt=""></i>
                   <span class="number en-font">{$userNum}</span>
                   <span class="name">会员</span>
@@ -168,11 +166,11 @@
     <div class="cms_info clearfix">
       <div class="you">
         <div class="info">
-          <div class="title en-font">使用者：<a href="#" class="new_tab" data-title="设置列表" data-icon=" fa-gears"><i class="fa fa-pencil-square-o"></i></a></div>
+          <div class="title en-font">使用者：<a href="#" class="js-new-tab" data-title="设置列表" data-icon=" fa-gears"><i class="fa fa-pencil-square-o"></i></a></div>
           <div class="con">
             <ul class="list">
-              <li><i class="fa fa-thumbs-up"></i>名称：<span>EduaskCMS测试站</span></li>
-              <li><i class="fa fa-wifi"></i>网址：<span class="en-font"><a href="http://demo.eduaskcms.xin/" target="_blank">http://demo.eduaskcms.xin/</a></span></li>
+              <li><i class="fa fa-thumbs-up"></i>名称：<span>SITE_NAME</span></li>
+              <li><i class="fa fa-wifi"></i>网址：<span class="en-font"><a href="https://gitee.com/wujizhou/tp51" target="_blank">https://gitee.com/wujizhou/tp51</a></span></li>
               <li><i class="fa fa-phone"></i>电话：<span class="en-font">公司电话</span></li>
               <li><i class="fa fa-envelope"></i>邮箱：<span class="en-font">公司邮箱</span></li>
               <li><i class="fa fa-map-marker"></i> 地址：<span>公司地址</span></li>
@@ -208,12 +206,12 @@
                         <th>域名到期日期</th>
                     </tr>
                     <tr>
-                        <td>1GB</td>
+                        <td>t1GB</td>
                         <td class="skin">
-                            <a href="/run/tool/getsitesize.html" class="javascript link" rel="get_site_size">『计算』 <span id="showSiteSize" class="layui-badge layui-bg-orange">0KB</span></a>
+                            <a href="/run/tool/getsitesize.html" class="javascript link" rel="get_site_size">『计算』 <span id="showSiteSize" class="layui-badge layui-bg-orange">t0KB</span></a>
                          </td>
-                        <td>不关心</td>
-                        <td>不关心</td>
+                        <td>t不关心</td>
+                        <td>t不关心</td>
                     </tr>
                     <tr>
                         <th>操作系统</th>
@@ -225,7 +223,7 @@
                         <td><?=php_uname('s')?></td>
                         <td><?=$_SERVER['SERVER_SOFTWARE']?></td>
                         <td><?=GetHostByName($_SERVER['SERVER_NAME'])?></td>
-                        <td>2M</td>
+                        <td>t2M</td>
                     </tr>
                     <tr>
                         <th>PHP版本</th>
@@ -235,15 +233,9 @@
                     </tr>
                     <tr>
                         <td><?=PHP_VERSION?></td>
-                        <td><?php
-                        // $db= new mysqli("localhost","root","1");
-                        // $rs= $db->query("select VERSION() as ver");
-                        // $row=$rs->fetch_assoc();
-                        // echo $row['ver'];
-                        echo '5.5.40';
-                        ?></td>
-                        <td>300S</td>
-                        <td><?php echo function_exists('curl_init') ? 'YES':'NO';?></td>
+                        <td id="js-mysql-v"></td>
+                        <td id="js-time-limit"></td>
+                        <td id="js-curl"></td>
                     </tr>
                     <tr>
                         <th>系统官网</th>
@@ -252,10 +244,10 @@
                         <th>系统版本</th>
                     </tr>
                     <tr>
-                        <td class="skin"><a href="http://www.51cc.win" class="link" target="_blank">『访问』</a></td>
-                        <td class="skin"><a href="#" class="link" target="_blank">『查阅』</a></td>
-                        <td class="skin"><a href="https://gitee.com/eduaskcms/eduaskcms" class="link" target="_blank">『求点赞』</a></td>
-                        <td>RainbowCMS V1.0.0</td>
+                        <td class="skin"><a href="https://gitee.com/wujizhou/tp51" class="link" target="_blank">『访问』</a></td>
+                        <td class="skin"><a href="https://gitee.com/wujizhou/tp51" class="link" target="_blank">『查阅』</a></td>
+                        <td class="skin"><a href="https://gitee.com/wujizhou/tp51" class="link" target="_blank">『求点赞』</a></td>
+                        <td id="js-cms-v"></td>
                     </tr>
                 </tbody></table>
             </div>
@@ -263,6 +255,10 @@
       </div>
     </div>
   </div>
+
+<div class="layui-elem-quote">
+  <p>不忘初心,放得始终 !</p>
+</div>
 </div>
 {/block}
 
@@ -275,6 +271,24 @@ layui.use(['rb'], function(){
   $ = layui.$;
 
   rb.log('welcome',' !!! ');
+
+  $.get("{:config('api_url')}/tool/info",{
+  },function(data){
+    // console.log(data);
+    try{
+      data = JSON.parse(data);
+      if(data.code){
+        rb.msg(data.info);
+      }else{
+        $('#js-mysql-v').html(data.info.mysql_v);
+        $('#js-curl').html(data.info.curl);
+        $('#js-time-limit').html(data.info.time_limit);
+        $('#js-cms-v').html(data.info.cms_v);
+      }
+    }catch(err){
+      rb.msg('请求异常');
+    }
+  });
 });
 </script>
 {/block}
