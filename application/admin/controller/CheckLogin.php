@@ -139,6 +139,11 @@ class CheckLogin extends Base {
     $tpl.=   '<div class="layui-input-inline '. $css.'">';
     if(in_array($type,['text','hidden','number','password'])){
       $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input '.$css2.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.' title="'.$val.'" '.$extra.'>';
+    }else if($type == 'cropper'){ // cropper
+      $tpl .= '<input type="hidden" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'">';
+      $tpl .= '<a id="jsf-'.$jsf.'-extra" data-img="'.avaUrl($extra).'" style="cursor:pointer;" title="更改">
+        <img src="'.avaUrl($extra,120).'" class="layui-upload-img" style="width:120px;">
+      </a>';
     }else if($type == 'radio'){ // radio
       $tpl .= '<input type="checkbox" name="'.$field.'" id="jsf-'.$jsf.'" lay-skin="switch" value="1" '.($val ? 'checked' : '').' '.$extra.'>';
     }else if($type =='textarea'){ // textarea
@@ -174,7 +179,7 @@ class CheckLogin extends Base {
       $tpl.= '</select>';
     }else if($type == 'icon'){ // icon 自定义图标选择
       $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-jsf-icon '.$css2.'" placeholder="'.$hold.'"  autocomplete="off"  '.$need_ipt.'>';
-      $tpl .= '</div>'.($val ? '<div class="layui-input-inline"><i class="'.$val.'"></i></div>' : '').'<div>';
+      $tpl .= '</div>'.($val ? '<div class="layui-input-inline" style="margin-top: 7px;"><i class="'.$val.'"></i></div>' : '').'<div>';
     }else if($type =='btimg'){ // btimg 自定义图片选择
       $show_add = false;
       $vals = explode(',', $val);

@@ -1,5 +1,38 @@
-{extend name="df/tpl/base_set_layer" /}
+{include file="df/tpl/base_head" /}
+
+</head>
+<body id="body">
+
+{block name="area_body"}
+{include file="df/tpl/set_form_layer" /}
+{include file="df/tpl/pic_select" /}
+{/block}
 
 {block name="area_foot"}
-  {include file="df/tpl/pic_select" /}
+<script>
+;layui.use(['rb','form','croppers'],function(){
+  var $ = layui.jquery
+    ,form = layui.form
+    ,croppers = layui.croppers
+    ,layer= layui.layer;
+
+  //创建一个头像上传组件
+  // croppers.render({
+  //   elem: '#jsf-avatar-extra'
+  //   ,saveW:150
+  //   ,saveH:150
+  //   ,mark :1/1    //选取比例
+  //   ,area :'840px'
+  //   ,field: 'wxshop'
+  //   ,url  : "{:url('file/uploadUserPicture',['session_id'=>session_id(),'type'=>'avatar'])}"
+  //   ,done: function(id){
+  //     $("#jsf-avatar").val(id);
+  //     // avaUrl 可能会有缓存问题
+  //     $("#jsf-avatar-extra>img").attr('src',"{:config('picture_url')}?id="+id+"&fresh=1&v="+Math.random());
+  //   }
+  // });
+});
+</script>
 {/block}
+</body>
+</html>

@@ -1,0 +1,102 @@
+<style>
+*{
+  margin: 0 auto;
+}
+.verify{
+  height: 38px;
+  margin-top: 30px;
+}
+.verify span{
+  width: 38px;
+  height: 38px;
+  font-family: &#65279;MicrosoftYaHei;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 38px;
+  letter-spacing: 0px;
+  color: #302f41;
+  margin-right: 23px;
+}
+#verify_box{
+  height: 38px;
+  text-align: center;
+  line-height: 38px;
+  font-size: 14px;
+  color:#fff;
+  position: relative;
+  background-color: rgba(212, 212, 212, 1);
+}
+#verify_xbox{
+  width: 54px;
+  height: 38px;
+  text-align: center;
+  line-height: 38px;
+  font-size: 14px;
+  color:#fff;
+  position: absolute;
+  background: #7BBB55;
+}
+#verify_btn{
+  cursor: pointer;
+  width: 54px;
+  height: 38px;
+  background-color: rgba(255, 255, 255, 1);
+  border: solid 1px rgba(212, 212, 212, 1);
+  float: right;
+}
+.continue{
+  width: 120px;
+  height: 38px;
+  background-color: rgba(212, 212, 212, 1);
+  margin: 0 70px;
+  border: none;
+  color: #302f41;
+  font-size: 16px;
+}
+.continue:hover{
+  background-color: rgba(235, 54, 38, 1);
+  color: #ffffff;
+}
+</style>
+<div class="verify layui-form-item">
+  <div id="verify_box">
+    <div id="verify_xbox">
+      <div id="verify_btn">
+        <img src="__IMG__iiii.png">
+      </div>
+    </div>
+  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;按住滑块，拖动到最右边
+  </div>
+</div>
+<script>
+$(function() {
+  var box  = document.getElementById('verify_box');
+  var xbox = document.getElementById('verify_xbox');
+  var element = document.getElementById('verify_btn');
+  var b = box.offsetWidth;
+  var o = element.offsetWidth;
+  element.ondragstart   = function() { return false; };
+  element.onselectstart = function() { return false; };
+  element.onmousedown   = function(e) {
+    var disX = e.clientX - element.offsetLeft;
+    document.onmousemove = function(e) {
+      var l = e.clientX - disX + o;
+      l = Math.min(Math.max(l,o),b);
+      xbox.style.width = l + 'px';
+    };
+    document.onmouseup = function(e) {
+      var l = e.clientX - disX + o;
+      if(l < b) {     l = o;
+      } else {        l = b;
+        xbox.innerHTML = '验证通过<div id="verify_btn"><img src="__IMG__kkkk.png"/></div>';
+        $('button[type=submit').removeClass('layui-btn-disabled');
+      }
+      xbox.style.width = l + 'px';
+      document.onmousemove = null;
+      document.onmouseup = null;
+    };
+  }
+})
+</script>

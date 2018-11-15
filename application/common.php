@@ -31,6 +31,23 @@
 //   return $r;
 // }
 
+function getArrKey($r,$key,$err='invalid array key'){
+  if($err && !isset($r[$key])) throws($err.':'.$key);
+}
+
+function getConfig($key='',$time=600) {
+  return (new \src\config\ConfigLogic)->getConfig($key);
+}
+function getDatatree($name='',$time=600) {
+  $c = (new \src\datatree\DatatreeLogic)->getDatatree($name,'id','title');
+  return $c;
+}
+function getUserById($id=0,$field='name',$null='') {
+  $temp = $id  ? (new \src\user\UserLogic)->getAllInfo($id) : [];
+  return isset($temp[$field]) ? $temp[$field] : $null;
+}
+
+
 function cache_get($key=''){
   !is_string($key) && $key=serialize($key);
   return Cache::get($key,null);
@@ -58,6 +75,68 @@ function cache_clear($key='',$return=false){
   }else{
     Cache::clear;
   }
+}
+
+/**
+ * 获取时间戳
+ * @param  mixed $time  int,string
+ * @return int          时间戳
+ */
+function fixTimeStamp($time=0,$thr=false){
+  $ret = 0;
+  if($time){// 非空
+    if(is_numeric($time)){//数字
+      $ret = (int) $time;
+    }else{ // 字符串
+      $ret = strtotime($time);
+      if(false === $ret){
+        $thr && throws('时间格式错误');
+      }
+    }
+  }
+  return $ret;
+}
+
+// return http_err_code and exit
+function retCode($code,$msg='',$data=[]){
+  header('HTTP/1.1 '.$code);
+  // //$code = (int) $code;
+  // $msgs = [ // 其他待测 -> http
+  //   301=>'Moved Permanently',
+  //   304=>'Not Modified',
+  //   401=>'Unauthorized',
+  //   403=>'Forbidden',
+  //   404=>'Not Found',
+  // ];
+  // $msg || $msg = (isset($msgs[$code]) ? $msgs[$code] : '');
+  // header('HTTP/1.1 '.$code);
+  // echo $msg;
+  exit;
+}
+// throw exception
+function throws($msg='excetion',$code=-1,$data=[]){
+  throw new \Exception($msg,$code);
+}
+
+// 全空需在外面处理
+function getWhereTime($field,$start='',$end=''){
+  empty($field) && throws('invalid:where_time_call_1');
+  // $start = fixTimeStamp($start);
+  // $end = fixTimeStamp($end);
+  if($start){
+    if($end){ // start-end
+      $map = [$field,'between time',[$start,$end]];
+    }else{ // start-
+      $map = [$field,'>=',$start];
+    }
+  }else{
+    if($end){ // -end
+      $map = [$field,'<=',$end];
+    }else{ // ~-~
+      throws('invalid:where_time_call_2');
+    }
+  }
+  return $map;
 }
 
 // 驼峰式 转下划线
@@ -238,9 +317,15 @@ function html_head_tip($html='',$pre=true){
   return '<blockquote class="layui-elem-quote head-tip">'.($pre ? '<strong><i class="fa fa-fw fa-info-circle"></i>提示：</strong>' : '').'<span style="display:inline-flex;">'.$html.'</span></blockquote>';
 }
 
-function html_return($url='',$msg='返回'){
-  $url = $url ? $url : 'javascript:history.go(-1)';
+function html_return($url='',$msg='',$skin=''){
+  if($skin === 'layer'){
+    $msg = $msg ? $msg : L('close');
+    return '<a style="cursor:pointer" class="layui-btn layui-btn-sm layui-btn-primary ml10 js-close-iframe">'.$msg.'</a>';
+  }else{
+    $msg = $msg ? $msg : L('return');
+    $url = $url ? $url : 'javascript:history.go(-1)';
     return '<a href="'.$url.'" class="layui-btn layui-btn-sm layui-btn-primary ml10">'.$msg.'</a>';
+  }
 }
 /**
  * @desc  im:十进制数转换成三十六机制数
@@ -302,13 +387,16 @@ function get_client_ip($type = 0,$adv=false) {
     return $ip[$type];
 }
 
+function getLastSql(){
+  return \think\Db::getLastSql();
+}
 // 头像地址
-function avaUrl($uid,$size=120){
-  return config('avatar_url').'?uid='.$uid.'&size='.$size;
+function avaUrl($uid,$size='',$fresh=true){
+  return config('avatar_url').'?uid='.$uid.( $size ? '&size='.$size : '').( $fresh ? '&fresh=1' : '');
 }
 // 图片地址
-function imgUrl($id,$size=120){
-  return config('picture_url').'?id='.$id.'&size='.$size;
+function imgUrl($id,$size='',$fresh=true){
+  return config('picture_url').'?id='.$id.( $size ? '&size='.$size : '').( $fresh ? '&fresh=1' : '');
 }
 // ajax 返回
 function ajaxReturn($msg,$url='',$data = [],$count=0,$time=0,$code=0){

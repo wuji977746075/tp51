@@ -13,7 +13,7 @@
         <select name="uid" class="user_select2" id="js-set-uid" style="width:200px;" lay-ignore>
           <!-- <option value="">UID/账号/昵称/手机号</option> -->
         </select>
-        </span>
+        <!-- <input type="text" name="uid" id="js-set-uid"  style="width:200px;display: inline-block;" class="layui-inline layui-input" placeholder="选择分配用户"> -->
         <a data-src="{:url(CONTROLLER_NAME.'/setUser')}" data-table="demo" class="layui-btn layui-btn-warm confirm layui-btn-sm sco-msg no-refresh js-ops fresh-table" id="js-set-user" title="批量分配" data-content="确定如此分配吗 ?"><i class="layui-icon layui-icon-link"></i>分配</a>
       </div>    <hr>
       <div class="layui-inline">
@@ -67,13 +67,53 @@
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','form','datetimepicker','picView','select2'], function() {
+layui.use(['rb','table2','form','datetimepicker','picView','select2'], function() { //tableSelect,'select2']
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
   ,rb = layui.rb
+  // ,tableSelect = layui.tableSelect
   ,$ = layui.$;
 
+  // ts-selected : 默认值
+  tableSelect.render({
+    elem: '#js-set-uid'//输入框
+    ,checkedKey: 'id'      //表格的唯一建值
+    ,searchKey: 'kword'    //搜索框的 name
+    ,searchPlaceholder: 'UID/账号/昵称/手机号'
+    ,table: {  //同LAYUI的TABLE模块，无需elem
+      url : "{:url('user/ajax',['invite'=>$invite,'level'=>$level])}"
+      ,method: 'get'
+      ,request: { pageName: 'page',limitName: 'size' }
+      ,loading: true
+      ,size: 'sm'
+      ,initSort:{
+        field: 'id'
+        ,type: 'desc'
+      }
+      ,page : {
+        limits: [5,10]
+        ,limit: 5
+        ,layout:['prev','page','next','skip','limit','count','refresh']
+      }
+      ,cols: [[
+      // {type: 'checkbox'}
+      {type: 'radio'}
+      ,{field: 'id',title: 'ID', width: 80,sort:true }
+      ,{field: 'nick', title: "昵称(用户名)",templet:'#nameTpl'}
+      ,{field: 'email', title: '邮箱' }
+      ,{field: 'phone', title: '手机' }
+      ]]
+    }
+    ,done: function (elem, data) {
+      // console.log('data',data);
+      if(data.data.length){
+        elem.val('['+data.data[0].id+'] '+data.data[0].name);
+      }else{
+        elem.val('');
+      }
+    }
+  });
 
   var send =  "{$send ?? ''}";
   // form init
@@ -158,4 +198,7 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
 <script type="text/html" id="inviteUrlSmTpl">
   <a href="{{ d.invite_url_sm }}" class="layui-table-link" target="_blank"  title="{{ d.invite_url_sm }}">{{ d.invite_url_sm }}</a>
 </script>
+<!-- <script type="text/html" id="nameTpl">
+  {{ layui.rb.avaImg(d.id,60) }} {{ d.nick }}
+</script> -->
 {/block}

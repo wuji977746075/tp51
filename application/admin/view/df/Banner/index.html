@@ -1,23 +1,16 @@
 {extend name="df/tpl/base" /}
 
-{block name="area_head"}
-<style>
-  .layui-table-cell{height: auto !important;}
-</style>
-{/block}
-
 {block name="area_body"}
 <fieldset class="layui-elem-field">
   <legend>Banner 管理</legend>
   <div class="layui-field-box">
-    {:html_head_tip('用户基础数据,点击单元格编辑')}
-
+    {:html_head_tip('系统轮播汇总,点击单元格编辑')}
     <form class="layui-form layui-form-pane">
       {:token()}
       <div class="layui-inline">
         <!-- <label for="jsf-dt-id" class="layui-form-label">关键词</label> -->
         <div class="layui-input-inline" style="width: 200px;">
-          <select name="dt_id" id="jsf-dt-id" lay-filter="jsf-dt-id">
+          <select name="dt_id" id="jsf-dt-id" lay-filter="search">
             <option value='0'> ==  全部  == </option>
             {volist name="types" id="v"}
             <option value="{$key}" {eq name="dt_id" value="$key"} selected {/eq}>{$v}</option>
@@ -26,41 +19,31 @@
         </div>
       </div>
       <div class="layui-inline hide">
-        <a class="layui-btn" id="js-search"><i class="layui-icon layui-icon-search"></i> 搜索</a>
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
       </div>
-    </form> <hr>
-    <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set',['dt_id'=>$dt_id])}" class="layui-btn" id="js-add"><i class="layui-icon layui-icon-add-1"></i>添加</a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm"><i class="layui-icon layui-icon-delete"></i>批量删除</a>
-    </div>
-    <table id="demo" lay-filter="fDemo"></table>
+    </form>
+
+<table id="demo" lay-filter="fDemo"></table>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',['dt_id'=>$dt_id])}" class="layui-btn layui-btn-sm" id="js-add" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-sm layui-btn-danger js-ops confirm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
   </div>
-</fieldset>
-<!-- tpl -->
-<script type="text/html" id="imgTpl">
-{{# if (d.img >0){ }}
-  <img src="{:config('picture_url')}?id={{ d.img }}&size=60" class="js-view" layer-src="{:config('picture_url')}?id={{ d.img }}">
-{{# }else{ }}
-{{# } }}
-</script>
-<script type="text/html" id="urlTypeTpl">
-{{ url_types[d.url_type] }}
-</script>
-<script type="text/html" id="dtIdTpl">
-{{ types[d.dt_id] }}
 </script>
 <script type="text/html" id="barDemo">
-<div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-edit"></i>编辑</a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert"><i class="layui-icon layui-icon-delete"></i>删除</a>
-</div>
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" tilte="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
 </script>
+
+  </div>
+</fieldset>
 {/block}
 
 {block name="area_foot"}
 <!-- script -->
 <script>
-var dt_id  = parseInt({$dt_id ?: 0});
 var url_types = JSON.parse('{:json_encode($url_types)}');
 var types = JSON.parse('{:json_encode($types)}');
 // page init
@@ -72,16 +55,19 @@ layui.use(['rb','table2','form'], function(){
   ,$ = layui.$;
 
   rb.log('page','init');
-  //执行渲染
-  var tb2 = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,where: { dt_id : dt_id }
-    ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size', }
-    ,limits: [10,30]
-    ,limit: 10
-    ,loading: true
-    ,page: true
+
+  var dt_id  = parseInt({$dt_id ?: 0});
+  // form init
+  // table init
+  rb.where.dt_id = dt_id;
+  rb.where.field = 'sort';
+  rb.setWhere = function () {
+    rb.where.dt_id = parseInt($('#jsf-dt-id').prop('value') || 0);
+  }
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: rb.where
     ,initSort: {
       field: 'sort',type: 'desc'
     }
@@ -93,54 +79,27 @@ layui.use(['rb','table2','form'], function(){
       ,{field: 'url_type', title: '链接类型 .', width: 100,edit: 'text',templet:'#urlTypeTpl'}
       ,{field: 'dt_id', title: '位置 .', width: 200,edit: 'text',templet:'#dtIdTpl'}
       ,{field: 'sort', title: '排序 .', width: 80,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',width:250,toolbar: '#barDemo'} //,fixed: 'right'
+      ,{align:'left',fixed: 'right',title: '操作',width:250,toolbar: '#barDemo'}
     ]]
-    ,done: function(res, page, count){
-      // 转换数据
-      //异步 res为接口返回,直接赋值 res为：{data: [], count: 99}
-      // console.log(res);
-      // res.data[0].username = 'done-edit';
-      // console.log(page,count);
-      // res.count = 100;
-    }
-  });
-
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    // console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    //this 当前排序的 th 对象
-    //desc（降序）、asc（升序）、null（空对象，默认排序）
-    tb2.reload({
-      initSort: obj
-      ,where: {
-        field: obj.field
-        ,order: obj.type
-        ,dt_id : dt_id
-      }
-    });
-  });
-  $('body').on('click', '#js-search', function(e) {
-    dt_id  = parseInt($('#jsf-dt-id').prop('value') || 0);
-    tb2.reload({
-      where: { dt_id:dt_id },
-      page: {
-        curr : 1
-      }
-    });
-    e.preventDefault();
-    return false;
-  });
-
-  form.on('select(jsf-dt-id)', function(data){
+  }));
+  {include file="df/tpl/index_extra"}
+  // 重写 form.on('select(search)
+  form.on('select(search)', function(data){
     $('#js-add').attr('href',"{:url(CONTROLLER_NAME.'/set',[])}?dt_id="+$('#jsf-dt-id').prop('value'));
     $('#js-search').trigger('click');
   });
 });
+</script>
+<!-- tpl -->
+<script type="text/html" id="imgTpl">
+{{# if (d.img >0){ }}
+{{ layui.rb.img(d.img,60,'js-view') }}
+{{# } }}
+</script>
+<script type="text/html" id="urlTypeTpl">
+{{ url_types[d.url_type] }}
+</script>
+<script type="text/html" id="dtIdTpl">
+{{ types[d.dt_id] }}
 </script>
 {/block}

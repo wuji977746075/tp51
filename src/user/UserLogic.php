@@ -13,9 +13,9 @@ class UserLogic extends BaseLogic{
 
   // return
   // todo : redis ...
-  function login($uid,$token='',$type='',$isAdmin=false){
+  function login($uid,$device_token='',$device_type='',$isAdmin=false){
     // add new session and logout the oldest
-    $sid = (new SessionLogic)->add($uid,$token,$type); // api
+    $sid = (new SessionLogic)->add($uid,$device_token,$device_type); // api
     // define('UID',$uid); //常量不可改
     // 如果是后台 则写一个 session
     $isAdmin && session(SessionLogic::ADMIN_KEY,$uid);

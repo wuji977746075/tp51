@@ -3,19 +3,40 @@ namespace app\admin\controller;
 
 use src\user\UserLogic;
 use src\role\UserRoleLogic;
+// use think\facade\Session;
 
 class Login extends Base{
 
   public function index(){
     if(IS_GET){ // admin login view
+      $login_token = time();
+      session('login_token',$login_token);
+      $this->assign('token',$login_token);
+      $auth_type = getConfig('admin_login_auth_type',0);
+      session('auth_type',$auth_type);
+      $this->assign('auth_type',$auth_type);
       return $this->show();
     }else{ // admin login
-
+      // check
+      $token = $this->_param('token','','非法访问.nt');
+      $login_token = session('login_token');
+      session('login_token',null); // only once
+      if($login_token != $token){
+        $this->error('非法访问.it');
+      };
+      $auth_type = session('auth_type');
+      session('auth_type',null);   // only once
+      if($auth_type == 'auth_code'){ // 验证码
+        if(!captcha_check($this->_param('auth_code','','需要验证码'),'login')){
+          $this->error('验证码错误或失效');
+        }
+      }elseif(in_array($auth_type,['','auth_slide'])){
+      }else{
+        $this->error('非法访问');
+      }
       $uname = $this->_param('uname','','需要用户名');
       $upass = $this->_param('upass','','需要密码');
-      $d_token = $this->_param('d_token','');
-      $d_type  = $this->_param('d_type','');
-      // ? user
+      // ? user : 出错跳转登陆
       try{
         $uinfo = (new UserLogic)->checkUser($uname,$upass);
         $uid   = $uinfo['id'];
@@ -37,7 +58,7 @@ class Login extends Base{
 
         }
         // 登陆
-        $sid = (new UserLogic)->login($uid,$d_token,$d_type,true);
+        $sid = (new UserLogic)->login($uid,'','web',true);
       }catch(\Exception $e){
         $this->opErr($e->getCode().':'.$e->getMessage(),url('login/index'));
       }

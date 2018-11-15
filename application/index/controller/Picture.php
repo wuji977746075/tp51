@@ -60,6 +60,25 @@ class Picture extends Controller{
 
     }
 
+    // 验证码
+    // 关闭vender 的 route
+    // $id 多个时的flag
+    function captcha ($w=120,$h=50,$id='login') {
+      // Config::pull('captcha') or config/captcha.php
+      $ops = [
+        'fontSize' => 20,
+        'imageW'   => $w,
+        'imageH'   => $h,
+        'useImgBg '=> true,
+        'useNoise' => false,
+        'expire'   => 300, // 300s 失效
+        // 'seKey'    => 'rainbowP',// 改的话验证那也该自定义
+        // 'length'   => 4,
+        // 'reset'    => false, // 成功后重置
+      ];
+      $captcha = new \think\captcha\Captcha($ops);
+      return $captcha->entry($id);
+    }
     // 请求头缓存
     function index() {
       //TODO: 带图片类型，对不同类型分批处理

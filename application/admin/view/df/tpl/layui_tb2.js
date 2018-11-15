@@ -40,6 +40,7 @@ layui.use(['rb','table2','element','form'], function(){
     rb.where.start = $('#jsf-start').val();
     rb.where.end   = $('#jsf-end').val();
   }
+
   // table render
   rb.table = table.render($.extend(rb.table_config, {
     url: '{:url(CONTROLLER_NAME."/ajax")}'

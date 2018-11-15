@@ -57,27 +57,44 @@ input{ text-indent: 2em; }
   </style>
 </head>
 <body>
-<div id="js-p">
-</div>
+<div id="js-p"></div>
 
 <form class="center layui-form" action="{:url('login/index')}" method="post">
+  <input type="hidden" name="token" value="{$token}">
   <div class="header">
     <h2>rainbowAdmin</h2>
     <p>layui+tp5后台管理模板系统</p>
   </div>
   <div class="layui-form-item relative">
     <i class="fa fa-user jsf-icon"></i>
-    <input type="text" name="uname" class="layui-input" placeholder="用户名">
+    <input type="text" name="uname" required class="layui-input" placeholder="用户名">
   </div>
   <div class="layui-form-item relative">
     <i class="fa fa-lock jsf-icon"></i>
-    <input type="text" name="upass" class="layui-input" placeholder="密码">
+    <input type="text" name="upass" required class="layui-input" placeholder="密码">
   </div>
-  <div class="layui-form-item">
+  {switch auth_type}
+    {case auth_slide}
+      {include file="df/tpl/auth_slide"}
+    {/case}
+    {case auth_code}
+      <div class="layui-form-item">
+        <!-- <label class="layui-form-label">验证码</label> -->
+        <div class="layui-input-inline">
+          <input type="text" name="auth_code" required autocomplete="off" class="layui-input" placeholder="验证码">
+        </div>
+        <div class="layui-form-mid layui-word-aux" style="padding: 0!important;margin: 0!important;border:1px solid #d2d2d2;">
+          <img src="{:config('api_url')}/picture/captcha?w=156&h=36&v={:time()}" onClick="this.src='{:config('api_url')}/picture/captcha?w=156&h=36&v'+Math.random();" alt="">
+        </div>
+      </div>
+    {/case}
+    {default /}
+  {/switch}
+  <!-- <div class="layui-form-item">
     <input type="checkbox" name="remember" id="jsf-remember"> 记住密码
-  </div>
+  </div> -->
   <div class="layui-form-item">
-    <button type="submit" class="layui-btn w-full" lay-submit lay-filter="formDemo">登陆</button>
+    <button type="submit" class="layui-btn w-full {eq name='auth_type' value='auth_slide'}layui-btn-disabled{/eq}" lay-submit lay-filter="formDemo">登陆</button>
   </div>
 </form>
 <script src="__CDN__particles/particles.js"></script>
