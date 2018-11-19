@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <title> 登陆页面 </title>
   <link rel="stylesheet" href="__CDN__layui/2.4.5/dist/css/layui.css" media="all">
+  <link rel="stylesheet" href="__SKIN__css/screen.css?v=__VERSION__" media="screen">
+  <style>
+    .layui-input, .layui-select, .layui-textarea{
+      height: 38px !important;
+    }
+  </style>
   <script>
     if(self!=top){
       top.location.href="{:url(CONTROLLER_NAME.'/index')}";

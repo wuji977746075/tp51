@@ -22,7 +22,6 @@ class User extends CheckLogin {
   // logic ajax page-list
   function index() {
     $this->checkUserRight();
-
     $role  = $this->_get('role/d',0);
     $this->assign('role',$role);
     // 查询所有角色

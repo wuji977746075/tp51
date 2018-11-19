@@ -46,19 +46,12 @@ return [
     'code_cfg'=>[
         'type'=>'local', //local:本地弹窗 qcloud: 腾讯云 juhe: 聚合
         'extra'=>[
-            //腾讯云配置
-//            'sdk_app_id'=>"1400018532",
-//            "app_key"=>"18d087393ef7df76214d5f6ec087a5ba"
-            //聚合配置
-            "key"=>"b771aa8f615679f52990ce44ad2d9042"
+           //腾讯云配置
+           // 'sdk_app_id'=>"1400018532",
+           // "app_key"=>"18d087393ef7df76214d5f6ec087a5ba"
+           //聚合配置
+           "key"=>"b771aa8f615679f52990ce44ad2d9042"
         ]
-    ],
-
-    //阿里百川
-    'alibaichuan_cfg'=>[
-        'is_debug'   => true,//是否测试
-        'app_key'    => '23500185',
-        'app_secret' => 'b7f5a4c77e7e91f5266d1f9ea7468874',
     ],
     //支持的支付方式
     'app_support_payways'=>[
@@ -121,7 +114,7 @@ return [
     'audio_upload_driver'=>'local',
     /* 图片上传相关配置 */
     'user_picture_upload' => [
-//上传公用配置
+        // 上传公用配置
         'mimes'    => '', //允许上传的文件MiMe类型
         'maxSize'  => 500*1024, //上传的文件大小限制 (不大于0或者不填-不做限制)
         'exts'     => 'jpg,gif,png,jpeg', //必填,允许上传的文件
@@ -129,10 +122,10 @@ return [
         'subName'  => ['date', 'Ymd'], //必填,子目录创建方式，[0]-函数名，[1]-参数，多个参数使用数组
         'rootPath' => './upload/userPicture/', //必填,保存根路径
 
-//新版上传配置
+        //新版上传配置
         // 'house_rate' => [4,3],//房源图片比例4:3
 
-//一下为兼容curl_upload的老版配置
+        //一下为兼容curl_upload的老版配置
         // 'savePath' => '',
         //curl使用 - 保存路径 eg: '1/'
         // 'saveName' => ['uniqid', ''], //上传文件命名规则，[0]-函数名，[1]-参数，多个参数使用数组
@@ -142,14 +135,6 @@ return [
     ],
     //图片上传相关配置（文件上传类配置）
     'picture_upload_driver'=>'local',
-
-    //阿里百川
-    // 'ALBAICHUAN_CFG'=>[
-    //     'is_debug'   => true,//是否测试
-    //     'app_key'    => '23456139',
-    //     'app_secret' => '4647cb9e09046b8ef8e56c5aa5f95a61',
-    // ]
-
 
     // 应用调试模式
     'app_debug'              => Env::get('app_debug',false),

@@ -22,8 +22,10 @@
         <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
       </div>
     </form>
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
 
-<table id="demo" lay-filter="fDemo"></table>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-group">
     <a href="{:url(CONTROLLER_NAME.'/set',['dt_id'=>$dt_id])}" class="layui-btn layui-btn-sm" id="js-add" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
@@ -36,9 +38,6 @@
     <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" tilte="删除"><i class="layui-icon layui-icon-delete"></i></a>
   </div>
 </script>
-
-  </div>
-</fieldset>
 {/block}
 
 {block name="area_foot"}

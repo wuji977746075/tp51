@@ -20,10 +20,6 @@ function ret($data){
   exit();
 };
 
-function throws($msg='excetion',$code=-1,$data=[]){
-  throw new \Exception($msg,$code);
-}
-
 // 直接返回错误信息
 function err($msg='error',$code = -1,$data=[]){
   ret(['code' => $code,'msg'=>$msg,'data' => $data]);
