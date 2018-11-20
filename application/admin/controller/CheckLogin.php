@@ -26,6 +26,7 @@ class CheckLogin extends Base {
   protected $jsf_tpl = []; //预定义模板
   protected $queryField = '*'; //查询字段
   protected $pagePara = []; //分页条件
+  protected $extraFields = false; //extra字段数组
   protected $uinfo = null; //当前账户信息
   // 表单字段
   protected $jsf = []; //自定义表单字段
@@ -119,7 +120,10 @@ class CheckLogin extends Base {
   protected function isTopSaler(){
     return $this->isSuper || (new UserLogic)->isTopSaler(UID);
   }
-  // require
+  // 表单字段模板构造器
+  // $field : *field
+  // $css   : input_parent_css|input_css
+  // $tip   : layui_tip_type
   function jsf_tpl($field,$type='text',$val='',$css='',$extra='',$tip=0){
     $need = (substr($field, 0,1)=='*' ? '*':'') ; // ? 必须字段
     $need_ipt = $need ? ' required  lay-verify="required" ' : ''; // ? layui 验证开启
@@ -230,6 +234,16 @@ class CheckLogin extends Base {
     // $this->checkUserRight();
     return $this->show();
   }
+
+
+  //关于jsf 一般一+二:
+  // 第一位 :
+  //  *(必选,入构)+字段(入构)+*(强制默认)+|+input类型+|+默认
+  // 第二位 : input父类的class+|+input的class
+  // 第三位 : extra
+  //  不定,select(选项)/radio/time(格式)/bt_img(max)..
+  // 第四位 : tip
+  //  不填为lang里的tip-{class}-{field}
   public function set(){
     $id = $this->id;
     if(IS_GET){ // view
@@ -241,6 +255,13 @@ class CheckLogin extends Base {
         $info = $this->logic->getInfo(['id'=>$id]);
         // todo : 判断不了重载的$info thinking...
         empty($info) && $this->error(Linvalid('id'));
+        if($this->extraFields){
+          try{
+            $info['extra'] = $info->extra;
+          }catch(\Exception $e){
+            throws('必须设置模型关联');
+          }
+        }
         $this->assign('info',$info);
       }else{    // add
       }
@@ -250,19 +271,28 @@ class CheckLogin extends Base {
       // 表单模板
       if($this->jsf_tpl){
         $jsf_tpl = [];
-        // *是否need input_name *是否设空
-        //    |input_type + |default_value
-        // class_name上次class
         foreach ($this->jsf_tpl as $v) {
+          $vs   = explode('|', $v[0]); // field_extra
           $v[1] = isset($v[1]) ? $v[1] : ''; // class
           $v[2] = isset($v[2]) ? $v[2] : ''; // extra
           $v[3] = isset($v[3]) ? $v[3] : 0; // tip
-          $vs = explode('|', $v[0]);
-          $vs[1] = (isset($vs[1]) && $vs[1]) ? $vs[1] : 'text';
-          $vs[2] = isset($vs[2]) ? $vs[2] : '';
-          $f=ltrim($vs[0],'*');
-          $t=$vs[1];
-          $val = rtrim($vs[0],'*')==$vs[0] ? ($id ? (isset($info[$f]) ? $info[$f] : $vs[2]) : '') : $vs[2];
+          $vs[1] = (isset($vs[1]) && $vs[1]) ? $vs[1] : 'text'; // input type
+          $vs[2] = isset($vs[2]) ? $vs[2] : ''; // df_val
+
+          $f   = rtrim(ltrim($vs[0],'*'),'*'); // field
+          $t   = $vs[1]; // input_type
+          $val = $vs[2]; // df_val
+          if($id){
+            if(rtrim($vs[0],'*') == $vs[0]){ //field右无*
+              if(isset($info[$f])){
+                $val = $info[$f];
+              }elseif($this->extraFields){
+                // && isset($info['extra'][$f])
+                // 不在info在extra中 但未发现直接抛异常
+                $val = $info['extra'][$f];
+              }
+            }
+          }
           $jsf_tpl[$f] = $this->jsf_tpl(rtrim($vs[0],'*'),$t,$val,$v[1],$v[2],$v[3]);
         }
         $this->assign('jsf_tpl',$jsf_tpl);

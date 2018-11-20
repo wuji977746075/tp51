@@ -268,7 +268,6 @@ class User extends CheckLogin {
     }
   }
 
-
   // 删除, 由id标志, check是检查是否含parent=id
   function del(){
     $id    = $this->id;
