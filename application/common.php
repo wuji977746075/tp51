@@ -116,6 +116,7 @@ function retCode($code,$msg='',$data=[]){
 // throw exception
 function throws($msg='excetion',$code=-1,$data=[]){
   throw new \Exception($msg,$code);
+  // throw new \think\Exception($msg,$code);
 }
 
 // 全空需在外面处理

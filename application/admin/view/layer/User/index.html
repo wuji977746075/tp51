@@ -1,7 +1,6 @@
 {extend name="df/tpl/base_index" /}
 
 {block name="area_body"}
-<!-- <link type="text/css" rel="stylesheet" href="__CDN__jquery-datetimepicker/jquery.datetimepicker.css?v=__VERSION__" /> -->
 <div class="layui-card">
   <div class="layui-card-header">用户管理</div>
   <div class="layui-card-body">
@@ -95,15 +94,15 @@ layui.use(['rb','table2','form','element','picView','datetimepicker'], function(
     ,where: rb.where
     ,cols:  [[
       {type: 'checkbox'}
-      ,{field: 'id',align: 'left',title: 'ID', width: 80,sort:true,hideDisable:true }
+      ,{field: 'id',align: 'left',title: 'ID', minWidth: 60,sort:true,hideDisable:true }
       ,{field: 'nick', title: "昵称(用户名)",templet:'#nameTpl'}
       ,{field: 'email', title: '邮箱 .',edit: 'text',templet:'#emailTpl' }
-      ,{field: 'phone', title: '手机 .',edit: 'text',templet:'#phoneTpl'}
+      ,{field: 'phone', title: '手机 .',width:125,edit: 'text',templet:'#phoneTpl'}
       ,{field: 'role_id', title: '角色',templet:'#roleTpl'}
-      ,{field: 'rate', title: '分佣',templet:'#rateTpl'}
-      ,{field: 'status', title: '状态', width: 80,templet:'#statusTpl',hide:true}
-      ,{field: 'reg_time', title: '注册时间',templet:'#timeTpl',sort:true,hide:true }
-      ,{align:'left',align: 'right',width:150,title: '操作',toolbar: '#barDemo'}
+      ,{field: 'rate',align:'right',width:60, title: '分佣',templet:'#rateTpl'}
+      ,{field: 'status', title: '状态', width: 60,templet:'#statusTpl',hide:true}
+      ,{field: 'reg_time', title: '注册时间',width: 125,templet:'#timeTpl',align:'right',sort:true,hide:true }
+      ,{align:'left',align: 'right',width:145,title: '操作',toolbar: '#barDemo'}
     ]]
   }));
   $('#jsf-start,#jsf-end').datetimepicker({
