@@ -5,87 +5,59 @@
   <legend>数据字典</legend>
   <div class="layui-field-box">
     {:html_head_tip('点击带 .列单元格编辑')}
-    <div class="layui-btn-group">
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</fieldset>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
       <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
       <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
     </div>
     {gt name="parent" value="0"}
     <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm" title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
     {/gt}
-    <table id="demo" lay-filter="fDemo"></table>
-  </div>
-</fieldset>
+</script>
+<script type="text/html" id="barDemo">
+<div class="layui-btn-group">
+  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+</div>
+</script>
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','element','form'], function(){
+layui.use(['rb','table2','form'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
   ,rb = layui.rb
   ,$ = layui.$;
   rb.log('page','init');
-  rb.where = {
-    parent: parseInt({$parent|default=0})
-    ,field:'sort'
-    ,order:'desc'
-  }
-  //执行渲染
-  rb.table = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+  // form init
+  // table init
+  rb.where.parent = parseInt({$parent|default=0});
+  rb.where.field  = 'sort';
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: rb.where
-    ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size' }
-    ,loading: true
-    ,page: {
-      limits: [10,30]
-      ,limit: 10
-    }
     ,initSort: {
       field:'sort'
       ,type:'desc'
     }
     ,cols:  [[
       {checkbox: true} //,LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,templet: '#idTpl', style:'cursor: pointer;',sort:true,event:'go',sort:true}
+      ,{field: 'id', title: 'ID', minWidth: 60,templet: '#idTpl', style:'cursor: pointer;',sort:true,event:'go',sort:true}
       ,{field: 'title', title: '字典名 .',edit: 'text'}
       ,{field: 'name', title: '系统名 .',edit: 'text'}
-      ,{field: 'icon', title: '图标 .', width: 120,edit: 'text',templet: '#iconTpl'}
+      ,{field: 'icon', title: '图标 .',edit: 'text',templet: '#iconTpl'}
       ,{field: 'desc', title: '描述 .',edit: 'text'}
-      ,{field: 'is_sys', title: '系统字典',templet:'#isSysTpl'}
-      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+      ,{field: 'is_sys', title: '系统',width:60,templet:'#isSysTpl'}
+      ,{field: 'sort',align:'right',title: '排序 .',minWidth:60,edit: 'text',sort:true}
+      ,{align:'left',title: '操作',width:85,toolbar: '#barDemo'}
     ]]
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    rb.table.reload({
-      where: rb.where
-      ,initSort: obj
-    });
-  });
-  // 单元格自定义编辑
-  table.on('tool(fDemo)', function(obj){
-    // console.log(obj);
-    var data = obj.data;
-    if(obj.event === 'go'){
-      rb.goTo(obj.tr.find('a').attr('href'));
-    }
-  });
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    // console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
-  // 单选
-  form.on('switch', function(data){
-    // console.log(data); //elem elem.checked value othis
-    var el = data.elem;
-    var id = parseInt(el.getAttribute('data-id'));
-    rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'is_sys',val: el.checked ? 1:0,id: id},true);
-  });
+  }));
+  {include file="df/tpl/index_extra"}
 });
 </script>
 <script type="text/html" id="iconTpl">
@@ -96,15 +68,9 @@ layui.use(['rb','table2','element','form'], function(){
 </script>
 <script type="text/html" id="isSysTpl">
   <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" value="{{ d.is_sys }}"
+  <input type="checkbox" class="layer-msg no-refresh fresh-table" data-id="{{ d.id }}" data-field="is_sys" value="{{ d.is_sys }}"
   {{# if(d.is_sys){ }} checked  {{#  } }}
   lay-skin="switch">
   </form>
-</script>
-<script type="text/html" id="barDemo">
-<div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
-  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
-</div>
 </script>
 {/block}

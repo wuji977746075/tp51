@@ -5,18 +5,27 @@
   <legend>节点 管理</legend>
   <div class="layui-field-box">
     {:html_head_tip('前端节点数据,点击单元格编辑')}
-    <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i> </a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i> </a>
-      <a href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" class="layui-btn confirm js-ops layui-btn-sm" title="批量禁用"><i class="fa fa-ban"></i> </a>
-    </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </fieldset>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i> </a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i> </a>
+    <a href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>'-1'])}" class="layui-btn confirm js-ops layui-btn-sm" title="批量禁用"><i class="fa fa-ban"></i> </a>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-right"></i> 详情</a>
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i> </a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"> <i class="layui-icon layui-icon-delete"></i> </a>
+  </div>
+</script>
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','element','form','picView'], function(){
+layui.use(['rb','table2','form'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
@@ -25,51 +34,18 @@ layui.use(['rb','table2','element','form','picView'], function(){
 
   rb.log('page','init');
   //执行渲染
-  rb.table = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size' }
-    ,loading: true
-    ,page: {
-      limits: [10,30]
-      ,limit: 10
-    }
-    ,initSort:{
-      field : 'id'
-      ,type: 'desc'
-    }
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,cols:  [[
-      {checkbox: true} //,LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,sort:true}
-      ,{field: 'title', title: '节点名 .',edit: 'text'}
-      ,{field: 'name', title: '系统名 .',edit: 'text'}
-      ,{field: 'desc', title: '描述 .',edit: 'text'}
-      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+      { checkbox: true} //,LAY_CHECKED: true
+      ,{ field: 'id', title: 'ID', minWidth: 60,sort:true }
+      ,{ field: 'title', title: '节点名 .',edit: 'text' }
+      ,{ field: 'name', title: '系统名' }
+      ,{ field: 'desc', title: '描述 .',edit: 'text' }
+      ,{ align:'left',title: '操作',width:150,toolbar: '#barDemo' }
     ]]
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    rb.where.field = obj.field;
-    rb.where.order = obj.type;
-    rb.table.reload({
-      where:rb.where
-      ,initSort: obj
-    });
-  });
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    // console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
+  }));
+  {include file="df/tpl/index_extra"}
 });
-</script>
-<script type="text/html" id="barDemo">
-<div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm"><i class="layui-icon layui-icon-right"></i> 详情</a>
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i> </a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"> <i class="layui-icon layui-icon-delete"></i> </a>
-</div>
 </script>
 {/block}

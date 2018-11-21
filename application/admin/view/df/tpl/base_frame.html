@@ -40,7 +40,7 @@
         < ?php }?-->
       </ul>
     </div>
-    <ul class="layui-nav layui-layout-right header-mid">
+    <ul class="layui-nav layui-layout-right header-mid p0">
       <li class="layui-nav-item">
         <a href="{:url('user/detail',['id'=>$uinfo.id])}" class="js-tab" data-tab="userd-{$uinfo.id}">
           <img src="{:avaUrl($uinfo.id,60)}" class="layui-nav-img" >
@@ -53,13 +53,19 @@
           <dd><a href="javascript:void(0);" class="js-tab" data-tab="users-{$uinfo.id}">系统设置</a></dd>
         </dl>
       </li>
-      <li class="layui-nav-item hvr-push"><a href="javascript:;" class=""> <i class="fa fa-bell" style=""></i><i class="layui-badge">5</i> </a></li>
+      <li class="layui-nav-item hvr-push">
+        <a href="javascript:;" class="" style="font-size: 0">
+          <i class="layui-icon layui-icon-notice"></i>
+          <i class="layui-badge" style="border-radius: 50%;margin: -11px 0px 0;">5</i>
+          <!-- <span class="layui-badge-dot"></span> -->
+        </a>
+      </li>
     </ul>
     <ul class="layui-nav layui-layout-right header-right">
-      <li class="layui-nav-item"><a href="{:url('manager/logout')}" class="ajax-get pr10 layer-msg js-logout" title="退出"> <i class="fa fa-sign-out"></i></a></li>
-      <li class="layui-nav-item"><a href="javascript:;" class="pl10 pr10 js-refresh" title="刷新"> <i class="fa fa-refresh layui-anim layui-anim-rotate layui-anim-loop"></i></a></li>
+      <li class="layui-nav-item"><a href="{:url('manager/logout')}" class="ajax-get pl10 pr10 layer-msg js-logout" title="退出"> <i class="fa fa-sign-out"></i></a></li>
+      <li class="layui-nav-item"><a href="javascript:;" class="pl0 pr10 js-refresh" title="刷新"> <i class="layui-icon layui-icon-refresh"></i></a></li>
       <li class="layui-nav-item">
-        <a href="javascript:;" class="pl10 pr10" id="admin-fullscreen" title="全屏"><i class="fa fa-arrows-alt"></i> <span class="admin-fullText"></span> </a>
+        <a href="javascript:;" class="pl0 pr10" id="admin-fullscreen" title="全屏"><i class="layui-icon layui-icon-screen-full"></i> <span class="admin-fullText"></span> </a>
       </li>
     </ul>
   </div>

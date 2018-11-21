@@ -5,26 +5,32 @@
   <div class="layui-card-header">菜单管理</div>
   <div class="layui-card-body">
     {:html_head_tip('最多3级菜单,点击带 .列单元格编辑')}
-    <div class="block clearfix">
-      <div class="layui-btn-group">
-        <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
-        <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
-      </div>
-      {gt name="parent" value="0"}
-      <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm"  title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
-      {/gt}
-      <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary layui-btn-sm" title="高级模式"><i class="fa fa-superpowers"></i> 高级模式</a>
-    </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',['parent'=>$parent])}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels',['check'=>1])}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+  {gt name="parent" value="0"}
+  <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm"  title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
+  {/gt}
+  <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary layui-btn-sm" title="高级模式"><i class="fa fa-superpowers"></i> 高级模式</a>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
 {/block}
 
 {block name="area_foot"}
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','form','element'], function(){
+layui.use(['rb','table2','form'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
@@ -38,32 +44,24 @@ layui.use(['rb','table2','form','element'], function(){
     ,order: 'asc'
   }
   // table render
-  rb.table = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: rb.where
-    ,method: 'get'
     ,initSort: {
       field: 'sort',type: 'asc'
     }
-    ,request: { pageName: 'page',limitName: 'size' }
-    ,loading: true
-    ,page: {
-      limits: [10,30]
-      ,limit: 10
-    }
-    ,size: 'sm'
     ,cols:  [[
       {checkbox: true} //,LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,templet: '#nameTpl', style:'cursor: pointer;',event:'go',sort:true}
+      ,{field: 'id', title: 'ID', minWidth: 60,templet: '#nameTpl', style:'cursor: pointer;',event:'go',sort:true}
       ,{field: 'name', title: '菜单 .',edit: 'text'}
       ,{field: 'icon', title: '图标 .',edit: 'text',templet: '#iconTpl'}
       ,{field: 'url', title: '链接 .',edit: 'text'}
       ,{field: 'params', title: '链接参数 .',edit: 'text'}
-      ,{field: 'show', title: '显示', width: 80,templet:'#showTpl'}
-      ,{field: 'sort',title: '排序 .',width:80,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+      ,{field: 'show', title: '显示', width: 60,templet:'#showTpl'}
+      ,{field: 'sort',title: '排序 .',align:'right',minWidth:60,edit: 'text',sort:true}
+      ,{align:'left',title: '操作',width:85,toolbar: '#barDemo'}
     ]]
-  });
+  }));
 
   {include file="df/tpl/index_extra"}
 });
@@ -80,11 +78,5 @@ layui.use(['rb','table2','form','element'], function(){
   <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="show" {{# if(d.show){ }} checked  {{#  } }}
   lay-skin="switch">
   </form>
-</script>
-<script type="text/html" id="barDemo">
-<div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
-  <a href="{:url(CONTROLLER_NAME.'/del',['check'=>1],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
-</div>
 </script>
 {/block}

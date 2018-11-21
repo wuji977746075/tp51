@@ -16,7 +16,7 @@
       <div class="layui-inline">
         <!-- <label for="jsf-group" class="layui-form-label">分组</label> -->
         <div class="layui-input-inline" style="width: 150px;">
-          <select name="group" id="jsf-group" lay-filter="jsf-group">
+          <select name="group" id="jsf-group" lay-filter="search">
             <option value="-1"> 全部分组 </option>
             {foreach :config('config_group_list') as $k=>$v}
             <option value="{$k}" {eq name="group" value="$k"} selected {/eq}>{$v}({$k})</option>
@@ -29,14 +29,21 @@
         <button class="layui-btn layui-btn-sm" type="reset" title="重置">重置</button>
       </div>
     </form>
-    <hr >
-    <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
-    </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </fieldset>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
 <!-- script -->
 <script>
 var groups = JSON.parse('{:json_encode($group_list)}');
@@ -48,75 +55,37 @@ layui.use(['rb','table2','form'], function(){
   ,rb = layui.rb
   ,$ = layui.$;
 
-  rb.where = {
-    group:parseInt({$group ?: -1})
-    ,kword:"{$kword ?: ''}"
-    ,field:'sort'
-    ,order:'desc'
-  }
   rb.log('page','init');
-  //执行渲染
-  rb.table = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
+  // form init
+  // table init
+  rb.where.group = parseInt({$group ?: -1});
+  rb.where.kword = "{$kword ?: ''}";
+  rb.where.field = 'sort';
+  rb.setWhere = function() {
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.group = $('#jsf-group').val();
+  }
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: rb.where
     ,initSort: {
       field: 'sort',type: 'desc'
     }
-    ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size' }
-    ,loading: true
-    ,page: {
-      limits: [10,30]
-      ,limit: 10
-    }
     ,cols:  [[
       {checkbox: true}, //,LAY_CHECKED: true
-      {field: 'id', title: 'ID', width: 50,sort:true}
+      {field: 'id', title: 'ID', minWidth: 60,sort:true}
       ,{field: 'title', title: '配置名 .',edit: 'text'}
       ,{field: 'name', title: '系统名 .',edit: 'text'}
       ,{field: 'value', title: '值 .',edit: 'text',templet:'#valueTpl'}
       ,{field: 'desc', title: '描述 .',edit: 'text'}
       ,{field: 'group', title: '分组 .', width: 80,edit: 'text',templet:'#groupTpl'}
-      ,{field: 'sort', title: '排序 .', width: 80,sort:true,edit: 'text'}
+      ,{field: 'sort',align:'right',title: '排序 .', minWidth: 60,sort:true,edit: 'text'}
       // ,{field: 'status', title: '状态', width: 80}
-      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+      ,{align:'left',title: '操作',width:85,toolbar: '#barDemo'}
     ]]
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    setWhere();
-    rb.where.field = obj.field;
-    rb.where.order = obj.type;
-    rb.table.reload({
-      where:rb.where
-      ,initSort: obj
-    });
-  });
-  function setWhere(){
-    rb.where.kword = $('#jsf-kword').val();
-    rb.where.group = $('#jsf-group').val();
-  }
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    // console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
-  $('body').on('click', '#js-search', function(event) {
-    setWhere();
-    rb.table.reload({
-      where: rb.where,
-      page: {
-        curr : 1
-      }
-    });
-    event.preventDefault();
-    return false;
-  });
-  form.on('select(jsf-group)', function(data){
-    $('#js-search').trigger('click');
-  });
+  }));
+  {include file="df/tpl/index_extra"}
 });
 
 </script>
@@ -126,11 +95,5 @@ layui.use(['rb','table2','form'], function(){
 </script>
 <script type="text/html" id="groupTpl">
 {{ groups[d.group] }}
-</script>
-<script type="text/html" id="barDemo">
-<div class="layui-btn-group">
-  <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
-  <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
-</div>
 </script>
 {/block}

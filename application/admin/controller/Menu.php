@@ -83,7 +83,6 @@ class Menu extends CheckLogin{
         }
       }
       $this->assign('parent',$parent);
-
       // 查询2级菜单 tree
       $menu = $this->logic->getAllMenu(false,2);
       array_unshift($menu, ['id'=>0,'name'=>'* 顶级 *','child'=>[]]);
@@ -91,7 +90,7 @@ class Menu extends CheckLogin{
 
       $this->jsf_tpl = [
         ['*name'],
-        ['*parent|selects','',$menu],
+        ['*parent|selects|'.$parent,'',$menu],
         ['url'],
         ['icon|icon'],
         ['params'],

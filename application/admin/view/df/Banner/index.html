@@ -74,11 +74,11 @@ layui.use(['rb','table2','form'], function(){
       {checkbox: true}
       ,{field: 'img', title: '图片', width: 100,templet:'#imgTpl'}
       // ,{field: 'title', title: '标志 .', width: 150,edit: 'text'}
-      ,{field: 'url', title: '链接 .', width: 250,edit: 'text'}
-      ,{field: 'url_type', title: '链接类型 .', width: 100,edit: 'text',templet:'#urlTypeTpl'}
-      ,{field: 'dt_id', title: '位置 .', width: 200,edit: 'text',templet:'#dtIdTpl'}
-      ,{field: 'sort', title: '排序 .', width: 80,edit: 'text',sort:true}
-      ,{align:'left',fixed: 'right',title: '操作',width:250,toolbar: '#barDemo'}
+      ,{field: 'url', title: '链接 .',edit: 'text'}
+      ,{field: 'url_type', title: '链接类型 .',edit: 'text',templet:'#urlTypeTpl'}
+      ,{field: 'dt_id', title: '位置 .',edit: 'text',templet:'#dtIdTpl'}
+      ,{field: 'sort', title: '排序 .', minWidth: 60,edit: 'text',sort:true}
+      ,{align:'left',fixed: 'right',title: '操作',width:85,toolbar: '#barDemo'}
     ]]
   }));
   {include file="df/tpl/index_extra"}

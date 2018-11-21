@@ -5,13 +5,15 @@
   <legend>客户端管理</legend>
   <div class="layui-field-box">
     {:html_head_tip('用户基础数据,点击单元格编辑')}
-    <div class="layui-btn-group">
-      <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
-      <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
-    </div>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </fieldset>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
 <script type="text/html" id="barDemo">
 <div class="layui-btn-group">
   <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
@@ -35,47 +37,20 @@ layui.use(['rb','table2','form'], function(){
 
   rb.log('page','init');
   //执行渲染
-  rb.table = table.render({ elem: '#demo'
-    ,url: '{:url(CONTROLLER_NAME."/ajax")}'
-    ,method: 'get'
-    ,request: { pageName: 'page',limitName: 'size', }
-    ,loading: true
-    ,page: {
-      limits: [10,30]
-      ,limit: 10
-    }
-    ,initSort:{
-      field: 'id'
-      ,type: 'desc'
-    }
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,cols:  [[
       {checkbox: true} //,LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 50,sort:true}
+      ,{field: 'id', title: 'ID', minWidth: 60,sort:true}
       ,{field: 'client_name', title: '名称 .',edit: 'text'}
       ,{field: 'client_id', title: 'client_id'}
       ,{field: 'client_secret', title: 'client_secret .',edit: 'text'}
       ,{field: 'desc', title: '描述 .',edit: 'text'}
-      ,{field: 'api_alg', title: '加密方式', width: 100}
-      ,{align:'left',title: '操作',toolbar: '#barDemo'}
+      ,{field: 'api_alg',align:'right',title: '加密方式', width: 100}
+      ,{align:'left',title: '操作',width:85,toolbar: '#barDemo'}
     ]]
-  });
-  // 单元格排序
-  table.on('sort(fDemo)', function(obj){
-    rb.where.field = obj.field;
-    rb.where.order = obj.type;
-    rb.table.reload({
-      where:rb.where
-      ,initSort: obj
-    });
-  });
-  // 单元格编辑
-  table.on('edit(fDemo)', function(obj){
-    // console.log(obj); // value , field ,data
-    $.post('{:url(CONTROLLER_NAME."/editOne")}', { field: obj.field,val: obj.value,id:obj.data.id }, function(data){
-      rb.ajaxTip(data);
-    });
-  });
-
+  }));
+  {include file="df/tpl/index_extra"}
 });
 </script>
 {/block}
