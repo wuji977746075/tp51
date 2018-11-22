@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8" />
+  <title>rainbow install helper</title>
+  <link rel="stylesheet" href="__CDN__layui/2.4.5/dist/css/layui.css">
+  <!-- <script src="__CDN__layui/2.4.5/dist/js/layui.css"></script> -->
+  <style>
+  .layui-input-block{ width: 200px; }
+  .layui-container{ width: 60%; }
+  li{ border-bottom: 1px #666 dashed;color: red; }
+  .fr{ float: right; }
+  .fl{ float: left; }
+  .green{ color:  green; }
+  .clr { clear: both;_zoom: 1; }
+  li span,li i{ position: relative;top: 8px;background-color:white ;padding: 3px 20px; }
+  </style>
+</head>
+<body>
+  <div class="layui-container">
+    <br >
+    <center><h1>rainbowPHP 安装向导</h1></center>
+    <br >
+
+    <blockquote class="layui-elem-quote">1,权限检查</blockquote>
+    <ul>
+      <li class="clr {$root_w ? 'green':''}">
+        <span>根目录 是否可写</span><i class="fr layui-icon layui-icon-{$root_w ? 'ok':'close'}"></i>
+      </li>
+      <li class="clr {$php_v ? 'green':''}">
+        <span>PHP 5.6 +</span><i class="fr layui-icon layui-icon-{$php_v ? 'ok':'close'}"></i>
+      </li>
+      <li class="clr {$php_mysqli ? 'green':''}">
+        <span>php_mysqli </span><i class="fr layui-icon layui-icon-{$php_mysqli ? 'ok':'close'}"></i>
+      </li>
+      <!-- <li class="clr {$tp_v ? 'green':''}">
+        <span>ThinkPHP 5.1 +</span><i class="fr layui-icon layui-icon-{$tp_v ? 'ok':'close'}"></i>
+      </li> -->
+    </ul>
+    <br >
+
+    <blockquote class="layui-elem-quote">2,数据库配置</blockquote>
+    <form class="layui-form" action="{:url('install/index/install')}">
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label">主机</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" required lay-verify="required" autocomplete="off" class="layui-input" type="text"
+           name="host" placeholder="请输入主机名" value="127.0.0.1">
+        </div>
+        <div class="layui-form-mid layui-word-aux">主机名,默认: 127.0.0.1</div>
+      </div>
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label">数据库</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" required lay-verify="required" autocomplete="off" class="layui-input" type="text"
+           name="name" placeholder="请输入数据库名" value="fly_bak">
+        </div>
+        <div class="layui-form-mid layui-word-aux">数据库名,默认: fly_bak</div>
+      </div>
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label">密码</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" required lay-verify="required" autocomplete="off" class="layui-input" type="text"
+           name="pass" placeholder="请输入密码" value="">
+        </div>
+        <div class="layui-form-mid layui-word-aux">数据库密码</div>
+      </div>
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label">用户</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" required lay-verify="required" autocomplete="off" class="layui-input" type="text"
+           name="user" placeholder="请输入用户名" value="root">
+        </div>
+        <div class="layui-form-mid layui-word-aux">数据库用户名,默认:root</div>
+      </div>
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label">表前缀</label>
+        <div class="layui-input-inline">
+          <input class="layui-input" required lay-verify="required" autocomplete="off" class="layui-input" type="text"
+           name="table_pre" placeholder="请输入数据库表前缀" value="f_">
+        </div>
+        <div class="layui-form-mid layui-word-aux">数据库表前缀,默认: f_</div>
+      </div>
+      <div class="layui-form-item">
+        <label for="" class="layui-form-label"></label>
+        <div class="layui-input-inline">
+          <button class="layui-btn layui-btn-sm" type="submit">确定</button>
+          <button class="layui-btn layui-btn-sm layui-btn-primary" type="reset">重置</button>
+        </div>
+      </div>
+    </form>
+    <br >
+
+    <blockquote class="layui-elem-quote">3,安装完成</blockquote>
+    <div class="admin">
+      后台 : rainbow/123456
+      <a href="/admin" class="layui-link"> 前往后台 </a>
+    </div>
+  </div>
+<script>
+// ;layui.use(['layer','jquery','form'],function() {
+//   var $ = layui.$,
+//   form = layui.form,
+//   layer = layui.layer;
+
+
+
+// });
+</script>
+</body>
+</html>
