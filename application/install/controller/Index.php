@@ -1,4 +1,10 @@
 <?php
+/**
+ * Author      : rainbow <977746075@qq.com>
+ * DateTime    : 2018-11-22 11:36:57
+ * Description : rainbowPHP 安装模块
+ */
+
 namespace app\install\controller;
 use think\Controller;
 
@@ -27,18 +33,13 @@ class Index extends Controller {
     throws('check db error');
   }
 
-  private function install(){
-    // copy file
-    //   copy to config file
-    // run  sql
-    // sql insert
-    //   sql insert : admin(name,pass)+db(pre)
-    // remove {root:tp51}/install
-    //   ok ...
+  // setting
+  function index() {
+    echo 'install... !';
   }
 
   // install
-  function index() {
+  function install(){
     $db_config = [
       'name' =>'fly',
       'user' =>'root',
@@ -46,11 +47,13 @@ class Index extends Controller {
       'table_pre' =>'f_',
     ];
     $this->checkDb($db_config);
-    $this->install();
-    // copy  file + right
-    // excute sql
+    // copy file
+    //   copy to config file
+    // run  sql
+    // sql insert
+    //   sql insert : admin(name,pass)+db(pre)
+    // remove {root:tp51}/install
     // add install.lock
     // clear
-    echo 'install ok !';
   }
 }

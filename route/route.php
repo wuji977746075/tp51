@@ -13,7 +13,7 @@
 // install
 Route::get('install', 'install/index/index');
 // another admin path
-Route::get('/admin', 'admin/login/index');
+Route::get('admin', 'admin/login/index');
 
 // 一些链接的重写
 // Route::get('think', function () {
