@@ -1,11 +1,12 @@
 <?php
 namespace app\admin\controller;
 
-use src\user\UserLogic;
-use src\role\UserRoleLogic;
+use src\user\user\UserLogic;
+use src\user\role\UserRoleLogic;
 // use think\facade\Session;
 
 class Login extends Base{
+  protected $model_id = 13;
 
   public function index(){
     if(IS_GET){ // admin login view

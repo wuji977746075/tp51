@@ -3,7 +3,8 @@
 namespace app\admin\controller;
 
 class Config extends CheckLogin{
-
+  protected $model_id = 5;
+  protected $banDelIds = [7,8];
   public function index(){
     $group = $this->_get('group/d',-1);
     $this->assign('group',$group);

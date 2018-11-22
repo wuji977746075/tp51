@@ -3,7 +3,7 @@
 namespace  app\admin\controller;
 
 class Datatree extends CheckLogin{
-
+  protected $model_id = 6;
   public function index(){
 
     $parent = $this->_param('parent/d',0);

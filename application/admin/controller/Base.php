@@ -3,12 +3,14 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Db;
-use src\config\ConfigLogic;
-use src\datatree\DatatreeLogic;
+use src\sys\core\ConfigLogic;
+use src\sys\core\DatatreeLogic;
+use src\sys\core\ModelLogic;
 
 class Base extends Controller{
   protected $logic = null;
-  protected $module_id = 2;
+  protected $module_id = null; // common
+  protected $model_id  = null; // common
   protected $session_id;
   protected $trans = 0;
   protected $suc_url = '';
@@ -51,9 +53,21 @@ class Base extends Controller{
     // get datatrees
     (new DatatreeLogic)->clearCache();
 
-
     $this->_checkIp();
     !defined('PRE') && define('PRE',config('table_df_pre'));
+
+    // get modals
+    $models = (new ModelLogic)->queryCache(false);
+    $models = getArr($models,'id');
+    !$this->model_id && throws('未知模型');
+    !isset($models[$this->model_id]) && throws('未知模块');
+    $this->model     = $models[$this->model_id];
+    $this->module_id = $this->model['module_id'];
+    // require upper
+    $this->_defined();
+    // set main logic : require upper
+    $this->_setLogic();
+
     //设置程序版本 - test
     $this->seo = [
       'title'       => config('site_title'),
@@ -66,30 +80,36 @@ class Base extends Controller{
       'business' => $this->business,
     ];
     $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
-    $this->_defined();
 
     // set page and sort
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('order','desc');
-    // set main logic
-    $this->_setLogic();
     $this->init();
     // !$this->logic && $this->error('需要配置主logic');
   }
   // set main login if possible
   protected function _setLogic($dir='') {
-    $logic_dir = $dir ? $dir : lcfirst(CONTROLLER_NAME);
-    $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
-    if(class_exists($logicPath)){
+    $logicPath = '\src\\sys\core\\'.CONTROLLER_NAME.'Logic';
+    if(class_exists($logicPath)){ // 是否为系统的
       $this->logic = new $logicPath;
     }else{
-      $logic_dir = preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
-      $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+      $module_name = $this->model['module_name'].'\\';
+      $logic_dir = $dir ? $dir : lcfirst(CONTROLLER_NAME);
+
+      $logicPath = '\src\\'.$module_name.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
       if(class_exists($logicPath)){
         $this->logic = new $logicPath;
+      }else{
+        $logic_dir = $module_name.preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
+        $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+        if(class_exists($logicPath)){
+          $this->logic = new $logicPath;
+        }
       }
     }
-    $this->business = $logic_dir;
+
+    // echo $logicPath;die();
+    $this->business = $this->model['title'];
   }
 
   protected function init(){
@@ -235,6 +255,12 @@ class Base extends Controller{
     if(!defined("IS_AJAX")){
       define("IS_AJAX", $this->request->isAjax());
     }
+
+    if(!defined("MODEL_ID")){
+      define("MODEL_ID", $this->model_id);
+      define("MODEL", $this->model);
+    }
+
   }
 
   /* 空操作，用于输出404页面 */

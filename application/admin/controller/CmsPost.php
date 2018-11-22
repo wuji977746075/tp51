@@ -6,10 +6,11 @@
  */
 
 namespace app\admin\controller;
-use src\cms\CmsCateLogic;
-use src\cms\CmsPostExtraLogic;
+use src\cms\cms\CmsCateLogic;
+use src\cms\cms\CmsPostExtraLogic;
 
 class CmsPost extends CheckLogin {
+  protected $model_id = 16;
   protected $banEditFields = ['author','id'];
   protected $extraFields = ['content','content_kwords','kwords','pid'];
 

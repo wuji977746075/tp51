@@ -1,11 +1,12 @@
 <?php
 namespace app\admin\controller;
 
-use src\auth\AuthLogic;
-use src\menu\MenuLogic;
-use src\client\ClientLogic;
+use src\sys\auth\AuthLogic;
+use src\admin\menu\MenuLogic;
+use src\sys\client\ClientLogic;
 
 class Role extends CheckLogin{
+  protected $model_id = 3;
   protected $banDelIds = [1,2];
 
   public function set(){

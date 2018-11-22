@@ -1,11 +1,5 @@
-{extend name="df/tpl/base" /}
+{extend name="df/tpl/base_set" /}
 
-{block name="area_body"}
-<div class="page-header">
-  <div class="page-title"><i></i>
-    CMS分类 {$op}
-  </div>
-</div>
-{include file="df/tpl/set_form"}
-{include file="df/tpl/icon_select"}
+{block name="area_foot"}
+  {include file="df/tpl/icon_select"}
 {/block}

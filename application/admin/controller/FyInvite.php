@@ -9,9 +9,9 @@ namespace app\admin\controller;
 // use
 
 class FyInvite extends CheckLogin {
+  protected $model_id = 19;
 
-
- function ajax() {
+  function ajax() {
     $uid = $this->uid;
     // 非自己则检查权限
     $uid != UID && $this->checkUserRight(UID,'index');
@@ -24,5 +24,5 @@ class FyInvite extends CheckLogin {
     $this->where = $map;
     // dump($map);die();
     parent::ajax();
- }
+  }
 }

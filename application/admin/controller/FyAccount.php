@@ -6,13 +6,14 @@
  */
 
 namespace app\admin\controller;
-use src\user\UserLogic;
-use src\role\UserRoleLogic;
-use src\fy\FyAccountLogic;
-use src\fy\FyAccountUserLogic;
-use src\fy\FyInviteLogic;
+use src\user\user\UserLogic;
+use src\user\role\UserRoleLogic;
+use src\fy\fy\FyAccountLogic;
+use src\fy\fy\FyAccountUserLogic;
+use src\fy\fy\FyInviteLogic;
 
 class FyAccount extends CheckLogin {
+  protected $model_id = 8;
   protected $banEditFields = ['id','pid'];
   function init() {
     $this->cfg['theme'] = 'layer';

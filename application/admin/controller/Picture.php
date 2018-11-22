@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 class Picture extends CheckLogin{
-
+  protected $model_id = 20;
   public function test(){
 
     //Editor + upload + Select Pic

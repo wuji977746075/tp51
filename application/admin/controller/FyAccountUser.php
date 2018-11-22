@@ -9,10 +9,11 @@ namespace app\admin\controller;
 // use
 
 class FyAccountUser extends CheckLogin {
+  protected $model_id = 18;
   // protected $banEditFields = ['id'];
   function ajax(){
     if($this->$uid){
-      $this->where = ['invite_uid'] = $uid;
+      $this->where = ['invite_uid'=> $uid];
     }
     parent::ajax();
   }

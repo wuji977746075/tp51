@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 class Test extends CheckLogin{
-
+  protected $model_id = 21;
   public function map(){
 
     $this->assign('desc', 'desc');

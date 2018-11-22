@@ -9,7 +9,7 @@ namespace app\admin\controller;
 // use
 
 class CmsCate extends CheckLogin {
-
+  protected $model_id = 15;
   // 递进型菜单首页
   public function index(){
     $parent = $this->_param('parent/d',0);

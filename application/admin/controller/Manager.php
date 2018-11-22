@@ -1,11 +1,11 @@
 <?php
 namespace app\admin\controller;
-use src\menu\MenuLogic;
-use src\user\UserLogic;
-use src\session\SessionLogic;
+use src\sys\session\SessionLogic;
+use src\admin\menu\MenuLogic;
+use src\user\user\UserLogic;
 
 class Manager extends CheckLogin{
-
+  protected $model_id = 12;
   public $menu = [];
   public $lang = ''; // 前端语言
 

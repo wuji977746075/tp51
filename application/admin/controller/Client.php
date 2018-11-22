@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 use src\auth\AuthLogic;
 class Client extends CheckLogin{
-
+  protected $model_id = 7;
   protected $banEditFields = ['client_id','id'];
 
   public function set(){

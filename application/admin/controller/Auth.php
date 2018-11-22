@@ -3,7 +3,7 @@
 namespace app\admin\controller;
 
 class Auth extends CheckLogin{
-
+  protected $model_id = 9;
   public function set(){
     $this->jsf = array_merge($this->jsf,[
       'name'  => '系统名',

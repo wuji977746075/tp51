@@ -76,44 +76,44 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
   ,$ = layui.$;
 
   // ts-selected : 默认值
-  tableSelect.render({
-    elem: '#js-set-uid'//输入框
-    ,checkedKey: 'id'      //表格的唯一建值
-    ,searchKey: 'kword'    //搜索框的 name
-    ,searchPlaceholder: 'UID/账号/昵称/手机号'
-    ,table: {  //同LAYUI的TABLE模块，无需elem
-      url : "{:url('user/ajax',['invite'=>$invite,'level'=>$level])}"
-      ,method: 'get'
-      ,request: { pageName: 'page',limitName: 'size' }
-      ,loading: true
-      ,size: 'sm'
-      ,initSort:{
-        field: 'id'
-        ,type: 'desc'
-      }
-      ,page : {
-        limits: [5,10]
-        ,limit: 5
-        ,layout:['prev','page','next','skip','limit','count','refresh']
-      }
-      ,cols: [[
-      // {type: 'checkbox'}
-      {type: 'radio'}
-      ,{field: 'id',title: 'ID', width: 80,sort:true }
-      ,{field: 'nick', title: "昵称(用户名)",templet:'#nameTpl'}
-      ,{field: 'email', title: '邮箱' }
-      ,{field: 'phone', title: '手机' }
-      ]]
-    }
-    ,done: function (elem, data) {
-      // console.log('data',data);
-      if(data.data.length){
-        elem.val('['+data.data[0].id+'] '+data.data[0].name);
-      }else{
-        elem.val('');
-      }
-    }
-  });
+  // tableSelect.render({
+  //   elem: '#js-set-uid'//输入框
+  //   ,checkedKey: 'id'      //表格的唯一建值
+  //   ,searchKey: 'kword'    //搜索框的 name
+  //   ,searchPlaceholder: 'UID/账号/昵称/手机号'
+  //   ,table: {  //同LAYUI的TABLE模块，无需elem
+  //     url : "{:url('user/ajax',['invite'=>$invite,'level'=>$level])}"
+  //     ,method: 'get'
+  //     ,request: { pageName: 'page',limitName: 'size' }
+  //     ,loading: true
+  //     ,size: 'sm'
+  //     ,initSort:{
+  //       field: 'id'
+  //       ,type: 'desc'
+  //     }
+  //     ,page : {
+  //       limits: [5,10]
+  //       ,limit: 5
+  //       ,layout:['prev','page','next','skip','limit','count','refresh']
+  //     }
+  //     ,cols: [[
+  //     // {type: 'checkbox'}
+  //     {type: 'radio'}
+  //     ,{field: 'id',title: 'ID', width: 80,sort:true }
+  //     ,{field: 'nick', title: "昵称(用户名)",templet:'#nameTpl'}
+  //     ,{field: 'email', title: '邮箱' }
+  //     ,{field: 'phone', title: '手机' }
+  //     ]]
+  //   }
+  //   ,done: function (elem, data) {
+  //     // console.log('data',data);
+  //     if(data.data.length){
+  //       elem.val('['+data.data[0].id+'] '+data.data[0].name);
+  //     }else{
+  //       elem.val('');
+  //     }
+  //   }
+  // });
 
   var send =  "{$send ?? ''}";
   // form init
@@ -148,7 +148,7 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
       ,{align:'left',title: '操作',toolbar: '#barDemo'}
     ]]
   }));
-
+  {include file="df/tpl/index_extra"}
   $('#jsf-start,#jsf-end').datetimepicker({
     lang: 'ch',
     format:'Y-m-d H:i',
@@ -171,7 +171,6 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
       var $tar = $('#js-set-user');
       $tar.data('href',$tar.data('src')+'?uid='+e.params.data.id);
   });
-  {include file="df/tpl/index_extra"}
 });
 </script>
 <!-- tpl -->

@@ -2,7 +2,7 @@
 namespace app\admin\controller;
 
 class Menu extends CheckLogin{
-  protected $business = '菜单';
+  protected $model_id = 1;
   // 递进型菜单首页
   public function index(){
     $parent = $this->_param('parent/d',0);

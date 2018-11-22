@@ -13,17 +13,14 @@
 {/block}
 
 {block name="area_body"}
-<div class="page-header">
-  <div class="page-title"><i></i>
-    文章 {$op}
-  </div>
-</div>
+<div class="page-header">文章 {$op}</div>
+{include file="df/tpl/set_form"}
+
 <!-- 工具箱 -->
 <ul class="tools-dir" style="display: none;">
   <li><a id="js-build-kwords" class="layui-btn layui-btn-primary layui-btn-fluid">生成关键词<em>new</em></a></li>
   <li><a id="js-build-excerpt" class="layui-btn layui-btn-primary layui-btn-fluid"><cite>生成摘要</cite><span class="layui-badge-dot"></span></a></li>
 </ul>
-{include file="df/tpl/set_form"}
 {include file="df/tpl/pic_select"}
 {/block}
 

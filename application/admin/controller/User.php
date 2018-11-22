@@ -1,20 +1,20 @@
 <?php
 namespace app\admin\controller;
 
-use src\role\RoleLogic;
-use src\role\UserRoleLogic;
-use src\user\UserExtraLogic;
-use src\fy\FyAccountLogic;
-use src\fy\FyAccountUserLogic;
-use src\fy\FyInviteLogic;
-use src\wallet\WalletLogic;
-use src\wallet\WalletHisLogic;
-use src\datatree\DatatreeLogic;
+use src\sys\role\RoleLogic;
+use src\sys\datatree\DatatreeLogic;
+use src\user\role\UserRoleLogic;
+use src\user\user\UserExtraLogic;
+use src\user\wallet\WalletLogic;
+use src\user\wallet\WalletHisLogic;
+use src\fy\fy\FyAccountLogic;
+use src\fy\fy\FyAccountUserLogic;
+use src\fy\fy\FyInviteLogic;
 
 class User extends CheckLogin {
+  protected $model_id = 2;
   protected $banDelIds = [1];
   protected $banEditFields = ['id','name'];
-  protected $business = '用户';
 
   protected function init() {
     $this->cfg['theme'] = 'layer';

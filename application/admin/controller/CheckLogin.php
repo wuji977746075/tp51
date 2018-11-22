@@ -1,10 +1,10 @@
 <?php
 namespace app\admin\controller;
 
-use src\session\SessionLogic;
-use src\user\UserLogic;
-use src\role\UserRoleLogic;
-use src\role\RoleLogic;
+use src\sys\role\RoleLogic;
+use src\sys\session\SessionLogic;
+use src\user\user\UserLogic;
+use src\user\role\UserRoleLogic;
 use \ErrorCode;
 
 class CheckLogin extends Base {

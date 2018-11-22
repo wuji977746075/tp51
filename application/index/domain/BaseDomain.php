@@ -11,9 +11,9 @@ use src\log\model\ApiHistory;
 use think\Debug;
 use think\exception\DbException;
 use think\Response;
-use src\session\SessionLogic;
-use src\client\ClientLogic;
-use src\role\RoleLogic;
+use src\sys\session\SessionLogic;
+use src\sys\client\ClientLogic;
+use src\sys\role\RoleLogic;
 /**
  * 基础领域模型
  * Class BaseDomain

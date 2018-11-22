@@ -18,9 +18,9 @@ use src\file\UserAudioLogic;
 use think\Controller;
 use think\Response;
 
-class File extends Base
-{
+class File extends Base {
 
+    protected $model_id = 17;
     protected function _initialize(){
 
         //TODO: 导致session，修改不启作用，沿用上次，导致一级菜单未能存入session，使得当前激活菜单不正确

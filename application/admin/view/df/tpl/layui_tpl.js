@@ -18,9 +18,7 @@
 </script>
 
 <script type="text/html" id="timeTpl">
-  {{# if(d.reg_time>0){ }}
-  {{ new Date((d.reg_time)*1000).format('yyyy/MM/dd hh:mm:ss') }}
-  {{# } }}
+  {{ layui.rb.gettime2(d.reg_time) }}
 </script>
 
 <script type="text/html" id="imgTpl">

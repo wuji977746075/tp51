@@ -1,8 +1,9 @@
 <?php
 namespace app\admin\controller;
-use src\datatree\DatatreeLogic;
+use src\sys\core\DatatreeLogic;
 
 class Banner extends CheckLogin {
+  protected $model_id = 14;
   private $types     = [];
   private $url_types = [];
   private $dt_id     = 0;

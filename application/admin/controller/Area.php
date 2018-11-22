@@ -2,11 +2,8 @@
 namespace app\admin\controller;
 
 class Area extends CheckLogin{
-
+  protected $model_id = 10;
   protected $banEditFields = ['parent','id'];
-  public function init(){
-    $this->logic = new \src\com\AreaLogic;
-  }
 
   // edit / add
   public function set(){

@@ -36,10 +36,10 @@ function getArrKey($r,$key,$err='invalid array key'){
 }
 
 function getConfig($key='',$time=600) {
-  return (new \src\config\ConfigLogic)->getConfig($key);
+  return (new \src\sys\core\ConfigLogic)->getConfig($key);
 }
 function getDatatree($name='',$time=600) {
-  $c = (new \src\datatree\DatatreeLogic)->getDatatree($name,'id','title');
+  $c = (new \src\sys\core\DatatreeLogic)->getDatatree($name,'id','title');
   return $c;
 }
 function getUserById($id=0,$field='name',$null='') {
