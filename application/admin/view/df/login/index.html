@@ -1,65 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
   <title> 登陆页面 </title>
-  <link rel="stylesheet" href="__CDN__layui/2.4.5/dist/css/layui.css" media="all">
-  <link rel="stylesheet" href="__SKIN__css/screen.css?v=__VERSION__" media="screen">
+  {include file="df/tpl/common_lib"}
+  <link rel="stylesheet" href="__CSS__test.css?v=__VERSION__" media="screen">
   <style>
     .layui-input, .layui-select, .layui-textarea{
       height: 38px !important;
     }
   </style>
   <script>
-    if(self!=top){
-      top.location.href="{:url(CONTROLLER_NAME.'/index')}";
-    }
+    if(self!=top){ top.location.href="{:url(CONTROLLER_NAME.'/index')}"; }
   </script>
-  {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css"}
-  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.4.5/dist/layui.js,__CDN__nprogress/nprogress.js"}
   <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{
-  height:100%;width:100%;min-height: 100%;overflow: hidden;
-}
-body{
-  font:14px Helvetica Neue,Helvetica,PingFang SC,\5FAE\8F6F\96C5\9ED1,Tahoma,Arial,sans-serif;line-height: 24px;
-  /*background: transparent url('../img/pre_bg.jpg') no-repeat center top;*/
-  /*background-size: cover;*/
-  background-color: #000;color: #999;
-  position:relative;
-}
-a{ color:#fff;text-decoration: none; }
-a:hover{text-decoration: none;}
-#js-p{
-  width:100%;height:80%;position:absolute;left: 0;top:0;
-  background-color: rgba(0,150,136,.3);
-}
-.center{
-  background-color: #f2f2f2;
-  position:absolute;left:50%;top:50%;
-  width : 400px;height:auto;padding: 20px;
-  border:1px solid rgba(100,100,100,.4);
-  margin-left: -200px;margin-top: -200px;
-}
-.header{  text-align: center;padding: 20px; }
-.header h2{
-  margin-bottom: 10px;color: #000;
-  font-weight: 300;font-size: 30px;
-}
-.header p{  font-weight: 300;color: #999; }
-.jsf-icon{
-  position: absolute;
-  left: 1px;top: 1px;
-  width: 38px;color: #d2d2d2;
-  line-height: 36px;text-align: center;
-}
-.w-full{ width:100% !important; }
-input{ text-indent: 2em; }
-.relative{ position: relative !important; }
-#jsf-remember{
-  display: inline-block !important;
-}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html,body{
+      height:100%;width:100%;min-height: 100%;overflow: hidden;
+    }
+    body{
+      font:14px Helvetica Neue,Helvetica,PingFang SC,\5FAE\8F6F\96C5\9ED1,Tahoma,Arial,sans-serif;line-height: 24px;
+      /*background: transparent url('../img/pre_bg.jpg') no-repeat center top;*/
+      /*background-size: cover;*/
+      background-color: #000;color: #999;
+      position:relative;
+    }
+    a{ color:#fff;text-decoration: none; }
+    a:hover{text-decoration: none;}
+    #js-p{
+      width:100%;height:80%;position:absolute;left: 0;top:0;
+      background-color: rgba(0,150,136,.3);
+    }
+    .center{
+      background-color: #f2f2f2;
+      position:absolute;left:50%;top:50%;
+      width : 400px;height:auto;padding: 20px;
+      border:1px solid rgba(100,100,100,.4);
+      margin-left: -200px;margin-top: -200px;
+    }
+    .header{  text-align: center;padding: 20px; }
+    .header h2{
+      margin-bottom: 10px;color: #000;
+      font-weight: 300;font-size: 30px;
+    }
+    .header p{  font-weight: 300;color: #999; }
+    .jsf-icon{
+      position: absolute;
+      left: 1px;top: 1px;
+      width: 38px;color: #d2d2d2;
+      line-height: 36px;text-align: center;
+    }
+    .w-full{ width:100% !important; }
+    input{ text-indent: 2em; }
+    .relative{ position: relative !important; }
+    #jsf-remember{
+      display: inline-block !important;
+    }
   </style>
 </head>
 <body>

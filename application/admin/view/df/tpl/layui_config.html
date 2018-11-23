@@ -1,0 +1,26 @@
+<script src="__SKIN__js/lib/lang_zh.js?v=__VERSION__"></script>
+<script>
+layui.cache.rainbow = window.rainbow = {
+  api_url:"{:config('api_url')}",
+  ava_url:"{:config('avatar_url')}",
+  img_url:"{:config('picture_url')}",
+  dir :"{:config('is_debug') ? '' : ''}", // min/
+  rev_ver : __VERSION__,
+}; // ueditor ...
+layui.config({
+  base : '__SKIN__js/'+ rainbow.dir
+  ,version : ''
+}).extend({
+  'scojs':'sco'
+  ,'picView':'picView'
+  ,'cropper':'cropper'
+  ,'croppers':'croppers'
+  ,'tableSelect':'tableSelect'
+  // ,'ckplayer':'ckplayer/ckplayer.min'
+  ,'tabrightmenu':'tabrightmenu100'
+  ,'table2':'table245'
+  ,'select2':'select2'
+  ,'datetimepicker': 'jquery.datetimepicker'
+  ,'qrcode': 'jquery-qrcode'
+}).use('app');
+</script>

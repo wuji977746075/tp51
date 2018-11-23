@@ -1,11 +1,12 @@
 .idea
-composer.lock
 *.log
 thinkphp
 .env
 .phpintel/
 runtime/
+node_modules/
 public/upload/
+#public/static/dist/
 extend/pscws4/etc/dict.utf8.xdb
 vendor/
 sftp-config.json

@@ -2,46 +2,14 @@
 <html lang="zh_cn">
 <head>
   <base href="{:config('site_url')}/" />
-  <meta charset="UTF-8">
   <title> {$seo.title ?? L('TITLE')}-{:config('site_title')}  {:config('is_debug') ? '[测试]' : ''} </title>
-  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="keywords" content="{$seo.keywords|default=' '}" />
   <meta name="description" content="{$seo.description|default=' '}" />
   <meta name="author" content="{$cfg.owner|default=' rainbow '}" />
-
-  <link rel="stylesheet" href="__CDN__layui/2.4.5/dist/css/layui.css" media="all">
-  <!-- nprogress + select2:4.0.0 + scojs:1.0.2 + jquery.datatimepicker + ... -->
-  <link rel="stylesheet" href="__SKIN__css/screen.css?v=__VERSION__" media="screen">
+  {include file="df/tpl/common_lib"}
   {if condition ="config('is_debug')" }
   <link rel="stylesheet" id="style-color" href="__SKIN__css/skin.css?v=__VERSION__" media="all">
   {else /}
   <link rel="stylesheet" id="style-color" href="__SKIN__css/skin/{$uinfo.theme|default='df'}.css?v=__VERSION__" media="all">
   {/if}
-  {css href="__CDN__font-awesome/4.7.0/css/font-awesome.min.css"}
-
-  {js href="__CDN__jquery/1.11.0/jquery.min.js,__CDN__layui/2.4.5/dist/layui.js,__CDN__nprogress/nprogress.js"}
-  <script src="__SKIN__js/lib/lang_zh.js?v=__VERSION__"></script>
-  <script>
-  layui.cache.rainbow = window.rainbow = {
-    api_url:"{:config('api_url')}",
-    ava_url:"{:config('avatar_url')}",
-    img_url:"{:config('picture_url')}",
-    dir :"{:config('is_debug') ? '' : ''}", //min/
-  };//ueditor ...
-  layui.config({
-    base : '__SKIN__js/'+ rainbow.dir
-    ,version : ''
-  }).extend({
-    'scojs':'sco'
-    ,'picView':'picView'
-    ,'cropper':'cropper'
-    ,'croppers':'croppers'
-    ,'tableSelect':'tableSelect'
-    // ,'ckplayer':'ckplayer/ckplayer.min'
-    // ,'tabrightmenu':'tabrightmenu100'
-    ,'table2':'table245'
-    ,'select2':'select2'
-    ,'datetimepicker': 'jquery.datetimepicker'
-    ,'qrcode': 'jquery-qrcode'
-  }).use('app');
-  </script>
+  {include file="df/tpl/layui_config"}

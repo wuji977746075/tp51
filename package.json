@@ -1,0 +1,22 @@
+{
+  "name": "tp51-static-manageer",
+  "version": "0.0.1",
+  "description": "资源自动化",
+  "scripts": { },
+  "author": "rainbow",
+  "license": "Apache2",
+  "devDependencies": {
+    "browser-sync": "^2.14.0",
+    "del": "^2.2.1",
+    "gulp": "^3.9.1",
+    "run-sequence": "^1.2.2",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-csscomb": "^3.0.7",
+    "gulp-cleanhtml": "^1.0.1",
+    "gulp-minify-inline-scripts": "0.0.6",
+    "gulp-imagemin": "^3.0.2",
+    "gulp-rev-append": "^0.1.8",
+    "gulp-rev-collector": "^1.0.5",
+    "gulp-uglify": "^2.0.0"
+  }
+}

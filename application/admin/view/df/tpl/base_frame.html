@@ -184,7 +184,7 @@ layui.use(['rb','element','tabrightmenu'], function(){
         // rb.local('menu_ids',_menu_ids);
         //组装左边菜单
         html = '';
-        var _menu_id = rb.local('menu_id');
+        var _menu_id = rb.local('menu_id') || 0;
         // for (k in menus[id]['child']){
         $.each(menus[id]['child'], function(k, item) {
           // item = menus[id]['child'][k];
@@ -217,8 +217,8 @@ layui.use(['rb','element','tabrightmenu'], function(){
             var $a = $this.children('a');
             var id = $a.data('id');
             // 保存上次点击的左边菜单id
-            var _menu_ids    = rb.local('menu_ids');
-            var _top_menu_id = rb.local('last_top_menu');
+            var _menu_ids    = rb.local('menu_ids') || [];
+            var _top_menu_id = rb.local('last_top_menu') || 0;
             if(_top_menu_id){
               _menu_ids[_top_menu_id] = id;
               rb.local('menu_ids',_menu_ids);
@@ -231,7 +231,7 @@ layui.use(['rb','element','tabrightmenu'], function(){
             rb.tabChangeTop(id,ops);
           });
         // }
-      }).filter('[data-id='+rb.local('last_top_menu')+']').addClass('layui-this').trigger('click');
+      }).filter('[data-id='+( rb.local('last_top_menu')|| 0 )+']').addClass('layui-this').trigger('click');
     }
   }
 
@@ -247,10 +247,10 @@ layui.use(['rb','element','tabrightmenu'], function(){
   // })
 
   // 自动记忆上次的每个大菜单的小菜单
-  var menu_id  = rb.local('menu_id');
-  var menu_ids = rb.local('menu_ids');
-  if(!menu_id && menu_ids){
-    menu_id = menu_ids[rb.local('last_top_menu')] || 0;
+  var menu_id  = rb.local('menu_id') || 0;
+  var menu_ids = rb.local('menu_ids') || [];
+  if(!menu_id && menu_ids.length){
+    menu_id = menu_ids[rb.local('last_top_menu') || 0] || 0;
   }
   if(menu_id){
     $('.layui-nav-tree dd a[data-id='+menu_id+']').click();

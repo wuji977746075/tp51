@@ -11,9 +11,9 @@
 //     ->pattern(['name' => '\w+', 'id' => '\d+']);
 
 // install
-Route::get('install', 'install/index/index');
-// another admin path
-Route::get('admin', 'admin/login/index');
+Route::get('install/', 'install/index');
+// another admin path : bug  html replace error(e:index)
+// Route::get('admin/', '@[admin/login/]index');
 
 // 一些链接的重写
 // Route::get('think', function () {
