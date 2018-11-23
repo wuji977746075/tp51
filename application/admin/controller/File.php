@@ -301,7 +301,7 @@ class File extends Base {
 
     private function ajaxReturn($data){
         $response = Response::create($data, "json")->code(200);
-        $response->header("X-Powered-By","rainbow")->send();
+        $response->header("X-Powered-By",POWER)->send();
         exit;
     }
 

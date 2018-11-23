@@ -144,7 +144,7 @@ class Sign extends Rest{
     private function jsonReturn($code,$msg=''){
         $data = ['code'=>$code,'msg'=>$msg];
         $response = $this->response($data, "json",200);
-        $response->header("X-Powered-By","WWW.ITBOYE.COM")->send();
+        $response->header("X-Powered-By",POWER)->send();
         exit(0);
     }
 }

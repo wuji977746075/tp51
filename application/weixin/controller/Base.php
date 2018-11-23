@@ -11,13 +11,13 @@ use think\Controller;
 use think\Response;
 use think\Request;
 abstract class Base extends Controller{
-		
+
 	protected $seo = array(
 			'title'=>'',
 			'keywords'=>'',
 			'description'=>'',
 	);
-	
+
 	protected $cfg = array(
 			'owner'=>'',
 			'theme'=>'simplex'
@@ -28,7 +28,7 @@ abstract class Base extends Controller{
 	public function assignVars($seo=array('title'=>'标题','keywords'=>'关键词','description'=>'描述',),	$cfg=array('owner'=>'杭州博也网络科技有限公司')){
 		$this->seo = array_merge($this->seo,$seo);
 		$this->cfg = array_merge($this->cfg,$cfg);
-		
+
 		$this->assign("seo",$this->seo);
 		$this->assign("cfg",$this->cfg);
 	}
@@ -39,7 +39,7 @@ abstract class Base extends Controller{
 		$this->seo = array_merge($this->seo,array('title'=>$title));
 		$this->assign("seo",$this->seo);
 	}
-	
+
 	//初始化
 	protected function _initialize(){
 		//设置程序版本
@@ -47,11 +47,11 @@ abstract class Base extends Controller{
 		$this->assignVars();
         $this->_defined();
 	}
-		
+
 	/* 空操作，用于输出404页面 */
     protected function _empty() {
-    	header('HTTP/1.1 404 Not Found'); 
-		header("status: 404 Not Found");     	
+    	header('HTTP/1.1 404 Not Found');
+		header("status: 404 Not Found");
 		header("Cache-Control: no-cache");
 		header("Pragma: no-cache");
 		if(!defined('DEBUG')){
@@ -106,7 +106,7 @@ abstract class Base extends Controller{
 
 	private function ajaxReturn($data){
 		$response =  Response::create($data, "json")->code(200);
-		$response->header("X-Powered-By","WWW.ITBOYE.COM")->send();
+		$response->header("X-Powered-By",POWER)->send();
 		exit;
 	}
 }

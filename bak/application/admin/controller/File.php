@@ -299,7 +299,7 @@ class File extends Admin
 
     private function ajaxReturn($data){
         $response =  Response::create($data, "json")->code(200);
-        $response->header("X-Powered-By","WWW.ITBOYE.COM")->send();
+        $response->header("X-Powered-By",POWER)->send();
         exit;
     }
 

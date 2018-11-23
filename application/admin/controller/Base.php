@@ -225,7 +225,7 @@ class Base extends Controller{
     header('Access-Control-Allow-Origin:*');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, sessionId");
-    header('X-POWER_BY:'.POWER);
+    header('X-Powered-By:'.POWER);
 
     $header = $this->request->header();
     $sessionId = isset($header['sessionid']) ? $header['sessionid'] : null;
