@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="zh_cn">
-<head>
+{include file="df/tpl/common_lib"}
   <base href="{:config('site_url')}/" />
   <title> {$seo.title ?? L('TITLE')}-{:config('site_title')}  {:config('is_debug') ? '[测试]' : ''} </title>
   <meta name="keywords" content="{$seo.keywords|default=' '}" />
   <meta name="description" content="{$seo.description|default=' '}" />
   <meta name="author" content="{$cfg.owner|default=' rainbow '}" />
-  {include file="df/tpl/common_lib"}
   {if condition ="config('is_debug')" }
   <link rel="stylesheet" id="style-color" href="__SKIN__css/skin.css?v=__VERSION__" media="all">
   {else /}

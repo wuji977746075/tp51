@@ -47,6 +47,12 @@ function getUserById($id=0,$field='name',$null='') {
   return isset($temp[$field]) ? $temp[$field] : $null;
 }
 
+// todo : 字符串 空格合并 去换行 删除注释
+// function DeleteHtml($str) {
+//   $str = preg_replace("/(\/\*.*\*\/)|(#.*?\n)|(\/\/.*?\n)/gs", '', str_replace(array("\r\n", "\r"), "\n", $str));
+//   $str = preg_replace("/\t{2,}/g"," ",$str);
+//   return trim($str);
+// }
 
 function cache_get($key=''){
   !is_string($key) && $key=serialize($key);
