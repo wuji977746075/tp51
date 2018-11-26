@@ -84,26 +84,6 @@ class Base extends Controller{
     // set page and sort
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('order','desc');
-    // 2018-11-23 18:16:19
-    // todo : gzip +
-    $this->view->filter(function($s){
-      $n = PHP_EOL;
-      // php   /*.*/ //  不用去
-      // html  <!--.-->
-      // css   /*.*/
-      // js    /*.*/ //
-      // 统一换行 \n
-      $s = str_replace(["\r\n", "\r"], "\n", $s);
-      // 去掉多行注释
-      // /*.*/ <!--.-->(<!--[if ]开头的除外)
-      $s = preg_replace("#((/\*.*?\*/)|(<!--(?!\[if )(.|\n)*?-->))(\n){0,}#u", "", $s);
-      // 去掉js单行注释 //(行//或 空格//)
-      $s = preg_replace("#\n#u","\n\n",$s); // 必须
-      $s = preg_replace(["#\n//.*?\n#u","#\n(.*?)( |\t|}|\)|;)//.*?\n#u"],["\n\n","\n$1$2  \n"],$s);
-      // 空格换行合并
-      $s = preg_replace(["# {2,}#u","#\s*\n\s*#u"],[" ","\n"],$s);
-      return $s;
-    });
     $this->init();
     // !$this->logic && $this->error('需要配置主logic');
   }
@@ -141,13 +121,16 @@ class Base extends Controller{
   // protected function getLoginUid(){
   //   return 1;
   // }
-
   protected function show($file='',$theme=''){
     $theme = $theme ? $theme : $this->cfg['theme'];
     if(!empty($file)){
-      return $this->fetch($theme.'/'.$file);
+      return $this->fetch($theme.'/'.$file,[],[
+        'filter' => 'tpl_filter'
+      ]);
     }else{
-      return $this->fetch($theme."/". request()->controller().'/'.request()->action());
+      return $this->fetch($theme."/". request()->controller().'/'.request()->action(),[],[
+        'filter' => 'tpl_filter'
+      ]);
     }
   }
   //解析分页api分页返回 - 并导入数据到模板

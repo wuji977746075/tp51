@@ -96,6 +96,32 @@ function cache_clear($key='',$return=false){
   }
 }
 
+// 请在输出前过滤 or 保存时html实体转码
+// Thinkphp5.1 Think\Template.php  : 398
+// $content = call_user_func_array('tpl_filter',[$content]);
+// todo : gzip +
+function tpl_filter($s) {
+  // $this->view->filter(function($s){
+  $n = PHP_EOL;
+  // php   /*.*/ //  不用去
+  // html  <!--.-->
+  // css   /*.*/
+  // js    /*.*/ //
+  // 统一换行 \n
+  $s = str_replace(["\r\n", "\r"], "\n", $s);
+  // 去掉多行注释
+  // /*.*/ <!--.-->(<!--[if ]开头的除外)
+  $s = preg_replace("#((/\*.*?\*/)|(<!--(?!\[if )(.|\n)*?-->))(\n){0,}#u", "", $s);
+  // 去掉js单行注释 //(行//或 空格//)
+  $s = preg_replace("#\n#u","\n\n",$s); // 必须
+  $s = preg_replace(["#\n//.*?\n#u","#\n(.*?)( |\t|}|\)|;)//.*?\n#u"],["\n\n","\n$1$2  \n"],$s);
+  // 空格换行合并
+  $s = preg_replace(["# {2,}#u","#\s*\n\s*#u"],[" ","\n"],$s);
+  // to optimize : 去掉js 某些换行
+  $s = preg_replace(["#,\n#u","#\n,#u","#\{\n#u","#\}\n#u","#;\n#u"],[",",",","{ ","} ",";"],$s);
+  return $s;
+  // });
+}
 /**
  * 获取时间戳
  * @param  mixed $time  int,string
