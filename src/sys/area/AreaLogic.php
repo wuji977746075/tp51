@@ -16,4 +16,10 @@ class AreaLogic extends BaseLogic{
     $r = $this->query(['parent'=>$id],false,$field);
     return $r;
   }
+
+  // tocombine
+  public function isExistCode($code='',$field='id'){
+    $r = $this->getInfo(['areaID'=>$code],false,$field);
+    return $r;
+  }
 }
