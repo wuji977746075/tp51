@@ -46,7 +46,20 @@ function getUserById($id=0,$field='name',$null='') {
   $temp = $id  ? (new \src\user\UserLogic)->getAllInfo($id) : [];
   return isset($temp[$field]) ? $temp[$field] : $null;
 }
-
+// seems not work ...
+// ob_start('ob_gzip');
+// echo $s;
+// end or ob_end_flush();
+function ob_gzip($content){
+  if(!headers_sent() && extension_loaded("zlib") && strstr($_SERVER["HTTP_ACCEPT_ENCODING"],"gzip")){
+    $content = gzencode($content,5);
+    // $content = gzcompress($content);bzcompress($content)
+    header("Content-Encoding: gzip");
+    header("Vary: Accept-Encoding");
+    header("Content-Length: ".strlen($content));
+  }
+  return $content;
+}
 // todo : 字符串 空格合并 去换行 删除注释
 // function DeleteHtml($str) {
 //   $str = preg_replace("/(\/\*.*\*\/)|(#.*?\n)|(\/\/.*?\n)/gs", '', str_replace(array("\r\n", "\r"), "\n", $str));
