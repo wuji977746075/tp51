@@ -112,7 +112,7 @@ function tpl_filter($s) {
   // 空格换行合并
   $s = preg_replace(["# {2,}#u","#\s*\n\s*#u"],[" ","\n"],$s);
   // 去掉某些换行
-  $s = preg_replace(["#,\n#u","#\n,#u","#;\n#u","#\{\n#u","#<((.|\n)*?)>\n#"],[",",",",";","{ ","<$1>"],$s);
+  $s = preg_replace(["#,\n#u","#\n,#u","#;\n#u","#\{\n#u","#>\n+<#"],[",",",",";","{ ","><"],$s);
   // bug : to optimize
   // $s = preg_replace("#\}\n#u","} ",$s);
   return $s;
