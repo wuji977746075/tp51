@@ -38,8 +38,8 @@ function getArrKey($r,$key,$err='invalid array key'){
 function getConfig($key='',$time=600) {
   return (new \src\sys\core\ConfigLogic)->getConfig($key);
 }
-function getDatatree($name='',$time=600) {
-  $c = (new \src\sys\core\DatatreeLogic)->getDatatree($name,'id','title');
+function getDatatree($name='',$k='id',$v='title',$time=600) {
+  $c = (new \src\sys\core\DatatreeLogic)->getDatatree($name,$k,$v);
   return $c;
 }
 function getUserById($id=0,$field='name',$null='') {

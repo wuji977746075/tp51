@@ -2,7 +2,6 @@
 namespace app\admin\controller;
 
 use src\sys\role\RoleLogic;
-use src\sys\datatree\DatatreeLogic;
 use src\user\role\UserRoleLogic;
 use src\user\user\UserExtraLogic;
 use src\user\wallet\WalletLogic;
@@ -133,8 +132,7 @@ class User extends CheckLogin {
     } unset($v);
     $this->assign('roles',$roles);
     // 账户变动类型
-    $dtTypes = (new DatatreeLogic)->getItems('wallet_change_item');
-    // dump($dtTypes);die();
+    $dtTypes = getDatatree('wallet_change_item','id',null);
     $this->assign('dtTypes',$dtTypes);
     // 用户资产
     // 用户订单
