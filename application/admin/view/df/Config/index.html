@@ -60,7 +60,6 @@ layui.use(['rb','table2','form'], function(){
   // table init
   rb.where.group = parseInt({$group ?: -1});
   rb.where.kword = "{$kword ?: ''}";
-  rb.where.field = 'sort';
   rb.setWhere = function() {
     rb.where.kword = $('#jsf-kword').val();
     rb.where.group = $('#jsf-group').val();
@@ -69,9 +68,6 @@ layui.use(['rb','table2','form'], function(){
   rb.table = table.render($.extend(rb.table_config,{
     url: '{:url(CONTROLLER_NAME."/ajax")}'
     ,where: rb.where
-    ,initSort: {
-      field: 'sort',type: 'desc'
-    }
     ,cols:  [[
       {checkbox: true}, //,LAY_CHECKED: true
       {field: 'id', title: 'ID', minWidth: 60,sort:true}

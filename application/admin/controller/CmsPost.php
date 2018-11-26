@@ -68,7 +68,7 @@ class CmsPost extends CheckLogin {
       // check cid/title add时(草稿时publish_time/0 author/UID)
       // todo: editor 分页 图片保存到本地
       $id = $this->id;
-      $paras['title'] = $this->logic->checkTitle($this->logic->filter($paras['title']));
+      $paras['title'] = $this->logic->checkTitle($paras['title'],$id);
       $content        = $this->logic->filter($paras['content']);
       $content_kwords = $extra->getContentScws($content);
 
