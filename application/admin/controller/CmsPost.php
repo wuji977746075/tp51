@@ -31,7 +31,7 @@ class CmsPost extends CheckLogin {
   // logic ajax page-list
   public function ajax() {
     // $kword = $this->_get('kword',''); // 搜索关键词
-    $r = $this->logic->queryCountWithUser($this->where,$this->page,$this->sort);
+    $r = $this->logic->queryCountWithUser($this->where,$this->page,$this->sort,false,'p.*,u.name as author_name','author');
     $this->checkOp($r);
   }
 

@@ -1,10 +1,20 @@
 <?php
-namespace app\admin\controller;
+/**
+ * Author      : rainbow <977746075@qq.com>
+ * DateTime    : 2018-11-26 17:54:14
+ * Description : [Description]
+ */
 
-class Menu extends CheckLogin{
-  protected $model_id = 1;
-  // 递进型菜单首页
-  public function index() {
+namespace app\admin\controller;
+// use
+
+class Bbs extends CheckLogin {
+  protected $model_id = 22;
+  protected function init() {
+    $this->cfg['theme'] = 'layer';
+  }
+
+  function index() {
     $parent = $this->_param('parent/d',0);
     $up     = $this->_param('up/d',0); //  ? parent的上级
     if($parent && $up){
@@ -15,57 +25,20 @@ class Menu extends CheckLogin{
     return $this->show();
   }
 
-  // drag型菜单首页
-  public function drag() {
-    $nodes = $this->logic->getAllMenu(false);
-    $this->assign('nodes',$nodes);
-    return $this->show();
-  }
 
-  // drag型菜单排序
-  public function dragSort() {
-    $ids = $this->_param('ids/a',[]);
-    if($ids){
-      // 最多3级
-      foreach ($ids as $k=>$v) {
-        $id = intval($v['id']);
-        $this->logic->saveById($id,['sort'=>$k]);
-
-        if(isset($v['children'])){
-        foreach ($v['children'] as $k2=>$v2) {
-          $id = intval($v2['id']);
-          $this->logic->saveById($id,['sort'=>$k2]);
-
-          if(isset($v2['children'])){
-          foreach ($v2['children'] as $k3=>$v3) {
-            $id = intval($v3['id']);
-            $this->logic->saveById($id,['sort'=>$k3]);
-          }
-          }
-        }
-        }
-      }
-      $this->suc();
-    }else{
-      $this->err(Linvalid('op'));
-    }
-  }
-
-  // ajax 返回菜单单页数据
-  public function ajax() {
-    $parent = $this->_get('parent/d',0);
+  function ajax() {
+    $parent = $this->_param('parent/d',0);
     $this->where = ['parent'=>$parent];
     return parent::ajax();
   }
 
-  public function set() {
+  function set() {
     $id = $this->id;
     $this->jsf = array_merge($this->jsf,[
       'name'   =>'标题',
       'parent' =>'父级',
-      'url'    =>'链接',
-      'params' =>'链接参数',
-      'show'   =>'显示',
+      'desc'   =>'描述',
+      'auth'   =>'审核',
     ]);
     $super  = $this->_param('super/d',0); // 是否为高级模式
     $parent = $this->_param('parent/d',0);
@@ -79,28 +52,25 @@ class Menu extends CheckLogin{
         if($parent){
           $info = $this->logic->getInfo(['id'=>$parent]);
           empty($info) && $this->error(Linvalid('parent'));
-          $info['level'] > 2 && $this->error(L('menu-over-level'));
         }
       }
       $this->assign('parent',$parent);
-      // 查询2级菜单 tree
-      $menu = $this->logic->getAllMenu(false,2);
-      array_unshift($menu, ['id'=>0,'name'=>'* 顶级 *','child'=>[]]);
-      $this->assign('menu',$menu);
-
+      // 查询按tree板块
+      $bbs = $this->logic->queryTree(false);
+      array_unshift($bbs, ['id'=>0,'name'=>'* 顶级 *','child'=>[]]);
+      $this->assign('bbs',$bbs);
       $this->jsf_tpl = [
         ['*name'],
-        ['*parent|selects|'.$parent,'',$menu],
-        ['url'],
-        ['icon|icon'],
-        ['params'],
-        ['show|radio','','',3],
+        ['*parent|selects|'.$parent,'',$bbs],
+        ['icon|btimg','',1],
+        ['status|radio','','',3],
+        ['auth|radio','','',3],
         ['desc|textarea','input-long'],
         ['sort|number'],
       ];
       return parent::set();
     }else{ //save
-      $paras = $this->_getPara('name','url,icon,params,show|0|int,desc,sort|0|int,parent|0|int');
+      $paras = $this->_getPara('name','icon,status|0|int,desc,auth|0|int,sort|0|int,parent|0|int');
       if($id){ // edit
         $info = $this->logic->getInfo(['id'=>$id]);
         empty($info) && $this->err(Linvalid('id'));
@@ -116,10 +86,6 @@ class Menu extends CheckLogin{
         if($parent){
           $r = $this->logic->getInfo(['id'=>$parent]);
           empty($r) && $this->err(Linvalid('parent'));
-          $r['level'] > 2 && $this->err(L('menu-over-level'));
-          $paras['level'] = intval($r['level']) + 1;
-        }else{
-          $paras['level'] = 1;
         }
         $id = $this->logic->add($paras);
       }

@@ -1,0 +1,81 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header">{$cfg.business}{:L('manage')}</div>
+  <div class="layui-card-body">
+    {:html_head_tip($cfg['business']."管理,点击带 .列单元格编辑")}
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete no-refresh fresh-table"></i></a>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','form'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+  // form init
+  // table init
+  rb.where.field  = 'create_time';
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: rb.where
+    ,initSort: {
+      field: 'create_time',type: 'desc'
+    }
+    ,cols:  [[
+      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', minWidth: 60,sort:true}
+      ,{field: 'title', title: '名称 .', templet: '#titleTpl'}
+      ,{field: 'uid', title: '作者', templet:"#uidTpl"}
+      ,{field: 'publish_time', title: '发布时间',templet: '#publicTimeTpl'}
+      ,{field: 'status', title: '状态', width: 75,templet:"#statusTpl"}
+      ,{field: 'update_time',align:'right',width:125,title: '上次更新',hide:true, sort:true,templet: '#updateTimeTpl'}
+      ,{align:'left',fixed: 'right',title: '操作', width: 85,toolbar: '#barDemo'}
+    ]]
+  }));
+
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="uidTpl">
+  {{ layui.rb.avaImg(d.uid,60) }}
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.uid }}" class="layui-table-link ajax-layer tooltip" data-text="[{{ d.uid }}] {{ d.uname }}" title='用户 {{ d.uname }} 详情'> {{ d.unick }}</a>
+</script>
+<script type="text/html" id="titleTpl">
+  {{ d.special ? '<i class="layui-badge">精华</i>' : '' }}
+  {{ d.top ? '<i class="layui-badge">置顶</i>': '' }}
+  {{ d.title }}
+</script>
+<script type="text/html" id="publicTimeTpl">
+  {{ layui.rb.getFormatTime(d.public_time) }}
+</script>
+<script type="text/html" id="updateTimeTpl">
+  {{ layui.rb.getFormatTime(d.update_time) }}
+</script>
+<script type="text/html" id="statusTpl">
+  <form class="layui-form">
+  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="status" {{# if(d.status){ }} checked  {{#  } }} lay-skin="switch">
+  </form>
+</script>
+{/block}

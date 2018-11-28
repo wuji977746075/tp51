@@ -383,7 +383,24 @@ abstract class BaseLogic {
         return ["count" => $count, "list" => $list];
 
     }
+    function queryCountWithUser($map = null, $page = false, $order = false, $params = false, $fields = 'p.*,u.name as uname,u.nick as unick',$jo="uid") {
+        $count = $this -> model ->alias('p')
+        ->join([PRE.'user'=>'u'],'p.'.$jo.' = u.id','left')
+        -> where($map)
+        -> count();
+        $list = [];
+        if($count){
+            empty($page) && $page = ['page'=>1,'size'=>10];
+            $query = $this-> model ->alias('p')->join([PRE.'user'=>'u'],'p.'.$jo.' = u.id','left');
+            if(!empty($map)) $query = $query->where($map);
+            if(false !== $order) $query = $query->order($order);
+            if(false !== $fields) $query = $query->field($fields);
 
+            $start = isset($page['start']) ? $page['start'] : max(0,(intval($page['page'])-1)*intval($page['size']));
+            $list = $query -> limit($start,$page['size']) -> select();
+        }
+        return ["count" => $count, "list" => $list->toArray()];
+    }
     /**
      * query
      * @param 查询条件|null $map

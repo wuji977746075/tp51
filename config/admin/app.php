@@ -29,4 +29,13 @@ return [
     // 默认跳转页面对应的模板文件
     'dispatch_success_tmpl'  => APP_PATH . 'admin/view/df/dispatch/jump.tpl',
     'dispatch_error_tmpl'    => APP_PATH . 'admin/view/df/dispatch/jump.tpl',
+
+    'exception_handle'       => function($e) {
+      // 请求异常
+      if (request()->isAjax()) {
+        return json(['code'=>$e->getCode(),'message'=>$e->getMessage(),'data'=> $e->getTrace()]);
+      }else{
+        throw $e;
+      }
+    }
 ];

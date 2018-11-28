@@ -11,7 +11,7 @@ use src\base\BaseLogic;
 class FyAccountLogic extends BaseLogic
 {
   // 推广位信息 + 分配人信息
-  function queryCountWithUser($map = null, $page = false, $order = false, $params = false, $fields = false){
+  function queryCountWithUser($map = null, $page = false, $order = false, $params = false, $fields = false,$f=''){
     $pre = PRE;
     empty($page) && $page = ['page'=>1,'size'=>10];
     $model = $this->getModel();
