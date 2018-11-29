@@ -40,6 +40,12 @@ class CheckLogin extends Base {
     'status' =>'状态',
     'title'  =>'标题',
   ];
+
+  // public function clearall(){
+  //   $result = Db::execute("TRUNCATE `itboye_api_call_his`;");
+  //   $this->success("操作成功");
+  // }
+
   public function initialize(){
     parent::initialize();
     $uid = SessionLogic::isAdminLogin(); // 是否登陆了后台

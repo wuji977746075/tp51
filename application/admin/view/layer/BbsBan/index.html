@@ -45,12 +45,11 @@ layui.use(['rb','table2','form'], function(){
     ,cols:  [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
       ,{field: 'id', title: 'ID', minWidth: 60,sort:true}
-      ,{field: 'title', title: '标题 .',edit:true,templet: '#titleTpl'}
-      ,{field: 'uid', title: '作者', templet:"#uidTpl"}
-      ,{field: 'top', title: '置顶', width: 60,templet:"#topTpl"}
-      ,{field: 'special', title: '精华', width: 60,templet:"#specialTpl"}
-      ,{field: 'status', title: '状态', width: 60,templet:"#statusTpl"}
-      ,{field: 'publish_time', title: '发布时间',templet: '#publicTimeTpl',hide:true}
+      ,{field: 'uid', title: '用户', templet:"#uidTpl"}
+      ,{field: 'reason', title: '原因', width: 60}
+      ,{field: 'start_time', title: '开始时间',templet: '#startTimeTpl'}
+      ,{field: 'end_time', title: '结束时间', width: 60,templet:"#endTimeTpl"}
+      ,{field: 'rule', title: '规则', width: 60,templet:"#ruleTpl"}
       ,{field: 'update_time',align:'right',width:125,title: '上次更新', sort:true,templet: '#updateTimeTpl'}
       ,{align:'left',fixed: 'right',title: '操作', width: 85,toolbar: '#barDemo'}
     ]]
@@ -64,30 +63,16 @@ layui.use(['rb','table2','form'], function(){
   {{ layui.rb.avaImg(d.uid,60) }}
   <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.uid }}" class="layui-table-link ajax-layer tooltip" data-text="[{{ d.uid }}] {{ d.uname }}" title='用户 {{ d.uname }} 详情'> {{ d.unick }}</a>
 </script>
-<script type="text/html" id="titleTpl">
-  {{ d.special ? '<i class="layui-badge">精华</i>' : '' }}
-  {{ d.top ? '<i class="layui-badge">置顶</i>': '' }}
-  {{ d.title }}
+<script type="text/html" id="startTimeTpl">
+  {{ layui.rb.getFormatTime(d.start_time) }}
 </script>
-<script type="text/html" id="publicTimeTpl">
-  {{ layui.rb.getFormatTime(d.public_time) }}
+<script type="text/html" id="endTimeTpl">
+  {{ layui.rb.getFormatTime(d.end_time) }}
 </script>
 <script type="text/html" id="updateTimeTpl">
   {{ layui.rb.getFormatTime(d.update_time) }}
 </script>
-<script type="text/html" id="statusTpl">
-  <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="status" {{# if(d.status){ }} checked  {{#  } }} lay-skin="switch">
-  </form>
-</script>
-<script type="text/html" id="topTpl">
-  <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="top" {{# if(d.top){ }} checked  {{#  } }} lay-skin="switch">
-  </form>
-</script>
-<script type="text/html" id="specialTpl">
-  <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="special" {{# if(d.special){ }} checked  {{#  } }} lay-skin="switch">
-  </form>
+<script type="text/html" id="ruleTpl">
+  {{ d.rule }}
 </script>
 {/block}

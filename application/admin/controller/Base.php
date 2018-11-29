@@ -56,6 +56,19 @@ class Base extends Controller{
     $this->_checkIp();
     !defined('PRE') && define('PRE',config('table_df_pre'));
 
+    //设置程序版本 - test
+    $this->seo = [
+      'title'       => config('site_title'),
+      'keywords'    => config('site_keyword'),
+      'description' => config('site_desc'),
+    ];
+    $this->cfg = [
+      'theme'    => config('admin_theme'),
+      'template' => 'df',
+      'business' => '', // change _setLogic
+    ];
+    $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
+
     // get modals
     $models = (new ModelLogic)->queryCache(false);
     $models = getArr($models,'id');
@@ -66,21 +79,7 @@ class Base extends Controller{
     // require upper
     $this->_defined();
     // set main logic : require upper
-    $this->_setLogic();
-
-    //设置程序版本 - test
-    $this->seo = [
-      'title'       => config('site_title'),
-      'keywords'    => config('site_keyword'),
-      'description' => config('site_desc'),
-    ];
-    $this->cfg = [
-      'theme'    => config('admin_theme'),
-      'template' => 'df',
-      'business' => $this->business,
-    ];
-    $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
-
+    $this->_setLogic($this->model['dir']);
     // set page and sort
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('order','desc');
@@ -89,27 +88,38 @@ class Base extends Controller{
   }
   // set main login if possible
   protected function _setLogic($dir='') {
-    $logicPath = '\src\\sys\core\\'.CONTROLLER_NAME.'Logic';
-    if(class_exists($logicPath)){ // 是否为系统的
-      $this->logic = new $logicPath;
-    }else{
+    if($dir){
       $module_name = $this->model['module_name'].'\\';
-      $logic_dir = $dir ? $dir : lcfirst(CONTROLLER_NAME);
-
+      $logic_dir = lcfirst($dir);
       $logicPath = '\src\\'.$module_name.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
       if(class_exists($logicPath)){
         $this->logic = new $logicPath;
       }else{
-        $logic_dir = $module_name.preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
-        $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+        throws('非法Logic目录'.$dir);
+      }
+    }else{
+      $logicPath = '\src\\sys\core\\'.CONTROLLER_NAME.'Logic';
+      if(class_exists($logicPath)){ // 是否为系统的
+        $this->logic = new $logicPath;
+      }else{
+        $module_name = $this->model['module_name'].'\\';
+        $logic_dir = lcfirst(CONTROLLER_NAME);
+        $logicPath = '\src\\'.$module_name.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
         if(class_exists($logicPath)){
           $this->logic = new $logicPath;
+        }else{
+          $logic_dir = $module_name.preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
+          $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
+          if(class_exists($logicPath)){
+            $this->logic = new $logicPath;
+          }
         }
       }
     }
 
     // echo $logicPath;die();
     $this->business = $this->model['title'];
+    $this->cfg['business'] = $this->business;
   }
 
   protected function init(){

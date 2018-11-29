@@ -25,7 +25,7 @@ class ModelLogic extends BaseLogic{
   function clearCache() {
     $this->queryCache(false);
   }
-  function queryCache($cache=true) {
+  function queryCache($cache=false) {
     $key  = self::CACHE_KEY;
     $time = self::CACHE_TIME;
     if($cache){

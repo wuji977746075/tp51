@@ -6,13 +6,12 @@
  */
 
 namespace app\admin\controller;
-use src\cms\cms\CmsCateLogic;
-use src\cms\cms\CmsPostExtraLogic;
+use src\bbs\bbs\BbsLogic;
 
 class BbsPost extends CheckLogin {
   protected $model_id = 23;
   protected $banEditFields = ['uid','id'];
-  // 主论坛再拆分content到extra
+  // 主论坛时拆分content到extra
   // protected $extraFields = ['content','content_kwords','kwords','pid'];
 
   public function init(){
@@ -26,13 +25,9 @@ class BbsPost extends CheckLogin {
     return parent::ajax();
   }
 
-  function index() {
-    return parent::index();
-  }
-
   function set() {
     $this->jsf = array_merge($this->jsf,[
-      'tid'          => '分类',
+      'tid'          => '板块',
       'content'      => '详情',
       'status'       => '发布',
       'special'      => '精华',
@@ -40,13 +35,13 @@ class BbsPost extends CheckLogin {
       'publish_time' => '发布时间',
     ]);
     if(IS_GET){ // view
-      $cates = (new BbsLogic)->getAllMenu(false,3);
+      $cates = (new BbsLogic)->queryTree(true);
       $this->jsf_tpl = [
         ['*tid|selects','',$cates],
         ['*title','input-long'],
-        // ['kwords','input-long'], //默认标题分词
-        // ['excerpt|textarea','input-long'], //默认内容前50字
         ['*content|textarea','input-ueditor'],
+        ['special|radio'],
+        ['top|radio'],
         ['status|radio','','lay-text="发布|草稿"'],
         ['publish_time|time','','Y-m-d H:i:s'],
       ];
