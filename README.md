@@ -37,8 +37,5 @@
 - ueditor添加图片删除
 
 ##admin
-- user auth-wheretime
-- throws 由index外放
+- datatree 按模块区分 mid
 - jsf:time-time选择
-- 一对一关联保存获取
-- cmspost checkbox无改变
