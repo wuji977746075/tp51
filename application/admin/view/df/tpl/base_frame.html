@@ -161,7 +161,7 @@ layui.use(['rb','element','tabrightmenu'], function(){
     initTabs.remove($(this).parent().attr('lay-id'));
   });
   // console.log(menus);
-  if(!$.isEmptyObject(menus)){
+  if(!rb.isEmpty(menus)){
     var html = '',k,item,menu,id;
     // 组装顶部菜单
 
@@ -217,7 +217,7 @@ layui.use(['rb','element','tabrightmenu'], function(){
             var $a = $this.children('a');
             var id = $a.data('id');
             // 保存上次点击的左边菜单id
-            var _menu_ids    = rb.local('menu_ids') || [];
+            var _menu_ids    = rb.local('menu_ids') || { };
             var _top_menu_id = rb.local('last_top_menu') || 0;
             if(_top_menu_id){
               _menu_ids[_top_menu_id] = id;
@@ -248,8 +248,8 @@ layui.use(['rb','element','tabrightmenu'], function(){
 
   // 自动记忆上次的每个大菜单的小菜单
   var menu_id  = rb.local('menu_id') || 0;
-  var menu_ids = rb.local('menu_ids') || [];
-  if(!menu_id && menu_ids.length){
+  var menu_ids = rb.local('menu_ids') || { };
+  if(!menu_id && !rb.isEmpty(menu_ids)){
     menu_id = menu_ids[rb.local('last_top_menu') || 0] || 0;
   }
   if(menu_id){
