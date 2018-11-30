@@ -1,8 +1,8 @@
 <?php
 namespace app\admin\controller;
 
-use src\sys\role\RoleLogic;
-use src\sys\session\SessionLogic;
+use src\sys\role\SysRoleLogic as RoleLogic;
+use src\sys\session\SysSessionLogic as SessionLogic;
 use src\user\user\UserLogic;
 use src\user\role\UserRoleLogic;
 use \ErrorCode;
@@ -241,6 +241,13 @@ class CheckLogin extends Base {
     return $this->show();
   }
 
+  // this->logic 是否定义了
+  protected function checkLogic($msg=''){
+    if(!is_subclass_of($this->logic,'\src\\base\\BaseLogic')){
+      $msg = $msg ? $msg : L('need-set-logic').':'.$this->logicPath;
+      $this->opErr($msg);
+    }
+  }
 
   //关于jsf 一般一+二:
   // 第一位 :
@@ -258,6 +265,7 @@ class CheckLogin extends Base {
       $this->assign('op',L($id ? 'edit' : 'add'));
       $this->assign('id',$id);
       if($id){  // edit
+        $this->checkLogic();
         $info = $this->logic->getInfo(['id'=>$id]);
         // todo : 判断不了重载的$info thinking...
         empty($info) && $this->error(Linvalid('id'));
@@ -306,7 +314,7 @@ class CheckLogin extends Base {
       return $this->show();
     }else{ // save
       // $this->checkUserRight(0,$id ? 'edit' : 'add');
-
+      $this->checkLogic();
       $paras = $this->_getPara($this->jsf_field[0],$this->jsf_field[1]);
       if(isset($paras['id'])) unset($paras['id']);
       if($id){  // edit
@@ -321,7 +329,7 @@ class CheckLogin extends Base {
   // logic ajax page-list
   public function ajax(){
     // $this->checkUserRight(0,'index');
-
+    $this->checkLogic();
     // $kword = $this->_get('kword',''); // 搜索关键词
     $r = $this->logic->queryCount($this->where,$this->page,$this->sort,$this->pagePara,$this->queryField);
     $this->checkOp($r);
@@ -331,7 +339,7 @@ class CheckLogin extends Base {
   // 一个字段(id外)修改 , 由id标志
   public function editOne() {
     // $this->checkUserRight(0,'edit');
-
+    $this->checkLogic();
     $field = htmlspecialchars($this->_param('field','',Llack('field')));
     // ? 是否禁止编辑
     if(in_array($field,$this->banEditFields)) $this->err(L('ban-op-field').$field);
@@ -344,7 +352,7 @@ class CheckLogin extends Base {
   // 删除, 由id标志, check是检查是否含parent=id
   public function del(){
     // $this->checkUserRight(0,'del');
-
+    $this->checkLogic();
     $id    = $this->id;
     $check = $this->_param('check/d',0);
     // ? id
@@ -361,7 +369,7 @@ class CheckLogin extends Base {
   // 批量删除, 由id标志
   public function dels(){
     // $this->checkUserRight(0,'del');
-
+    $this->checkLogic();
     $ids   = $this->_param('ids/a',[]);
     $check = $this->_param('check/d',0);
     // ? id

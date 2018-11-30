@@ -1,6 +1,6 @@
 <?php
 
-namespace src\file;
+namespace src\file\user;
 use think\Model;
 
 class UserAudio extends Model

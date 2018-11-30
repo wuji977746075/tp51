@@ -3,9 +3,9 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Db;
-use src\sys\core\ConfigLogic;
-use src\sys\core\DatatreeLogic;
-use src\sys\core\ModelLogic;
+use src\sys\core\SysConfigLogic as ConfigLogic;
+use src\sys\core\SysDatatreeLogic as DatatreeLogic;
+use src\sys\core\SysModelLogic as ModelLogic;
 
 class Base extends Controller{
   protected $logic = null;
@@ -88,35 +88,28 @@ class Base extends Controller{
   }
   // set main login if possible
   protected function _setLogic($dir='') {
-    if($dir){
-      $module_name = $this->model['module_name'].'\\';
-      $logic_dir = lcfirst($dir);
-      $logicPath = '\src\\'.$module_name.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
-      if(class_exists($logicPath)){
-        $this->logic = new $logicPath;
-      }else{
-        throws('非法Logic目录'.$dir);
+    // 模块 : sys
+    $module_name = lcfirst($this->model['module_name']);
+    $src_module = '\src\\'.$module_name.'\\';
+    // [Module][Dir]Modal
+    $c = ltrim_fix(lcfirst(CONTROLLER_NAME),$module_name);
+    $c = $c ? $c : $module_name;
+    $cs = explode('_',strtounderscore(CONTROLLER_NAME));
+    $c1 = $dir ? $dir : (isset($cs[1]) ? $cs[1] : $cs[0]); // module/ + $dir/$c1
+    $c2 = CONTROLLER_NAME;
+    // $c2 = ucfirst($c); // module/$c1/ + $c2Logic
+    if($module_name == 'sys'){
+      $logicPath = $src_module.'core\\'.$c2.'Logic';
+      if(!class_exists($logicPath)){ // 不为系统核心
+        $logicPath = $src_module.$c1.'\\'.$c2.'Logic';
       }
     }else{
-      $logicPath = '\src\\sys\core\\'.CONTROLLER_NAME.'Logic';
-      if(class_exists($logicPath)){ // 是否为系统的
-        $this->logic = new $logicPath;
-      }else{
-        $module_name = $this->model['module_name'].'\\';
-        $logic_dir = lcfirst(CONTROLLER_NAME);
-        $logicPath = '\src\\'.$module_name.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
-        if(class_exists($logicPath)){
-          $this->logic = new $logicPath;
-        }else{
-          $logic_dir = $module_name.preg_replace('/([A-Z]{1}.*)?/', '', $logic_dir);
-          $logicPath = '\src\\'.$logic_dir.'\\'.CONTROLLER_NAME.'Logic';
-          if(class_exists($logicPath)){
-            $this->logic = new $logicPath;
-          }
-        }
-      }
+      $logicPath = $src_module.$c1.'\\'.$c2.'Logic';
     }
-
+    $this->logicPath = $logicPath;
+    if(class_exists($logicPath)){
+      $this->logic = new $logicPath;
+    }
     // echo $logicPath;die();
     $this->business = $this->model['title'];
     $this->cfg['business'] = $this->business;

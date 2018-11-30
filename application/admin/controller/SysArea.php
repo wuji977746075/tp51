@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
 
-class Area extends CheckLogin{
+class SysArea extends CheckLogin{
   protected $model_id = 10;
   protected $banEditFields = ['parent','id'];
 

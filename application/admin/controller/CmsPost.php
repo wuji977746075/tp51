@@ -6,8 +6,8 @@
  */
 
 namespace app\admin\controller;
-use src\cms\cms\CmsCateLogic;
-use src\cms\cms\CmsPostExtraLogic;
+use src\cms\cate\CmsCateLogic;
+use src\cms\post\CmsPostExtraLogic;
 
 class CmsPost extends CheckLogin {
   protected $model_id = 16;
@@ -30,6 +30,7 @@ class CmsPost extends CheckLogin {
 
   // logic ajax page-list
   public function ajax() {
+    $this->checkLogic();
     // $kword = $this->_get('kword',''); // 搜索关键词
     $r = $this->logic->queryCountWithUser($this->where,$this->page,$this->sort,false,'p.*,u.name as author_name','author');
     $this->checkOp($r);

@@ -24,10 +24,44 @@ class ProductGroupLogic extends BaseLogic
         $this->setModel(new ProductGroup());
     }
 
-    public function addProduct(ProductGroupLogic $product){
+   public function addProduct($params){
+        $product_group = $this->_param('product_group', '');
+        $group_start_time = $this->_param('group_start_time', '');
+        $group_start_time = strtotime($group_start_time);
+        $group_end_time = $this->_param('group_end_time', '');
+        $group_end_time = strtotime($group_end_time);
+        $group = array(
+            'product_group' => $product_group,
+            'group_start_time' => $group_start_time,
+            'group_end_time' => $group_end_time,
+        );
+        $groupModel = new ProductGroupLogic();
+        if($group['product_group'] !== '' && $group['product_group'] !== 0){
+            $map = array(
+                'p_id' => $pid
+            );
+            $error = false;
+            $result = $groupModel ->delete($map);
 
+            if($result['status'] === false){
+                $error = $result['info'];
+            }
+
+            if($error === false){
+                $entity = array(
+                    'start_time' => $group['group_start_time'],
+                    'end_time' => $group['group_end_time'],
+                    'price' => 0,
+                    'p_id' => $pid,
+                    'g_id' => $group['product_group'],
+                );
+                $result = $groupModel -> add($entity);
+                if($result['status'] === false){
+                    $error = $result['info'];
+                }
+            }
+        }
     }
-
     public function queryWithProduct($map = null,$page = array('curpage'=>1,'size'=>10),$order = false,$params = false,$field = false){
         $main_img_type = 6015;//主图
 

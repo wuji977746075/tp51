@@ -7,6 +7,7 @@ return [
   'menu-over-level'=>'最多3级菜单',
   'need-del-down'=>'需要先删除下级',
   'need-jsf-name' => '需设置表单显示名',
+  'need-set-logic' => '需正确设置Logic',
   'no-data' => '暂无数据',
   'no-query-data' => '暂无数据', //分页无数据
   'select-df' => '== 请选择 ==',

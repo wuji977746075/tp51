@@ -2,8 +2,8 @@
 
 namespace src\user\user;
 use src\base\BaseLogic;
-use src\sys\role\RoleLogic;
-use src\sys\session\SessionLogic;
+use src\sys\role\SysRoleLogic as RoleLogic;
+use src\sys\session\SysSessionLogic as SessionLogic;
 use src\user\role\UserRoleLogic;
 use src\user\user\UserExtraLogic;
 use Check;

@@ -2,7 +2,7 @@
 
 {block name="area_body"}
 <div class="layui-card">
-  <div class="layui-card-header">{$cfg.business}{:L('manage')}</div>
+  <div class="layui-card-header">{$cfg.business} {:L('manage')}</div>
   <div class="layui-card-body">
     {:html_head_tip($cfg['business']."管理,点击带 .列单元格编辑")}
     <table id="demo" lay-filter="fDemo"></table>
@@ -46,10 +46,10 @@ layui.use(['rb','table2','form'], function(){
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
       ,{field: 'id', title: 'ID', minWidth: 60,sort:true}
       ,{field: 'uid', title: '用户', templet:"#uidTpl"}
+      ,{field: 'rule', title: '规则',templet:"#ruleTpl"}
       ,{field: 'reason', title: '原因', width: 60}
-      ,{field: 'start_time', title: '开始时间',templet: '#startTimeTpl'}
-      ,{field: 'end_time', title: '结束时间', width: 60,templet:"#endTimeTpl"}
-      ,{field: 'rule', title: '规则', width: 60,templet:"#ruleTpl"}
+      ,{field: 'start_time', title: '开始时间', width: 125,templet: '#startTimeTpl'}
+      ,{field: 'end_time', title: '结束时间', width: 125,templet:"#endTimeTpl"}
       ,{field: 'update_time',align:'right',width:125,title: '上次更新', sort:true,templet: '#updateTimeTpl'}
       ,{align:'left',fixed: 'right',title: '操作', width: 85,toolbar: '#barDemo'}
     ]]
@@ -60,8 +60,10 @@ layui.use(['rb','table2','form'], function(){
 </script>
 <!-- tpl -->
 <script type="text/html" id="uidTpl">
+  {{# if (d.uid >0){ }}
   {{ layui.rb.avaImg(d.uid,60) }}
   <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.uid }}" class="layui-table-link ajax-layer tooltip" data-text="[{{ d.uid }}] {{ d.uname }}" title='用户 {{ d.uname }} 详情'> {{ d.unick }}</a>
+  {{# } }}
 </script>
 <script type="text/html" id="startTimeTpl">
   {{ layui.rb.getFormatTime(d.start_time) }}

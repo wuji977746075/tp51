@@ -383,7 +383,7 @@ abstract class BaseLogic {
         return ["count" => $count, "list" => $list];
 
     }
-    function queryCountWithUser($map = null, $page = false, $order = false, $params = false, $fields = 'p.*,u.name as uname,u.nick as unick',$jo="uid") {
+    function queryCountWithUser($map = null, $page = false, $order = false, $params = false, $fields = "p.*,ifnull(u.name,'') as uname,ifnull(u.nick,'') as unick",$jo="uid") {
         $count = $this -> model ->alias('p')
         ->join([PRE.'user'=>'u'],'p.'.$jo.' = u.id','left')
         -> where($map)

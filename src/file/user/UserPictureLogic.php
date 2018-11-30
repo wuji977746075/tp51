@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 1
- * Date: 2016-10-17
- * Time: 14:49
- */
 
-namespace src\file;
-
+namespace src\file\user;
 
 use src\base\BaseLogic;
 use upload\Upload;

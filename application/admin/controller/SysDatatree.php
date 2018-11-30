@@ -2,7 +2,7 @@
 
 namespace  app\admin\controller;
 
-class Datatree extends CheckLogin{
+class SysDatatree extends CheckLogin{
   protected $model_id = 6;
   public function index(){
 

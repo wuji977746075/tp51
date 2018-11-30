@@ -1,7 +1,8 @@
 <?php
 namespace app\admin\controller;
-use src\auth\AuthLogic;
-class Client extends CheckLogin{
+use src\sys\auth\AuthLogic;
+
+class SysClient extends CheckLogin{
   protected $model_id = 7;
   protected $banEditFields = ['client_id','id'];
 

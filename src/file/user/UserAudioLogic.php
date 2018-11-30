@@ -6,7 +6,7 @@
  * Time: 14:49
  */
 
-namespace src\file;
+namespace src\file\user;
 
 use src\base\BaseLogic;
 use upload\Upload;

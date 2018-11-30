@@ -36,14 +36,14 @@ function getArrKey($r,$key,$err='invalid array key'){
 }
 
 function getConfig($key='',$time=600) {
-  return (new \src\sys\core\ConfigLogic)->getConfig($key);
+  return (new \src\sys\core\SysConfigLogic)->getConfig($key);
 }
 function getDatatree($name='',$k='id',$v='title',$time=600) {
-  $c = (new \src\sys\core\DatatreeLogic)->getDatatree($name,$k,$v);
+  $c = (new \src\sys\core\SysDatatreeLogic)->getDatatree($name,$k,$v);
   return $c;
 }
 function getUserById($id=0,$field='name',$null='') {
-  $temp = $id  ? (new \src\user\UserLogic)->getAllInfo($id) : [];
+  $temp = $id  ? (new \src\user\user\UserLogic)->getAllInfo($id) : [];
   return isset($temp[$field]) ? $temp[$field] : $null;
 }
 // seems not work ...
@@ -90,6 +90,26 @@ function cache_clear($key='',$return=false){
   }
 }
 
+// trim 第二个参数 不能带非空
+function ltrim_fix($str='',$s='') {
+  return preg_replace('/^'.$s.'(\w*?)$/', "$1", $str);
+}
+/**
+  * 下划线转驼峰
+  * 思路:
+  * step1.原字符串转小写,原字符串中的分隔符用空格替换,在字符串开头加上分隔符
+  * step2.将字符串中每个单词的首字母转换为大写,再去空格,去字符串首部附加的分隔符.
+  */
+function strtocamel($str,$sep='_') {
+  $str = $sep. str_replace($sep, " ", strtolower($str));
+  return ltrim(str_replace(" ", "", ucwords($str)), $sep );
+}
+/**
+  * 驼峰命名转下划线命名
+  */
+function strtounderscore($str,$sep='_') {
+  return strtolower(preg_replace('/([a-z])([A-Z])/', "$1" . $sep . "$2", $str));
+}
 // 请在输出前过滤 or 保存时html实体转码
 // Thinkphp5.1 Think\Template.php  : 398
 // $content = call_user_func_array('tpl_filter',[$content]);

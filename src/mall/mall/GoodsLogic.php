@@ -29,6 +29,360 @@ class ProductLogic extends BaseLogic
         $this->setModel(new Product());
     }
 
+        public function edit($params){
+        if(!isset($params['id']) || intval($params['id']) <= 0){
+            return $this->error('非法id');
+        }
+        $this->params = $params;
+        $id = $params['id'];
+        //1. 商品基本信息
+        $productModel   = $this->getBaseInfo();
+        $logic = new ProductLogic();
+        $logic->saveByID($id,$productModel->getData());
+        //2. 商品属性
+        $attrLogic = new ProductAttrLogic();
+        $attrModel = $this->getAttributes();
+
+        $attrLogic->save(['pid'=>$id],$attrModel->getData());
+
+        //3. 商品图片
+        $imgModelList = $this->getImages();
+        $productImgLogic = new ProductImageLogic();
+        $productImgLogic->delete(['pid'=>$id]);
+        foreach ($imgModelList as &$vo){
+            $vo['pid'] = $id;
+        }
+
+        $productImgLogic->addAll($imgModelList);
+
+        //4. 商品属性
+        $propArray = $this->getProductProp();
+
+        foreach ($propArray as &$vo){
+            $vo['pid'] = $id;
+        }
+        $productPropLogic = new ProductPropLogic();
+
+        $productPropLogic->delete(['pid'=>$id]);
+        $productPropLogic->addAll($propArray);
+
+        return $this->success('操作成功');
+    }
+    /**
+     * 商品搜索
+     * @author hebidu <email:346551990@qq.com>
+     * @param $entity
+     * @return array
+     */
+    public function searchs($entity)
+    {
+        $order = !empty($entity['order']) ? $entity['order'] : "d";
+        $lang = $entity['lang'];
+        $cate_id = $entity['cate_id'];
+        $prop_id = $entity['prop_id'];
+        $keyword = $entity['keyword'];
+        $uid = !empty($entity['uid']) ? $entity['uid'] : -1;
+        $page_index = $entity['page_index'];
+        $page_size = max(intval($entity['page_size']), 1);
+        $page_size = min($page_size, 1000);
+
+        $logic = new ProductLogic();
+        $filter = [];
+        if (!empty($entity['l_price']) && !empty($entity['r_price'])){
+            $l_price = floatval($entity['l_price']);
+            $r_price = floatval($entity['r_price']);
+            $filter = [
+                'l_price' => $l_price,
+                'r_price' => $r_price
+            ];
+        }
+        $result = $logic->search($filter,$order,$uid,$lang,$cate_id,$prop_id,$keyword,['page_size'=>$page_size,'page_index'=>$page_index]);
+        //获取图片
+        if($result['status'] && is_array($result['info'])){
+            $count = $result['info']['count'];
+            $list = $result['info']['list'];
+
+            $list = (new ProductLogic())->mergeImages($list);
+            $list = (new ProductLogic())->mergePrice($list);
+            $list = (new ProductLogic())->mergeGroup($list);
+
+            return $this->success(['count'=>$count,'list'=>$list]);
+        }else{
+            return $this->error($result['info']);
+        }
+    }
+    /*
+     * 获取商品属性信息表
+     */
+    private function getProductProps(){
+        $properties = $this->_param('prop',[]);
+
+        if(empty($properties)) return [];
+        $data = array();
+        $error = false;
+        $propvalueLogic = new CategoryPropvalueLogic();
+        foreach($properties as  $vo){
+            $map = array(
+                'id' => $vo,
+            );
+            $result = $propvalueLogic->getInfo($map);
+            if($result['status']){
+                $prop_id = $result['info']['prop_id'];
+            }else{
+                $error = $result['info'];
+                break;
+            }
+            $entity = array(
+                'prop_id' => $prop_id,
+                'value_id' => $vo
+            );
+            array_push($data,$entity);
+        }
+
+        return $data;
+    }
+
+    /**
+     * 获取商品图片表
+     * @return array
+     */
+    private function getImagess(){
+        //1. 主图
+        $main_img = $this->_param('main_img', '');
+        $img = explode(",", $this->_param('img', ''));
+
+        //2. 商品轮播图
+        $imgModelList = [];
+        if(!empty($main_img)){
+            $imgModel = new ProductImage();
+            $imgModel->setAttr('type',getDatatree('PRODUCT_MAIN_IMG'));
+            $imgModel->setAttr('img_id',$main_img );
+
+            array_push($imgModelList,$imgModel->getData());
+        }
+
+        foreach ($img as $vo) {
+            if ($vo) {
+                $imgModel = new ProductImage();
+                $imgModel->setAttr('type',getDatatree('PRODUCT_SHOW_IMG'));
+                $imgModel->setAttr('img_id',$vo );
+                array_push($imgModelList,$imgModel->getData());
+            }
+        }
+
+        return $imgModelList;
+    }
+
+    /**
+     * 获取商品基本信息
+     */
+    private function getBaseInfos(){
+        $fields = ["dt_goods_unit","synopsis","place_origin","product_code","secondary_headlines","store_id|int","id|int",["product_name"=>"name"]];
+        return ParamsHelper::setModelAttr($fields,$this->params, new Product());
+    }
+
+    /**
+     * 获取商品属性信息
+     *
+     * @return Model
+     */
+    private function getAttributess(){
+        $fields = ["favorite_cnt","view_cnt","contact_way","contact_name","consignment_time","view_cnt","has_receipt","under_guaranty","support_replace","total_sales","buy_limit"];
+        return ParamsHelper::setModelAttr($fields,$this->params, new ProductAttr());
+    }
+    /**
+     * 商品详情页
+     * @author hebidu <email:346551990@qq.com>
+     * @param $id  integer 商品id
+     * @return array
+     */
+    public function details($id){
+
+        $logic  = new ProductLogic();
+        $result = $logic->detail($id);
+
+        if(ValidateHelper::legalArrayResult($result)){
+
+            $product_info = $result['info'];
+            $product_info['carousel_images'] = [];
+
+            if(!empty($product_info['main_img'])){
+                array_push($product_info['carousel_images'],$product_info['main_img']);
+            }
+            $productImageLogic  = new ProductImageLogic();
+
+            $result = $productImageLogic->queryNoPaging(['pid'=>$id]);
+
+            if(ValidateHelper::legalArrayResult($result)){
+                foreach ($result['info'] as $item){
+                    if($item instanceof Model){
+                        $item = $item->toArray();
+                    }
+                    if($item['type'] == ProductImage::Carousel_Images){
+                        array_push($product_info['carousel_images'],$item['img_id']);
+                    }
+                }
+            }
+
+            $product_info['is_fav'] = $this->isFavoriteProduct($id);
+
+            $product_info = $this->filterUnused($product_info);
+
+            return $this->success($product_info);
+        }elseif($result['status'] && empty($result['info'])){
+            return $this->error('该商品不存在');
+        }
+
+        return $this->error($result);
+    }
+
+    private function filterUnused($product){
+        unset($product['price2']);
+        unset($product['price3']);
+        unset($product['cnt1']);
+        unset($product['cnt2']);
+        unset($product['cnt3']);
+        unset($product['sku_id']);
+        unset($product['sku_desc']);
+        unset($product['ori_price']);
+        unset($product['price']);
+        unset($product['quantity']);
+        unset($product['icon_url']);
+        unset($product['create_time']);
+        unset($product['pid']);
+        unset($product['is_second']);
+        unset($product['sku_product_code']);
+        unset($product['buy_limit']);
+        unset($product['min_buy_cnt']);
+        unset($product['dt_origin_country']);
+        return $product;
+    }
+
+    /**
+     * 获取该商品是否已收藏
+     * @param $id
+     * @return int
+     */
+    private function isFavoriteProduct($id){
+
+        $result = (new FavoritesLogic())->getInfo([
+            'type'=>Favorites::FAV_TYPE_PRODUCT,
+            'favorite_id'=>$id
+        ]);
+
+        if(ValidateHelper::legalArrayResult($result)){
+            return 1;
+        }else{
+            return 0;
+        }
+
+    }
+    public function add($params){
+        $this->params = $params;
+
+        $productModel   = $this->getBaseInfo();
+        $attrModel = $this->getAttributes();
+        $imgModelList = $this->getImages();
+        $propArray = $this->getProductProp();
+
+        $logic = new ProductLogic();
+        $result = $logic->addToProduct($productModel,$attrModel,$imgModelList,$propArray);
+
+        return $result;
+    }
+
+    /*
+     * 获取商品属性信息表
+     */
+
+    /**
+     * 获取商品基本信息
+     */
+    private function getBaseInfo()
+    {
+        $product = new Product();
+        $field = ["place_origin", "lang", "dt_goods_unit", "dt_origin_country", "synopsis", "weight", "detail", "store_id", "status", "onshelf", "update_time", "create_time", "cate_id", "loc_address", "loc_province", "loc_city", "loc_country", "template_id", "uid", "name", "product_code", "secondary_headlines"];
+        foreach ($field as $vo) {
+            $product->setAttr($vo, $this->_param($vo, ''));
+        }
+        return $product;
+    }
+
+    /**
+     * 获取商品属性信息
+     *
+     * @return ProductAttr
+     */
+    private function getAttributes()
+    {
+        $attrModel = new ProductAttr();
+        $field = ["favorite_cnt", "view_cnt", "contact_way", "contact_name", "consignment_time", "view_cnt", "has_receipt", "under_guaranty", "support_replace", "total_sales", "buy_limit"];
+
+        foreach ($field as $vo) {
+            $attrModel->setAttr($vo, $this->_param($vo, ''));
+        }
+        return $attrModel;
+    }
+
+    /**
+     * 获取商品图片表
+     * @return array
+     */
+    private function getImages()
+    {
+        //1. 主图
+        $main_img = $this->_param('main_img', '');
+        $img = explode(",", $this->_param('img', ''));
+
+        //2. 商品轮播图
+        $imgModelList = [];
+        if (!empty($main_img)) {
+            $imgModel = new ProductImage();
+            $imgModel->setAttr('type', getDatatree('PRODUCT_MAIN_IMG'));
+            $imgModel->setAttr('img_id', $main_img);
+
+            array_push($imgModelList, $imgModel->getData());
+        }
+
+        foreach ($img as $vo) {
+            if ($vo) {
+                $imgModel = new ProductImage();
+                $imgModel->setAttr('type', getDatatree('PRODUCT_SHOW_IMG'));
+                $imgModel->setAttr('img_id', $vo);
+                array_push($imgModelList, $imgModel->getData());
+            }
+        }
+
+        return $imgModelList;
+    }
+
+    private function getProductProp(){
+        $properties = $this->_param('properties','');
+        if(empty($properties)) return [];
+        $data = array();
+        $error = false;
+        $properties = explode(",",$properties);
+        $propvalueLogic = new CategoryPropvalueLogic();
+        foreach($properties as  $vo){
+            $map = array(
+                'id' => $vo,
+            );
+            $result = $propvalueLogic->getInfo($map);
+            if($result['status']){
+                $prop_id = $result['info']['prop_id'];
+            }else{
+                $error = $result['info'];
+                break;
+            }
+            $entity = array(
+                'prop_id' => $prop_id,
+                'value_id' => $vo
+            );
+            array_push($data,$entity);
+        }
+
+        return $data;
+    }
     private function getQuery($map){
 
         $cate_id = isset($map['cate_id']) ? $map['cate_id']:"";

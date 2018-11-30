@@ -2,7 +2,7 @@
 
 namespace app\admin\controller;
 
-class Config extends CheckLogin{
+class SysConfig extends CheckLogin{
   protected $model_id = 5;
   protected $banDelIds = [7,8];
   public function index(){

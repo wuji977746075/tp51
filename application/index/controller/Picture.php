@@ -8,7 +8,7 @@
 namespace app\index\controller;
 
 use image\Image;
-use src\file\UserPictureLogic;
+use src\file\user\UserPictureLogic;
 use src\user\user\UserLogic;
 use think\Controller;
 

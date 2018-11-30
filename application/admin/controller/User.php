@@ -1,11 +1,11 @@
 <?php
 namespace app\admin\controller;
 
-use src\sys\role\RoleLogic;
+use src\sys\role\SysRoleLogic as RoleLogic;
 use src\user\role\UserRoleLogic;
 use src\user\user\UserExtraLogic;
-use src\user\wallet\WalletLogic;
-use src\user\wallet\WalletHisLogic;
+use src\user\wallet\UserWalletLogic as WalletLogic;
+use src\user\wallet\UserWalletHisLogic as WalletHisLogic;
 use src\fy\fy\FyAccountLogic;
 use src\fy\fy\FyAccountUserLogic;
 use src\fy\fy\FyInviteLogic;

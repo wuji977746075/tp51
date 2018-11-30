@@ -5,7 +5,7 @@ use src\sys\auth\AuthLogic;
 use src\admin\menu\MenuLogic;
 use src\sys\client\ClientLogic;
 
-class Role extends CheckLogin{
+class SysRole extends CheckLogin{
   protected $model_id = 3;
   protected $banDelIds = [1,2];
 

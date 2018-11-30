@@ -14,4 +14,17 @@ class BbsBan extends CheckLogin{
   function init(){
     $this->cfg['theme'] = 'layer';
   }
+
+
+  function index() {
+    return parent::index();
+  }
+
+
+  function ajax() {
+    $this->checkLogic();
+    // $kword = $this->_get('kword',''); // 搜索关键词
+    $r = $this->logic->queryCountWithUser($this->where,$this->page,$this->sort);
+    $this->checkOp($r);
+  }
 }
