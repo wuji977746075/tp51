@@ -5,11 +5,13 @@ use think\Db;
 use think\exception\DbException;
 use think\Model;
 use Exception;
+use src\base\traits\Jump;
 
 /**
  * Logic 基类 , 出错请抛出错误
  */
 abstract class BaseLogic {
+    use Jump;
     const CACHE_TIME = 600;
     /**
      * API调用模型实例
@@ -33,6 +35,18 @@ abstract class BaseLogic {
      */
     protected function init(){
 
+    }
+
+    protected function isValidInfo($id,$field='id',$err=true){
+        $info = $this->getInfo([$field=>$id]);
+        if($err === true) {
+            $err = Linvalid($field.'=>'.$id);
+        }else{
+        }
+        if($err && empty($info)){
+            $this->err($err);
+        }
+        return $info;
     }
 
     public function trans(){

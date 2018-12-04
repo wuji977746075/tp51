@@ -7,29 +7,42 @@
 
 namespace src\bbs\bbs;
 use src\base\BaseLogic;
-
+// use src\base\traits\Tree;
 /**
  * 论坛板块业务逻辑
  */
 
 class BbsLogic extends BaseLogic {
+  // use Tree;
+
   const DEFAULT_BLOCK   = 1;
   const BANNER_POSITION = 6220;
   const MAX_POST_IMG    = 9;
   const MAX_REPLY_IMG   = 3;
 
   protected $filter_words;
-  protected function _init(){
-    $this->setModel(new Bbs());
-    $this->filter_words = (new ConfigLogic)->getOneField(['name'=>'BBS_BAN_WORDS'],'value');
+  protected function init(){
+    $this->filter_words = getConfig('filter_words');
   }
+
+  // function isValidParent($pos,$parPos){
+  //   $info  = $this->isValidInfo($pos,'pos');
+  //   $pinfo = $this->isValidInfo($parPos,'pos');
+  //   if(!$this->isParent($pos,$parPos)){
+  //     $this->err(Linvalid('parent relation'));
+  //   }
+  // }
+
+  // function hasChildren($id) {
+  //   return $this->isValidInfo($id,'parent',L('need-del-down')) ? true : false;
+  // }
 
   public function checkBlock($tid=0){
     $r = $this->getInfo(['id'=>$tid]);
-    if(!$r) return returnErr('论坛配置有误');
-    if($r['status'] == 1) return returnErr('论坛锁定中,请稍后再试');
-    if($r['status'] ==-1) return returnErr('论坛关闭中,请稍后再试');
-    return returnSuc($r);
+    if(!$r) throws('论坛配置有误');
+    if($r['status'] == 1) throws('论坛锁定中,请稍后再试');
+    if($r['status'] ==-1) throws('论坛关闭中,请稍后再试');
+    return $r;
   }
 
   // 关键词过滤
@@ -62,7 +75,7 @@ class BbsLogic extends BaseLogic {
       $val = cache($key);
       if($val) return $val;
     }
-    $val = (new BbsPostLogicV2)->count(['status'=>1,'tid'=>$tid]);
+    $val = (new BbsPostLogic)->count(['status'=>1,'tid'=>$tid]);
     if($time>0) cache($key,$val,$time);
     return $val;
   }
@@ -74,7 +87,7 @@ class BbsLogic extends BaseLogic {
       $num = cache($key);
       if($num) return $num;
     }
-    $num = (new BbsReplyLogicV2)->count(['tid'=>$tid]);
+    $num = (new BbsReplyLogic)->count(['tid'=>$tid]);
     if($time>0) cache($key,$num,$time);
     return $num;
   }

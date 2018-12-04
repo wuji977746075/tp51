@@ -35,6 +35,7 @@ function getArrKey($r,$key,$err='invalid array key'){
   if($err && !isset($r[$key])) throws($err.':'.$key);
 }
 
+// 获取某个name的配置值,解析后返回
 function getConfig($key='',$time=600) {
   return (new \src\sys\core\SysConfigLogic)->getConfig($key);
 }

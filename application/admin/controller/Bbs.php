@@ -6,7 +6,6 @@
  */
 
 namespace app\admin\controller;
-// use
 
 class Bbs extends CheckLogin {
   protected $model_id = 22;
@@ -24,7 +23,6 @@ class Bbs extends CheckLogin {
     $this->assign('parent',$parent);
     return $this->show();
   }
-
 
   function ajax() {
     $parent = $this->_param('parent/d',0);
@@ -72,16 +70,18 @@ class Bbs extends CheckLogin {
     }else{ //save
       $paras = $this->_getPara('name','icon,status|0|int,desc,auth|0|int,sort|0|int,parent|0|int');
       if($id){ // edit
+
         $info = $this->logic->getInfo(['id'=>$id]);
         empty($info) && $this->err(Linvalid('id'));
-
+        // ? parent以改变
         if($parent != intval($info['parent'])){
+          // 排除子类
           $info = $this->logic->getInfo(['parent'=>$id]);
           $info && $this->err(L('need-del-down'));
-        }elseif($parent == $id){
-          $this->err(Linvalid('op'));
+          // 排除自身
+          $parent == $id && $this->err(Linvalid('op'));
+          $r = $this->logic->save(['id'=>$id],$paras);
         }
-        $r = $this->logic->save(['id'=>$id],$paras);
       }else{ // add
         if($parent){
           $r = $this->logic->getInfo(['id'=>$parent]);

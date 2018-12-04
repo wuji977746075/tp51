@@ -30,30 +30,32 @@ class BbsBanLogic extends BaseLogic {
   }
 
   //禁言的用户列表
-  public function querySlient(array $map,array $page=['curpage'=>1,'size'=>10],$order=false,array $params=[],$fields=false){
-
-    $query = $this->getModel()->group('uid');
-    if($map) $query = $query->where($map);
-    if(false !== $order)  $query = $query->order($order);
-    if(false !== $fields) $query = $query->field($fields);
-
-    $start = max(intval($page['curpage'])-1,0)*intval($page['size']);
-    $list = $query -> limit($start,$page['size']) -> select();//->buildSql();//
-    $list = $list ? obj2Arr($list) : [];
-
+  public function querySlient(array $map,array $page=['page'=>1,'size'=>10],$order=false,array $params=[],$fields=false){
     $count = $this->getModel()->group('uid')-> where($map) -> count();
-    // 查询满足要求的总记录数
-    $Page = new Page($count, $page['size']);
-    //分页跳转的时候保证查询条件
-    if (false !== $params) {
-      foreach ($params as $key => $val) {
-        $Page -> parameter[$key] = urlencode($val);
-      }
-    }
-    // 实例化分页类 传入总记录数和每页显示的记录数
-    $show = $Page -> show();
+    $list = [];
+    if($count){
+      $query = $this->getModel()->group('uid');
+      if($map) $query = $query->where($map);
+      if(false !== $order)  $query = $query->order($order);
+      if(false !== $fields) $query = $query->field($fields);
 
-    return ["count"=>$count,"show" => $show, "list" => $list];
+      $start = max(intval($page['page'])-1,0)*intval($page['size']);
+      $list = $query -> limit($start,$page['size']) -> select();//->buildSql();//
+      $list = $list ? obj2Arr($list) : [];
+    }
+    // 查询满足要求的总记录数
+    // $Page = new Page($count, $page['size']);
+    // //分页跳转的时候保证查询条件
+    // if (false !== $params) {
+    //   foreach ($params as $key => $val) {
+    //     $Page -> parameter[$key] = urlencode($val);
+    //   }
+    // }
+    // // 实例化分页类 传入总记录数和每页显示的记录数
+    // $show = $Page -> show();
+
+    // return ["count"=>$count,"show" => $show, "list" => $list];
+    return ["count"=>$count, "list" => $list];
   }
 
   //是否 禁止了某样或某些权限
