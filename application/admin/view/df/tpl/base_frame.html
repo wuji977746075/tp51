@@ -44,7 +44,7 @@
       <li class="layui-nav-item">
         <a href="{:url('user/detail',['id'=>$uinfo.id])}" class="js-tab" data-tab="userd-{$uinfo.id}">
           <img src="{:avaUrl($uinfo.id,60)}" class="layui-nav-img" >
-          {$uinfo.nick}
+          <!-- {$uinfo.nick} -->
         </a>
         <dl class="layui-nav-child">
           <dd><a href="{:url('user/detail',['id'=>$uinfo.id])}" class="js-tab" data-tab="userd-{$uinfo.id}">基本资料</a></dd>
@@ -160,11 +160,10 @@ layui.use(['rb','element','tabrightmenu'], function(){
   el.on('tabDelete(mainTab)', function(data){
     initTabs.remove($(this).parent().attr('lay-id'));
   });
-  // console.log(menus);
+  // console.log('menus',menus);
   if(!rb.isEmpty(menus)){
     var html = '',k,item,menu,id;
     // 组装顶部菜单
-
     $.each(menus, function(k, item) {
     // for (k in menus) {
       // item = menus[k];
@@ -175,6 +174,7 @@ layui.use(['rb','element','tabrightmenu'], function(){
     // };
     });
     if(html){
+      if(menus.length>9) $('.layui-layout-left').addClass('layui-nav-mini');
       $('.layui-layout-left').html(html).children('.layui-nav-item').on('click',function(e){
         e.preventDefault();
         id = $(this).index();

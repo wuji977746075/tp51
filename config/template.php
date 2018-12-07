@@ -15,7 +15,7 @@
 
 const CDN = 'http://cdn.my/';
 const LIB_CSS    = 'http://test.my/learn-layui/';
-const CSS_VER = 2018111201;
+const CSS_VER = 2018120701;
 return [
     // 默认过滤方法 用于普通标签输出
     'default_filter' => '', //htmlspecialchars
