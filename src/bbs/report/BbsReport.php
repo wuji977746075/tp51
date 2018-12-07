@@ -6,7 +6,7 @@
  * Time: 14:46
  */
 
-namespace app\src\bbs\report;
+namespace src\bbs\report;
 
 use think\Model;
 
@@ -14,7 +14,7 @@ use think\Model;
  * 论坛板块模型
  */
 
-class Report extends Model{
+class BbsReport extends Model{
   /**
    * 自动完成
    * @var array

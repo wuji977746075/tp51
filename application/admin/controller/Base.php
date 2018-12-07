@@ -65,9 +65,8 @@ class Base extends Controller{
     $this->cfg = [
       'theme'    => config('admin_theme'),
       'template' => 'df',
-      'business' => '', // change _setLogic
+      // 'business' => '', // change _setLogic
     ];
-    $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
 
     // get modals
     $models = (new ModelLogic)->queryCache(false);
@@ -84,6 +83,7 @@ class Base extends Controller{
     $this->page = ['page'=>$this->_get('page/d',1),'size'=>$this->_get('size/d',10)];
     $this->sort = $this->_get('field','id').' '.$this->_get('order','desc');
     $this->init();
+    $this->assign(['seo'=>$this->seo,'cfg'=>$this->cfg]);
     // !$this->logic && $this->error('需要配置主logic');
   }
   // set main login if possible

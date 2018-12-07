@@ -52,26 +52,41 @@ class BbsBan extends CheckLogin{
   }
 
   function set(){
-    $this->jsf = array_merge($this->jsf,[
-      'reason'     =>'原因',
-      'start_time' =>'开始时间',
-      'end_time'   =>'结束时间',
-    ]);
     if(IS_GET){ // add - view
-      // $jsfs = [
-      //   ['nick','input-long'],
-      //   ['avatar|btimg','',1],
-      //   ['phone'],
-      //   ['email'],
-      //   ['status|radio'],
-      //   ['*role|selects|'.$role_id,'',$roles]
-      // ];
-      // $this->jsf_tpl = $jsfs;
       return parent::set();
     }else{      // add - save
-      $paras = $this->_getPara('nick','avatar,phone,email,status|0|int,pass');
-      $this->suc_url = url(CONTROLLER_NAME.'/index');
-      $this->suc(LL('op suc'));
+      $this->jsf = array_merge($this->jsf,[
+        'reason'     =>'原因',
+        'rule'       =>'规则',
+        // 自定义
+        'start' =>'开始时间',
+        'end'   =>'结束时间',
+        'uids'  =>'用户',
+      ]);
+      $paras = $this->_getPara('uids||mulint,reason,rule|0|int','start,end');
+      extract($paras);
+      $reason = htmlspecialchars($reason);
+      $start  = $start ? strtotime($start) : 0;
+      $end    = $end ? strtotime($end) : 0;
+      // ? uid
+      $adds = [];
+      foreach ($uids as $uid) {
+        if(is_numeric($uid) && $uid>0){
+          // ? uid
+          $r = (new UserLogic)->isValidInfo($uid,'id');
+          // ?
+          $adds[] = [
+            'uid'        =>$uid,
+            'start_time' =>$start,
+            'end_time'   =>$end,
+            'rule'       =>$rule,
+            'reason'     =>$reason,
+          ];
+        }
+      }
+      $adds && $this->logic->addAll($adds);
+      // $this->suc_url = url(CONTROLLER_NAME.'/index');
+      $this->opSuc();
     }
   }
 
@@ -88,49 +103,5 @@ class BbsBan extends CheckLogin{
     }else{
       $this->opErr('无效操作,因为已解除了');
     }
-  }
-
-  /**
-   * 添加禁言
-   */
-  public function banAdd(){
-      if(IS_AJAX){
-          $uids   = input('uids/s','');
-          $start  = input('banStart/s','');
-          $end    = input('banEnd/s','');
-          $rule   = input('rule/d',0);
-          $reason = htmlspecialchars(input('reason/s',''));
-          !$uids && $this->error('需要用户','');
-          !$rule && $this->error('需要规则','');
-          !$reason && $this->error('需要备注','');
-          $start = $start ? strtotime($start) : 0;
-          $end   = $end ? strtotime($end) : 0;
-          // ? uid
-          $uids_arr = array_unique(explode(',', trim($uids)));
-          $ret = '';$adds = [];
-          foreach ($uids_arr as $v) {
-              $uid = $v;
-              if(is_numeric($v) && $v>0){
-                  // ? uid
-                  $r = (new MemberLogic)->getInfo(['uid'=>$uid]);
-                  if(!$r['status']) $this->error($r['info'],'');
-                  if(empty($r['info'])) $this->error('无此用户:'.$v,'');
-                  // ?
-                  $adds[] = [
-                      'uid'        =>$uid,
-                      'start_time' =>$start,
-                      'end_time'   =>$end,
-                      'rule'       =>$rule,
-                      'reason'     =>$reason,
-                  ];
-              }
-          }
-          if($adds){
-              $r = (new BbsBanLogicV2)->addAll($adds);
-          }
-          $this->success('操作成功');
-      }else{
-          $this->error('未知请求','');
-      }
   }
 }

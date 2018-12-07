@@ -1,0 +1,69 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header">{$cfg.business} {:L('manage')}</div>
+  <div class="layui-card-body">
+    {:html_head_tip($cfg['business']."管理,点击带 .列单元格编辑")}
+    <table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','form'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+  // form init
+  // table init
+  rb.where.field  = 'create_time';
+  rb.setWhere = function() {
+    rb.where.uid  = $('#jsf-uid').val();
+  }
+  // table render
+  rb.table = table.render($.extend(rb.table_config,{
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where: rb.where
+    ,initSort: {
+      field: 'create_time',type: 'desc'
+    }
+    ,toolbar:false
+    ,cols: [[
+      // {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
+      {field: 'id', title: 'ID', minWidth: 60,sort:true,hideDisable:true}
+      ,{field: 'uid', title: '用户', templet:"#uidTpl"}
+      // ,{field: 'count',align:'right',minWidth:60,title: '违规次数',templet:"#countTpl"}
+      // ,{field: 'rule', title: '规则',templet:"#ruleTpl"}
+      // ,{field: 'reason', title: '原因'}
+      // ,{field: 'start_time', title: '开始时间', width: 125,templet: '#startTimeTpl'}
+      // ,{field: 'end_time', title: '结束时间', width: 125,templet:"#endTimeTpl"}
+      // ,{field: 'update_time',align:'right',width:85,title: '上次更新', sort:true,hide:true,templet: '#updateTimeTpl'}
+      // ,{field: 'create_time',align:'right',width:85,title: '添加时间', sort:true,hide:true,templet: '#createTimeTpl'}
+      ,{align:'left',fixed: 'right',title: '操作', width: 105,toolbar: '#barDemo'}
+    ]]
+  }));
+  // {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="uidTpl">
+  {{# if (d.uid >0){ }}
+  {{ layui.rb.avaImg(d.uid,60) }}
+  <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.uid }}" class="layui-table-link ajax-layer tooltip" data-text="[{{ d.uid }}] {{ d.uname }}" title='用户 {{ d.uname }} 详情'> {{ d.unick }}</a>
+  {{# } }}
+</script>
+<script type="text/html" id="startTimeTpl">
+  {{ layui.rb.getFormatTime(d.start_time) }}
+</script>
+{/block}

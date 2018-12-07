@@ -10,7 +10,7 @@
 {block name="area_body"}
 <!-- <div class="layui-card">
   <div class="layui-card-body"> -->
-    {:html_head_tip('添加禁闭 (先加用户, * 必须)')}
+    {:html_head_tip('添加禁闭 (先加用户, * 必须,同一用户的以最新的为准)')}
     <form class="layui-form layui-form-pane post-form">
       <div class="layui-form-item">
         <label for="user_select" class="layui-form-label">用户</label>
@@ -44,7 +44,6 @@
       </div>
       <div class="layui-form-item">
         <div class="layui-form-label red">* 规则</div>
-        <input type="hidden" name="uids" value="" id="js-uids" />
         <div class="layui-inline">
           <select name='rule' lay-search lay-verify="required">
             <option value=""> == 规则 == </option>
@@ -61,7 +60,7 @@
         </div>
       </div>
       <div class="layui-form-item layui-input-block">
-        <button target-form="post-form" class="layui-btn layui-btn-sm ajax-post layer-msg fresh-parent-table close-iframe" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"><i class="layui-icon layui-icon-ok"></i>{$op}</button>
+        <button  target-form="post-form" href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-post layer-msg fresh-parent-table close-iframe"><i class="layui-icon layui-icon-ok"></i>{$op}</button>
         {:html_return('','','layer')}
       </div>
     </form>

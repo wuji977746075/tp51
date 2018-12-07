@@ -39,7 +39,7 @@
 </script>
 <script type="text/html" id="barDemo">
   <div class="layui-btn-group">
-    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="详细违规"><i class="layui-icon layui-icon-edit">详情</i></a>
+    <a href="javascript:;" data-uid="{{ d.uid }}" class="layui-btn layui-btn-sm" title="详细违规">详情</i></a>
     <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert no-refresh fresh-table" title="解除"><i class="layui-icon layui-icon-delete"></i></a>
   </div>
 </script>
@@ -73,8 +73,8 @@ layui.use(['rb','table2','form','select2'], function(){
       field: 'create_time',type: 'desc'
     }
     ,cols: [[
-      {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', minWidth: 60,sort:true,hideDisable:true}
+      // {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
+      {field: 'id', title: 'ID', minWidth: 60,sort:true,hideDisable:true}
       ,{field: 'uid', title: '用户', templet:"#uidTpl"}
       ,{field: 'count',align:'right',minWidth:60,title: '违规次数',templet:"#countTpl"}
       ,{field: 'rule', title: '规则',templet:"#ruleTpl"}
@@ -83,7 +83,7 @@ layui.use(['rb','table2','form','select2'], function(){
       ,{field: 'end_time', title: '结束时间', width: 125,templet:"#endTimeTpl"}
       ,{field: 'update_time',align:'right',width:85,title: '上次更新', sort:true,hide:true,templet: '#updateTimeTpl'}
       ,{field: 'create_time',align:'right',width:85,title: '添加时间', sort:true,hide:true,templet: '#createTimeTpl'}
-      ,{align:'left',fixed: 'right',title: '操作', width: 125,toolbar: '#barDemo'}
+      ,{align:'left',fixed: 'right',title: '操作', width: 105,toolbar: '#barDemo'}
     ]]
   }));
 
