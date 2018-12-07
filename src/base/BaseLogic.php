@@ -267,7 +267,7 @@ abstract class BaseLogic {
         $order && $query = $query->order($order);
         $field && $query = $query->field($field);
         // $lock  && $query = $query->lock(true);
-        $r = $query->where($map)->find();
+        $r = $query->where($map)->find(); // object
         // $r = $r ? $r->toArray() : [];
         $noNull && $this->checkDbNull($r,$noNull);
         return $r;

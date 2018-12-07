@@ -16,7 +16,7 @@
   {gt name="parent" value="0"}
   <a href="{:url(CONTROLLER_NAME.'/index',['parent'=>$parent,'up'=>1])}" class="layui-btn layui-btn-warm layui-btn-sm"  title="返回" id="js-return"><i class="fa fa-reply"></i> </a>
   {/gt}
-  <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary layui-btn-sm" title="高级模式"><i class="fa fa-superpowers"></i> 高级模式</a>
+  <a href="{:url(CONTROLLER_NAME.'/drag')}" class="layui-btn fr  layui-btn-primary layui-btn-sm" title="高级模式"><i class="fa fa-superpowers"></i> todo : 高级模式</a>
 </script>
 <script type="text/html" id="barDemo">
   <div class="layui-btn-group">
@@ -48,14 +48,14 @@ layui.use(['rb','table2','form'], function(){
       field: 'sort',type: 'desc'
     }
     ,cols:  [[
-      {checkbox: true} //,LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', width: 60,templet: '#nameTpl', style:'cursor: pointer;',event:'go',sort:true}
-      ,{field: 'icon', title: '图标',width:60,templet: '#imgTpl'}
-      ,{field: 'name', title: '板块 .',edit: 'text'}
-      ,{field: 'auth', title: '审核',width:60,templet:'#authTpl'}
-      ,{field: 'status', title: '显示', width: 60,templet:'#statusTpl'}
-      ,{field: 'sort',title: '排序 .',align:'right',minWidth:60,edit: 'text',sort:true}
-      ,{align:'left',title: '操作',width:85,toolbar: '#barDemo'}
+      {checkbox: true } //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', width: 60,templet: '#nameTpl', style:'cursor: pointer;',event:'go',sort:true,hideDisable:true }
+      ,{field: 'icon', title: '图标',width:60,templet: '#imgTpl' }
+      ,{field: 'name', title: '板块 .',edit: 'text' }
+      ,{field: 'auth', title: '审核',width:60,templet:'#authTpl' }
+      ,{field: 'status', title: '显示', width: 60,templet:'#statusTpl' }
+      ,{field: 'sort',title: '排序 .',align:'right',minWidth:60,edit: 'text',sort:true }
+      ,{align: 'left',title: '操作',width:85,toolbar: '#barDemo' }
     ]]
   }));
 
@@ -70,14 +70,12 @@ layui.use(['rb','table2','form'], function(){
 </script>
 <script type="text/html" id="authTpl">
   <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="auth" {{# if(d.auth){ }} checked  {{#  } }}
-  lay-skin="switch">
+    <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="auth" {{# if(d.auth){ }} checked  {{#  } }} lay-skin="switch">
   </form>
 </script>
 <script type="text/html" id="statusTpl">
   <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="status" {{# if(d.status){ }} checked  {{#  } }}
-  lay-skin="switch">
+    <input type="checkbox" data-id="{{ d.id }}" class="layer-msg no-refresh" data-field="status" {{# if(d.status){ }} checked  {{#  } }} lay-skin="switch">
   </form>
 </script>
 {/block}

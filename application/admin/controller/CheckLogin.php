@@ -164,14 +164,14 @@ class CheckLogin extends Base {
       $val &&  $val = date($extra,intval($val));
       $tpl.= '<input type="text" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input js-datetime-picker '.$css2.'" data-format="'.$extra.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.' >';
     }else if($type == 'select'){ // select(k=>v)
-      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.' >';
+      $tpl.= '<select lay-search name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.'>';
       $tpl.= '<option value="">'.L('select-df').'</option>';
       foreach ($extra as $k=>$v) {
         $tpl.= '<option value="'.$k.'"'.($k==$val ? ' selected="selected"':'').'>'.$v.'</option>';
       }
       $tpl.= '</select>';
     }else if($type =='selects'){ // select(id,name) / select(id,name,child)
-      $tpl.= '<select name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.'>';
+      $tpl.= '<select lay-search name="'.$field.'" id="jsf-'.$jsf.'"  '.$need_ipt.'>';
       $tpl.= '<option value="">'.L('select-df').'</option>';
       foreach ($extra as $v) {// level1
         $tpl.= '<option value="'.$v['id'].'"'.($v['id']==$val ? ' selected="selected"':'').'>'.$v['name'].'</option>';
@@ -219,8 +219,10 @@ class CheckLogin extends Base {
     $tpl.=    '</div>';
     if($field == 'sort'){
       $note = L('sort-desc');
-    }else if($field == 'icon'){
-      $note = L('icon-class');
+    }else if($type == 'icon'){
+      $note = L('tip-default-icon');
+    }else if($type == 'btimg'){
+      $note = L('tip-default-btimg');
     }else{
       $note = L('tip-'.lcfirst(CONTROLLER_NAME).'-'.$field);
     }

@@ -26,21 +26,30 @@ return [
   'tip-banner-title'=>'32字以内',
   'tip-banner-url'=>'url / 类型主键',
   'tip-banner-img'=>'banner图片,建议3:1且不超过500K,以标题说明优先',
+
   'tip-cmsCate-name'=>'32字以内',
   'tip-cmsCate-url'=>'分类链接,url(\'\')参数 或 http地址',
   'tip-cmsCate-hide'=>'是否对用户隐藏,超管无效,一般开发用',
   'tip-cmsCate-parent'=>'有下级分类时将修改失败',
+
   'tip-config-title'=>'32字以内',
   'tip-config-name'=>'32字以内,系统组可由config(\'\')获取',
+
   'tip-datatree-is_sys'=>'是否为系统数据字典',
   'tip-datatree-title'=>'32字以内',
   'tip-datatree-name'=>'32字以内,获取:dataree(\'device_limit\')',
+
+  'tip-default-btimg'=>'选择图片,建议1:1且不超过500K',
+  'tip-default-icon'=>'选择图标,为字体图标的class',
+
   'tip-menu-name'=>'32字以内',
   'tip-menu-parent'=>'有下级菜单时将修改失败',
   'tip-menu-url'=>'菜单链接,url(\'\')参数 或 http地址',
   'tip-menu-params'=>'k=>v&k2=>v2形式',
   'tip-menu-show'=>'是否对用户隐藏,超管无效,一般开发用',
+
   'tip-role-name'=>'32字以内',
+
   'tip-user-name'=>'4-32位数字英文,不重复,添加后不可修改',
   'tip-user-pass'=>'6-12位数字英文,加密保存,不改不填,登不了请重设',
   'tip-user-nick'=>'32字以内',

@@ -1,1 +1,127 @@
-{extend name="df/tpl/base_set_layer" /}
+{include file="df/tpl/base_head" /}
+
+{block name="area_head"}
+<script src="__CDN__/lodash/4.14.0/lodash.min.js"></script>
+{/block}
+
+</head>
+<body id="body">
+<!-- <div class="page-header">{$cfg.business} {$op}</div> -->
+{block name="area_body"}
+<!-- <div class="layui-card">
+  <div class="layui-card-body"> -->
+    {:html_head_tip('添加禁闭 (先加用户, * 必须)')}
+    <form class="layui-form layui-form-pane post-form">
+      <div class="layui-form-item">
+        <label for="user_select" class="layui-form-label">用户</label>
+        <div class="layui-input-inline" style="width:250px" >
+          <select id="user_select" style="width:188px" lay-ignore></select>
+          <a class="layui-btn layui-btn-sm" id="js-add-user"><i class="layui-icon layui-icon-add-1"></i> </a>
+        </div>
+        <div class="layui-form-mid layui-word-aux">* 先选择用户在操作</div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-form-label">* 已选用户</div>
+        <input type="hidden" name="uids" value="" id="js-uids"/>
+        <div class="layui-inline">
+          <table class="layui-table" id="js-users">
+            <tr><th>ID</th><th>昵称</th><th>操作</th></tr>
+          </table>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <label class="layui-form-label">时间</label>
+        <div class="layui-inline">
+          <div class="layui-input-inline">
+            <input type="text" class="layui-input" name="start" id="js-start">
+          </div>
+          <div class="layui-form-mid">-</div>
+          <div class="layui-input-inline">
+            <input type="text" class="layui-input" name="end" id="js-end" >
+          </div>
+          <div class="layui-form-mid layui-word-aux">(空为永久)</div>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-form-label red">* 规则</div>
+        <input type="hidden" name="uids" value="" id="js-uids" />
+        <div class="layui-inline">
+          <select name='rule' lay-search lay-verify="required">
+            <option value=""> == 规则 == </option>
+            <option value="2"> 禁止发改帖子 </option>
+            <option value="1"> 禁止发改回复 </option>
+            <option value="3"> 禁止发改回复+帖子 </option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-form-item">
+        <div class="layui-form-label red">* 理由</div>
+        <div class="layui-inline">
+          <textarea name="reason" cols="40" lay-verify="required" class="layui-textarea" placeholder="请输入理由:违法,广告,灌水,引战,..." ></textarea>
+        </div>
+      </div>
+      <div class="layui-form-item layui-input-block">
+        <button target-form="post-form" class="layui-btn layui-btn-sm ajax-post layer-msg fresh-parent-table close-iframe" href="{:url(CONTROLLER_NAME.'/set',['id'=>$id])}"><i class="layui-icon layui-icon-ok"></i>{$op}</button>
+        {:html_return('','','layer')}
+      </div>
+    </form>
+<!--   </div>
+</div> -->
+{/block}
+
+{block name="area_foot"}
+<script>
+// page init
+;layui.use(['rb','table2','form','datetimepicker','select2'], function(){
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  // 删除发送用户 click
+  $('#js-users').on('click','.js-clear',function(){
+    // console.log(this);
+    var uid = $(this).data('uid');
+    var uids_str = _.trim($('#js-uids').val(),',');
+    var uids_arr = _.uniq(uids_str.split(','));
+    uids_arr = _.filter(uids_arr, function(n) {
+      return n !=  uid;
+    });
+    uids_str = _.trim(uids_arr.join(','),',');
+    console.log(uids_str);
+    $('#js-uids').val(uids_str);
+    $(this).parent().parent('tr').remove();
+  });
+  // 添加发送用户 click
+  $('#js-add-user').click(function(){
+    var data = $('#user_select').select2('data')[0];
+    var uid  = data ? data.id : 0;
+    var name = data ? data.nick : '';
+    if(uid>0){
+      var uids_str = _.trim($('#js-uids').val(),',');
+      var uids_arr = _.uniq(uids_str.split(','));
+      if($.inArray(''+uid,uids_arr) == -1){ //不存在
+        uids_arr.push(uid);
+        $('#js-users').append('<tr><td>'+uid+'</td><td>'+name+'</td><td><a class="js-clear" data-uid="'+uid+'" title="删除"> <i class="fa fa-times"></i> </a> </td></tr>');
+        uids_str = _.trim(uids_arr.join(','),',');
+        console.log(uids_str);
+        $('#js-uids').val(uids_str);
+      }else{
+        rb.alert('重复选择');
+      }
+    }else{
+      rb.alert('请先选择用户');
+    }
+  });
+  $('#js-start,#js-end').datetimepicker({
+      lang: 'ch',
+      format:'Y-m-d H:i:s',
+      allowBlank : true,
+  });
+  $('#user_select').select2(rb.getSelect2Config({ },{ url: "{:url('user/ajax')}" }));
+});
+</script>
+{/block}
+</body>
+</html>

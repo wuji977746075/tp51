@@ -5,19 +5,42 @@
   <div class="layui-card-header">{$cfg.business} {:L('manage')}</div>
   <div class="layui-card-body">
     {:html_head_tip($cfg['business']."管理,点击带 .列单元格编辑")}
+    <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <select class="user_select2" id="jsf-uid" style="width:200px;" lay-ignore>
+        <!-- <option value="">UID/账号/昵称/手机号</option> -->
+        </select>
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <!-- <label class="layui-form-label">规则</label> -->
+        <div class="layui-input-inline" style="width: 130px;">
+          <select id="jsf-rule" lay-search>
+            <option value="">== 规则 ==</option>
+            <option value="1">禁止帖子</option>
+            <option value="2">禁止回复</option>
+            <option value="3">禁止帖子/回复</option>
+          </select>
+        </div>
+      </div>
+      <div class="layui-inline">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
     <table id="demo" lay-filter="fDemo"></table>
   </div>
 </div>
 <script type="text/html" id="toolbarDemo">
   <div class="layui-btn-group">
-    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加"><i class="layui-icon layui-icon-add-1"></i></a>
-    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger js-ops confirm layui-btn-sm" title="批量删除"><i class="layui-icon layui-icon-delete no-refresh fresh-table"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加禁闭"><i class="layui-icon layui-icon-add-1"></i></a>
   </div>
 </script>
 <script type="text/html" id="barDemo">
   <div class="layui-btn-group">
-    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="编辑"><i class="layui-icon layui-icon-edit"></i></a>
-    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/detail',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="详细违规"><i class="layui-icon layui-icon-edit">详情</i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-alert no-refresh fresh-table" title="解除"><i class="layui-icon layui-icon-delete"></i></a>
   </div>
 </script>
 {/block}
@@ -26,7 +49,7 @@
 <!-- script -->
 <script>
 // page init
-layui.use(['rb','table2','form'], function(){
+layui.use(['rb','table2','form','select2'], function(){
   var layer = layui.layer
   ,table = layui.table2
   ,form = layui.form
@@ -35,6 +58,13 @@ layui.use(['rb','table2','form'], function(){
   // form init
   // table init
   rb.where.field  = 'create_time';
+  rb.setWhere = function() {
+    rb.where.rule = $('#jsf-rule').val();
+    rb.where.uid  = $('#jsf-uid').val();
+    // if(rb.where.uid){
+    //   rb.where.field = 'create_time';
+    // }
+  }
   // table render
   rb.table = table.render($.extend(rb.table_config,{
     url: '{:url(CONTROLLER_NAME."/ajax")}'
@@ -42,19 +72,22 @@ layui.use(['rb','table2','form'], function(){
     ,initSort: {
       field: 'create_time',type: 'desc'
     }
-    ,cols:  [[
+    ,cols: [[
       {checkbox: true} //,fixed: 'left',LAY_CHECKED: true
-      ,{field: 'id', title: 'ID', minWidth: 60,sort:true}
+      ,{field: 'id', title: 'ID', minWidth: 60,sort:true,hideDisable:true}
       ,{field: 'uid', title: '用户', templet:"#uidTpl"}
+      ,{field: 'count',align:'right',minWidth:60,title: '违规次数',templet:"#countTpl"}
       ,{field: 'rule', title: '规则',templet:"#ruleTpl"}
-      ,{field: 'reason', title: '原因', width: 60}
+      ,{field: 'reason', title: '原因'}
       ,{field: 'start_time', title: '开始时间', width: 125,templet: '#startTimeTpl'}
       ,{field: 'end_time', title: '结束时间', width: 125,templet:"#endTimeTpl"}
-      ,{field: 'update_time',align:'right',width:125,title: '上次更新', sort:true,templet: '#updateTimeTpl'}
-      ,{align:'left',fixed: 'right',title: '操作', width: 85,toolbar: '#barDemo'}
+      ,{field: 'update_time',align:'right',width:85,title: '上次更新', sort:true,hide:true,templet: '#updateTimeTpl'}
+      ,{field: 'create_time',align:'right',width:85,title: '添加时间', sort:true,hide:true,templet: '#createTimeTpl'}
+      ,{align:'left',fixed: 'right',title: '操作', width: 125,toolbar: '#barDemo'}
     ]]
   }));
 
+  $(".user_select2").select2(rb.getSelect2Config({ },{ url: "{:url('user/ajax')}" }));
   {include file="df/tpl/index_extra"}
 });
 </script>
@@ -68,6 +101,11 @@ layui.use(['rb','table2','form'], function(){
 <script type="text/html" id="startTimeTpl">
   {{ layui.rb.getFormatTime(d.start_time) }}
 </script>
+<script type="text/html" id="countTpl">
+  {{# if (d.count>0) { }}
+  {{ d.count }}
+  {{# } }}
+</script>
 <script type="text/html" id="endTimeTpl">
   {{ layui.rb.getFormatTime(d.end_time) }}
 </script>
@@ -75,6 +113,6 @@ layui.use(['rb','table2','form'], function(){
   {{ layui.rb.getFormatTime(d.update_time) }}
 </script>
 <script type="text/html" id="ruleTpl">
-  {{ d.rule }}
+  {{ d.rule_desc }}
 </script>
 {/block}
