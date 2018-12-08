@@ -2,9 +2,9 @@
 
 {block name="area_body"}
 <div class="layui-card">
-  <div class="layui-card-header">淘宝客账号管理</div>
+  <div class="layui-card-header">{$cfg.business}{:L('manage')}</div>
   <div class="layui-card-body">
-    {:html_head_tip('淘宝客账户数据,点击 .单元格编辑<br>Excel导入注意格式对号入座,从左到右的列依次为:名称(可空)，PID，长连接，短链接(可空)，淘口令(可空)')}
+    {:html_head_tip({$cfg.business}.'数据,点击 .单元格编辑<br>Excel导入注意格式对号入座,从左到右的列依次为:名称(可空)，PID，长连接，短链接(可空)，淘口令(可空)')}
     <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
       {:token()}
     <div class="block clearfix">
@@ -229,7 +229,7 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
   {{# } }}
 </script>
 <script type="text/html" id="timeTpl">
-  {{ layui.rb.gettime2( d.create_time ) }}
+  {{ layui.rb.getFormatTime( d.create_time ) }}
 </script>
 <script type="text/html" id="allotTpl">
    {{# if(d.to_uid>0){ }}
