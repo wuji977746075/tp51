@@ -200,12 +200,7 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
     ]]
   }));
   //
-  $('#jsf-start,#jsf-end').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
-    // timepicker:false,
-  });
+  rb.initDateTimePicker('#jsf-start,#jsf-end');
   $(".user_select2").select2(rb.getSelect2Config({ },{ url: "{:url('user/ajax',['level'=>1])}" }));
   $('#js-set-user').click(function(event) {
     if($(this).data('href')){

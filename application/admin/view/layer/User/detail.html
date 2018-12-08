@@ -168,12 +168,7 @@ layui.use(['rb','form','table2','element','datetimepicker','picView'],function()
       // ,{ title: '操作',toolbar: '#barDemo'}
     ]]
   }));
-  $('#jsf-start,#jsf-end,#jsf-start2,#jsf-end2').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
-    // timepicker:false,
-  });
+  rb.initDateTimePicker('#jsf-start,#jsf-end,#jsf-start2,#jsf-end2');
   var where2 = {
     uid : uid
     ,field:'id'

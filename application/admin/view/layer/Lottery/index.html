@@ -16,7 +16,7 @@
       <div class="layui-inline layui-form-item mb0">
         <label class="layui-form-label">活动时间 <i class="layui-icon layui-icon-date"></i></label>
         <div class="layui-input-inline" style="width: 130px;">
-          <input type="text" id='jsf-start' name="start" class="layui-input">
+          <input type="text" id='jsf-start' name="start" class="layui-input" >
         </div>
         <div class="layui-form-mid">-</div>
         <div class="layui-input-inline" style="width: 130px;">
@@ -81,13 +81,7 @@ layui.use(['rb','table2','form','datetimepicker','picView','select2'], function(
     ]]
   }));
   //
-  $('#jsf-start,#jsf-end').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
-    // timepicker:false,
-  });
-
+  rb.initDateTimePicker('#jsf-start,#jsf-end');
   {include file="df/tpl/index_extra"}
 });
 </script>

@@ -24,26 +24,8 @@ layui.use(['rb','form','datetimepicker','picView'], function(){
   $ = layui.$;
 
   rb.log('page','init');
-  // datetimepicker
-  $(".js-datetime-picker").each(function(index, el) {
-    var $el = $(el);
-    var fmt = $el.data('format');
-    $el.datetimepicker({
-      lang: 'ch',
-      timepicker:fmt.indexOf("i") != -1,
-      datepicker:fmt.indexOf("m") != -1,
-      // step: 5,
-      format:fmt,
-      allowBlank : true,
-    });
-  });
-  // ueditor
-  var ue = UE.getEditor('jsf-content',{
-    toolbars:[
-      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
-     , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map', 'preview',  'drafts','forecolor','backcolor'
-      ]
-  ]});
+  rb.initDateTimePicker();
+  rb.initUeditor('jsf-content');
 });
 </script>
 {/block}

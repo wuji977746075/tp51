@@ -153,12 +153,7 @@ layui.use(['rb','table2','element','form','picView'], function(){
     var el = data.elem;
     rb.post(el,'{:url(CONTROLLER_NAME."/editOne")}',{ field: 'status',val: el.checked ? 1:0,id:parseInt(el.getAttribute('data-id')) },true);
   });
-  $('#jsf-start,#jsf-end').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
-    // timepicker:false,
-  });
+  rb.initDateTimePicker('#jsf-start,#jsf-end');
   $('body').on('click', '#js-search', function(event) {
     var kword = $('#jsf-kword').val();
     var start = $('#jsf-start').val();

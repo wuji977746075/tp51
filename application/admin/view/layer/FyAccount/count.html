@@ -85,12 +85,7 @@ layui.use(['rb','table2','form','datetimepicker'], function() {
       ,{align:'left',title: '操作',toolbar: '#barDemo'}
     ]]
   }));
-  $('#jsf-start,#jsf-end').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
-    // timepicker:false,
-  });
+  rb.initDateTimePicker('#jsf-start,#jsf-end');
   {include file="df/tpl/index_extra"}
 });
 </script>

@@ -33,11 +33,11 @@
         <label class="layui-form-label">时间</label>
         <div class="layui-inline">
           <div class="layui-input-inline">
-            <input type="text" class="layui-input" name="start" id="js-start">
+            <input type="text" class="layui-input" name="start" id="js-start" data-format='Y-m-d H:i:s'>
           </div>
           <div class="layui-form-mid">-</div>
           <div class="layui-input-inline">
-            <input type="text" class="layui-input" name="end" id="js-end" >
+            <input type="text" class="layui-input" name="end" id="js-end" data-format='Y-m-d H:i:s'>
           </div>
           <div class="layui-form-mid layui-word-aux">(空为永久)</div>
         </div>
@@ -113,11 +113,7 @@
       rb.alert('请先选择用户');
     }
   });
-  $('#js-start,#js-end').datetimepicker({
-      lang: 'ch',
-      format:'Y-m-d H:i:s',
-      allowBlank : true,
-  });
+  rb.initDateTimePicker('#js-start,#js-end');
   $('#user_select').select2(rb.getSelect2Config({ },{ url: "{:url('user/ajax')}" }));
 });
 </script>
