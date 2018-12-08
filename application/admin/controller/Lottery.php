@@ -19,22 +19,22 @@ class Lottery extends CheckLogin {
 
   function set(){
     $this->jsf = array_merge($this->jsf,[
-      'views'      => '浏览量',
+      'name'       => '活动名',
+      'icon'       => '图标',
       'start_time' => '开始时间',
       'end_time'   => '截止时间',
+      'views'      => '浏览量',
       'playtimes'  => '游戏次数',
-      'icon'       => '图标',
-      'name'       => '活动名'
     ]);
     if(IS_GET){ // view
       $this->jsf_tpl = [
         ['*name'],
         ['icon|btimg','',1],
         ['desc|textarea','input-ueditor'],
-        ['start_time|time'],
-        ['end_time|time','','Y-m-d'],
-        ['views|number','|layui-disabled','disabled'],
-        ['playtimes|number','|layui-disabled','disabled'],
+        ['start_time|time','','Y-m-d H:i:s'],
+        ['end_time|time','','Y-m-d H:i:s'],
+        ['views|number*|0'],
+        ['playtimes|number*|0'],
       ];
       return parent::set();
     }else{ // save

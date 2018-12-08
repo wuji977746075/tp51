@@ -127,7 +127,7 @@ class CheckLogin extends Base {
     return $this->isSuper || (new UserLogic)->isTopSaler(UID);
   }
   // 表单字段模板构造器
-  // $field : *field
+  // $field : *field*|type*|df
   // $css   : input_parent_css|input_css
   // $tip   : layui_tip_type
   function jsf_tpl($field,$type='text',$val='',$css='',$extra='',$tip=0){
@@ -136,6 +136,11 @@ class CheckLogin extends Base {
     $field = ltrim($field,'*'); // 字段名
     !isset($this->jsf[$field]) && $this->error(L('need-jsf-name').':'.$field);
     $name = $this->jsf[$field]; // 字段显示名
+    $ipt_disable = false;
+    if($type != rtrim($type,'*')){ // disable
+      $type = rtrim($type,'*');
+      $ipt_disable = true;
+    }
     $hide = $type == 'hidden' ? 'hide' : ''; //是否为 隐藏域
     $hold = $need ? L('type-in').$name : ''; // 表单placeholder
     $jsf = str_replace('_', '-', $field); // 表单id
@@ -145,9 +150,10 @@ class CheckLogin extends Base {
     $tpl.=   '<label for="jsf-'.$jsf.'" class="layui-form-label">'.$need.' '.$name.'</label>';
     $csses = explode('|',$css);
     $css   = $csses[0];
-    $css2  = isset($csses[1]) ? $csses[1] : '';
+    $css2  = (isset($csses[1]) ? $csses[1] : '').($ipt_disable ? ' layui-disabled' : '');
     $tpl.=   '<div class="layui-input-inline '. $css.'">';
     if(in_array($type,['text','hidden','number','password'])){
+      $ipt_disable && $extra .= ' disabled';
       $tpl.= '<input type="'.$type.'" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'" class="layui-input '.$css2.'" placeholder="'.$hold.'"  autocomplete="off" '.$need_ipt.' title="'.$val.'" '.$extra.'>';
     }else if($type == 'cropper'){ // cropper
       $tpl .= '<input type="hidden" name="'.$field.'" id="jsf-'.$jsf.'" value="'.$val.'">';
@@ -253,7 +259,7 @@ class CheckLogin extends Base {
 
   //关于jsf 一般一+二:
   // 第一位 :
-  //  *(必选,入构)+字段(入构)+*(强制默认)+|+input类型+|+默认
+  //  *(必选,入构)+字段(入构)+*(强制默认)+|+input类型+*(隐藏标志)|+默认
   // 第二位 : input父类的class+|+input的class
   // 第三位 : extra
   //  不定,select(选项)/radio/time(格式)/bt_img(max)..

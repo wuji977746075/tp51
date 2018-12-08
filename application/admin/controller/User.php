@@ -212,19 +212,16 @@ class User extends CheckLogin {
           }
         }
       }
-      $jsfs = [
-        ['*name',$id ? '|layui-disabled' : '',$id ? 'disabled': '']
-      ];
-      $jsfs[] = $id ? ['pass*'] : ['*pass*'];
-      $jsfs = array_merge($jsfs,[
+      $this->jsf_tpl = [
+        ['*name'.($id ? '|text*' : '')],
+        [($id ? '' : '*').'pass*'],
         ['nick','input-long'],
         ['avatar|btimg','',1],
         ['phone'],
         ['email'],
         ['status|radio'],
         ['*role|selects|'.$role_id,'',$roles]
-      ]);
-      $this->jsf_tpl = $jsfs;
+      ];
       return parent::set();
     }else{      // save
       $paras = $this->_getPara('nick','avatar,phone,email,status|0|int,pass');

@@ -1,17 +1,42 @@
 {extend name="df/tpl/base_set_layer" /}
 
 {block name="area_body"}
+<!-- ueditor -->
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="__PUBLIC__static/ueditor/1.4.3/ueditor.all.min.js"> </script>
+{/block}
+
+{block name="area_body"}
   {include file="df/tpl/pic_select" /}
 <script>
 ;layui.use(['rb','form','datetimepicker'],function(){
-  var rb = layui.rb
-  ,$= layui.jquery;
+  var layer = layui.layer,
+  form = layui.form,
+  rb   = layui.rb,
+  $ = layui.$;
 
-  $('#jsf-start-time,#jsf-end-time').datetimepicker({
-    lang: 'ch',
-    format:'Y-m-d H:i',
-    allowBlank : true,
+  rb.log('page','init');
+
+  // datetimepicker
+  $('#jsf-start-time,#jsf-end-time').each(function(index, el) {
+    var $el = $(el);
+    var fmt = $el.data('format');
+    $el.datetimepicker({
+      lang: 'ch',
+      timepicker:fmt.indexOf("i") != -1,
+      datepicker:fmt.indexOf("m") != -1,
+      // step: 5,
+      format:fmt,
+      allowBlank : true,
+    });
   });
+  // ueditor
+  var ue = UE.getEditor('jsf-desc',{
+    toolbars:[
+      ['fullscreen', 'source', 'undo', 'redo', 'bold','italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', '|','lineheight'
+     , 'fontsize','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', 'insertimage','emotion','link', 'unlink', 'anchor', '|','map', 'preview',  'drafts','forecolor','backcolor'
+      ]
+  ]});
 });
 </script>
 {/block}
