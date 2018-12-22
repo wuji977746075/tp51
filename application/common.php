@@ -1,13 +1,4 @@
 <?php
-// +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
-// +----------------------------------------------------------------------
-// | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
-// +----------------------------------------------------------------------
-// | Author: 流年 <liu21st@gmail.com>
-// +----------------------------------------------------------------------
 // 应用公共文件
 /**
  * 生成假数据对象列表
@@ -377,10 +368,6 @@ function getArr($arr,$key_f='',$val_f=null){
     return $r;
   }
 }
-//身份证验证
-function isIdCard($id_number=''){
-  return preg_match('/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/', $id_number);
-}
 
 /**
  * @desc  im:十进制数转换成三十六机制数
@@ -572,6 +559,35 @@ function LL($str='',$dif=' ',$add = ''){
     return implode($add,array_map('lang',explode($dif, trim($str))));
 }
 
+require '../extend/ChromePhp.php';
+function chlog($data,$type=0){
+  switch ($type) {
+    case 1:
+      ChromePhp::info($data);
+      break;
+    case 11:
+      ChromePhp::warn($data);
+      break;
+    case 111:
+      ChromePhp::table($data);
+      break;
+    case 2:
+      ChromePhp::error($data);
+      break;
+    case 3:
+      ChromePhp::group($data);
+      break;
+    case 33:
+      ChromePhp::groupEnd($data);
+    case 333:
+      ChromePhp::groupCollapsed($data);
+      break;
+
+    default:
+      ChromePhp::log($data);
+      break;
+  }
+}
 function cslog($val){
     $debug = debug_backtrace(); //调用堆栈
     unset($debug[0]['args']);

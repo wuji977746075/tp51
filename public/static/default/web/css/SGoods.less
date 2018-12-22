@@ -1,0 +1,71 @@
+@import "base";
+@col : #ea5505;//rgb(213,92,11)
+.card{margin: 0 0 0.2rem 0 !important;background-color: #f5f5f5 !important;box-shadow: 0 .05rem .1rem rgba(0,0,0,0.2) !important;//border-radius: 1.1rem!important;
+.card-header{background-color: #f5f5f5 !important;}
+.card-content{background-color: #f5f5f5 !important;}
+.card-footer{background-color: #f5f5f5 !important;}
+}
+.list-block{min-height: 90%;}
+.headerCard>div{
+	>div{
+		font-size: 1.6rem;color:#444;font-weight: bold;
+		>a{font-size: 1rem;font-weight: normal}
+	}
+	>a{
+		line-height: 2rem;font-size: 1.2rem;
+	}
+}
+html{font-size:12px}
+@media only screen and (min-width:400px){html{font-size:11px!important}}
+@media only screen and (min-width:414px){html{font-size:12px!important}}
+@media only screen and (min-width:480px){html{font-size:14px!important}}
+@media (device-height:736px) and (-webkit-min-device-pixel-ratio:2){/* 兼容iphone6 Plus */
+  html,body{font-size: 10px !important;}
+}
+.deco {
+	height: 80%;
+	width: 5px;
+	background: @col;
+	float: left;
+	border-radius: 10px 10px 10px 10px;
+}
+.lotCard{
+	 .card-header{
+			color:@col;width:100%;//font-family: "MicroSoft Yahei" !important;
+			display:inline-block;
+			text-align: center;font-size: 2.2rem;
+			font-weight: bold;
+			span{
+				line-height: 33px;width:auto;height: 33px;display:inline-block;padding-right: 25px;
+				background:url(../imgs/index/rarr.png) right 5px no-repeat;margin:0 auto;letter-spacing: .7rem;
+				// letter-spacing: -0.2rem;
+				// transform:rotate(7deg);
+			}
+	}
+}
+.conCard{
+	padding-left: 5px;height:100%;
+	.card-header{
+		text-align: left;font-size: 1.6rem;
+		height:4rem;display:block;
+		text-indent: 10px;color:@grew2;font-weight: bold;
+		margin-top: 1px;margin-bottom: 1px;border-radius: 1px;line-height: 1.6rem;
+		.left{padding-top: 6px;}
+	}
+	.card-content{
+		ul{
+			width: 100%;display: block !important;
+			li{
+				width: 50%;overflow-x:hidden;float:left;padding: 4px;box-sizing: border-box;
+					a.img{
+						width: 100%;height:auto;display:block;
+						img{width: 100%;height: 100%;}
+					}
+					.th{ .line-clamp(2);font-size: 1.6rem;line-height: 4rem;max-height: 3rem;overflow:hidden}
+					.score{
+						color:@yell1;font-size: 1.5rem;height:3.8rem;
+					}
+			}
+		}
+	}
+}

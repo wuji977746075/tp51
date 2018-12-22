@@ -4,7 +4,7 @@
 <div class="layui-card">
   <div class="layui-card-header">{$cfg.business}{:L('manage')}</div>
   <div class="layui-card-body">
-    {:html_head_tip({$cfg.business}.'数据,点击 .单元格编辑')}
+    {:html_head_tip($cfg['business'].'数据,点击 .单元格编辑')}
     <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
       {:token()}
       <div class="layui-inline">
@@ -41,7 +41,7 @@
 </script>
 <script type="text/html" id="barDemo">
   <div class="layui-btn-group">
-    <a href="{:url(CONTROLLER_NAME.'/prize',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="奖品">奖品</a>
+    <a href="{:url(CONTROLLER_NAME.'/lotteryPrizeLink',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="奖品">奖品</a>
     <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改"><i class="layui-icon layui-icon-edit"></i></a>
     <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
   </div>

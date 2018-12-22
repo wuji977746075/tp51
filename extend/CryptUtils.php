@@ -1,12 +1,15 @@
 <?php
+use \ErrorCode as EC;
+use src\base\traits\Jump;
 class CryptUtils {
-
+    const ERROR = EC::CRYPT_ERROR;
+    use Jump;
     /**
      * 签证签名
      * @param $sign
      * @param $data
      * @return bool
-     * @throws \Exception
+     * @throws BaseException
      */
     public static function verify_sign($sign,$data){
         $tmp_sign = self::sign($data);
@@ -35,10 +38,6 @@ class CryptUtils {
         return base64_encode(base64_encode($str));
     }
 
-    // todo
-    public static function throws($msg='',$exc=null){
-        throw new \Exception($msg);
-    }
     /**
      * 签名
      * @param $param  [client_secret,data,time,type,notify_id]
@@ -52,10 +51,10 @@ class CryptUtils {
         $type = isset($param['type']) ? $param['type'] : '';
         $data = isset($param['data']) ? $param['data'] : '';
 
-        empty($client_secret) && self::throws("client_secret参数非法!");
-        empty($time) && self::throws("time参数非法!");
-        empty($type) && self::throws("type参数非法!");
-        empty($notify_id) && self::throws("notify_id参数非法!");
+        empty($client_secret) && $this->err("client_secret参数非法!");
+        empty($time) && $this->err("time参数非法!");
+        empty($type) && $this->err("type参数非法!");
+        empty($notify_id) && $this->err("notify_id参数非法!");
 
         $text = $time.$type.$data.$client_secret.$notify_id;
         return md5($text);

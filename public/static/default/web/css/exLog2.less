@@ -1,0 +1,31 @@
+.list-block{margin-top: 0 !important;}
+.line-clamp(@lines, @line-height: 1.3rem) {
+  text-overflow: ellipsis;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: @lines !important; // number of lines to show
+  overflow: hidden;
+  white-space: pre-line !important;
+  line-height: @line-height !important;
+  height: @line-height * @lines !important;
+}
+.content-block-title{
+	font-size: 1rem!important;text-align: center;margin-top: 1rem!important;
+}
+.item-title-row{
+	.item-title{
+		// font-size: 1.4rem!important;
+		.line-clamp(2)
+	}
+}
+.item-subtitle{
+	display: flex;
+	display: -webkit-flex;
+	.left{flex:1;}
+	.right{flex:1;color:#d55c0b;text-align: right;}
+}
+.card-footer{
+	border-top: 1px #F0E3E3 solid;
+	a{color:#808080;}
+	.icon{vertical-align:top;}
+}

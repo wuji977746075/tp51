@@ -1,0 +1,71 @@
+$(function() {
+  'use strict';
+  // $.router.load(window.location.href,true);
+  // $.alert('这是一段提示消息');
+  //   console.log('index');
+  // $(document).on("pageInit", "#page-detail", function(e, id, page) {
+  //   console.log('index-');
+  //   $('body').css('font-size','1.4rem');
+  //   $('.content-block-title').css('font-size','1.4rem');
+  //   $('.item-inner>div').css('font-size','1.2rem');
+  //   // html,body{font-size:14px!important;}.content-block-title{font-size: 1.4rem !important;}.item-inner>div{font-size: 1.2rem !important;}
+  // });
+  $(document).on("pageInit", "#page-infinite", function(e, id, page) {
+  // console.log('indexpageinit');
+    var lastIndex = $('.list-container li').length;
+    var loading = false;
+    // 最多可加载的条目
+    var maxItems = 500;
+    var itemsPerLoad = 10;
+    // alert(lastIndex);
+    addItems(itemsPerLoad, lastIndex);
+    function addItems(number, lastIndex) {
+       $.getJSON("{:U('ExchangeLog/getLogs',array('uid'=>$uid,'psw'=>$psw),false)}",{ 'start':lastIndex,'size':number },function(data){
+          if(!data.status){$.alert('服务器故障');return;}
+          if(!data.info || data.info.length < number){
+            $.toast('没有更多了');$('.infinite-scroll-preloader').remove();
+            // console.log('没有了');
+            $.detachInfiniteScroll($('.infinite-scroll'));
+            // return;
+          }
+          var html = '',infos =data.info;
+          // console.log('length:'+data.info.length);
+          $.each(infos,function(i,v){
+            html =html + '<li><div class="time">'+v.exchange_time+'</div>'
+              +'<div>'
+              +'    <div class="img"><img src="{:U('Api/Picture/index')}?id='+v.main_img+'" width=80 height=80 /></div>'
+              +'    <div class="con">'
+              +'        <div class="th">'+v.pname+'</div>'
+              +'        <div class="bd clearfix"><div class="left">'+v.price+'积分</div><div class="right">'+v.excahnge_status+'</div></div></div>'
+              +'</div>'
+              +'<div class="text-r"><a target="_self" data-no-cache="true" href="{:U(\'Webview/ExchangeLog/detail\',array(\'uid\'=>$uid,\'psw\'=>$psw),\'\')}/id/'+v.id+'">查看详情 <span class="icon icon-right"></span></a></div>'
+              +'</li>';
+          });
+          // 添加新条目
+          $('.infinite-scroll .list-container').append(html);
+          // $.detachInfiniteScroll($('.infinite-scroll'));
+            // 删除加载提示符
+          // $('.infinite-scroll-preloader').remove();
+          $.refreshScroller();
+      })
+    }
+    // 注册'infinite'事件处理函数
+    $(page).on('infinite', function() {
+      console.log('infinate');
+      if (loading) return;
+      loading = true;
+      setTimeout(function() {
+          loading = false;
+          // if (lastIndex >= maxItems) {
+          //     $.detachInfiniteScroll($('.infinite-scroll'));
+          //     $('.infinite-scroll-preloader').remove();
+          //     return;
+          // }
+          addItems(itemsPerLoad, lastIndex);
+          lastIndex = $('.list-container li').length;
+          $.refreshScroller();
+      }, 1000);
+    });
+  });
+  $.init();
+});

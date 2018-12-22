@@ -14,7 +14,7 @@ use app\src\user\logic\UcenterMemberLogic;
 use think\Controller;
 use think\Request;
 
-class BaseWeb extends Controller
+class Check extends Controller
 {
     protected $lang;
 

@@ -1,0 +1,86 @@
+*{
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+a,a:hover,a:visited{
+    color: rgb(49,49,49);
+    text-decoration: none;
+}
+
+.wrap{
+    width:100%;
+    text-align: center;
+    font-size: 1.5rem;
+    color: rgb(49,49,49);
+}
+
+input{
+    height:50px;
+    width:96%;
+}
+
+.title{
+    margin:0 auto;
+    width:100%;
+    text-align: center;
+    background:rgb(234,85,5);
+    padding-top:8px;
+    padding-bottom:8px;
+    font-size: 2.6rem;
+    color:rgb(255,255,255);
+}
+
+.line{
+    width:100%;
+    margin:0 auto;
+    background:rgb(238,238,238);
+    height:10px;
+}
+
+.content-block{
+    width:100%;
+    margin:0 auto;
+    text-align: left;
+    padding-left:2%;
+}
+
+.under-line{
+    border-bottom:1px solid rgb(208,208,208);
+}
+
+.code-button{
+    border-radius:0.5rem;
+    border:1px solid rgb(208,208,208);
+}
+
+.button-block{
+    margin:0 auto;
+    text-align: center;
+    width:80%;
+    background: rgb(234,85,5);
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size:2.6rem;
+    color:rgb(255,255,255);
+}
+
+.button-block a,.button-block a:hover,.button-block a:visited{
+    color:rgb(255,255,255);
+    font-size:2.6rem;
+}
+
+.protocal{
+    margin:0 auto;
+    text-align: center;
+    margin-top: 10px;
+    color: rgb(49,49,49);
+    font-size: 1.2rem;
+}
+
+.protocal-content,.protocal-content:hover,.protocal-content:visited{
+    color:rgb(235,86,6);
+    cursor: pointer;
+}

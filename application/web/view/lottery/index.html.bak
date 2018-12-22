@@ -1,0 +1,441 @@
+<!DOCTYPE html">
+<html>
+<head>
+    <base href="{:C('SITE_URL')}/" />
+    <meta charset="utf-8">
+    <title>{$seo.title|default=L('TITLE')}-{:C('WEBSITE_TITLE')}</title>
+    <meta name="keywords" content="{$seo.keywords|default=" "}" />
+    <meta name="description" content="{$seo.description|default=" "}" />
+    <meta name="author" content="{$cfg.owner|default=" Gooraye "}" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=320px, initial-scale=1, maximum-scale=3, user-scalable=yes">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<!-- <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<META HTTP-EQUIV="Expires" CONTENT="0"> -->
+<link rel="stylesheet" href="__CSS__/lottery.css">
+</head>
+    <body class="w320">
+        {__NORUNTIME__}
+        <div class="container">
+            <div class="top-txt" id ="score">当前积分：<span>{$info.score}</span></div>
+            <div class="top-txt" id ="allC">今天可抽：<span>{$info.remainA}</span>次</div>
+            <div class="top-txt" id ="freeC">免费次数：<span>{$info.remainF}</span>次</div>
+            <div class="top-txt" id ="rollIn">我的中奖记录</div>
+            <div id="lottery">
+<!-- lottery table -->
+<table border="0" cellpadding="0" cellspacing="0">
+    <tr>
+        <td class="lottery-unit lottery-unit-0"></td>
+        <td class="lottery-unit lottery-unit-1"></td>
+        <td class="lottery-unit lottery-unit-2"></td>
+    </tr>
+    <tr>
+        <td class="lottery-unit lottery-unit-7"></td>
+        <td class="start"><a href="javascript::void(0)"></a></td>
+        <td class="lottery-unit lottery-unit-3"></td>
+    </tr>
+    <tr>
+        <td class="lottery-unit lottery-unit-6"></td>
+        <td class="lottery-unit lottery-unit-5"></td>
+        <td class="lottery-unit lottery-unit-4"></td>
+    </tr>
+</table>
+<!-- lottery table end -->
+            </div>
+
+<div class=" detail" id="showLogs">
+<div class="line"></div>
+    <div class="tit">最新中奖</div>
+    <div class="con">
+        <ul>
+<volist name="list" id="v">
+    <li><empty name='v.nickname'>用户{$v.uid}<else />{$v.nickname}</empty> 抽中 {$v.prize_name}</li>
+</volist>
+        </ul>
+    </div>
+</div>
+
+<div class="detail">
+    <div class="line"></div>
+    <div class="tit">活动说明</div>
+    <div class="con">{$game.description|htmlspecialchars_decode}</div>
+</div>
+<div class="am-modal am-modal-confirm" tabindex="-1" id="my-confirm">
+  <div class="am-modal-dialog">
+    <!-- <div class="am-modal-hd"></div> -->
+    <div class="am-modal-bd"></div>
+    <div class="am-modal-footer">
+      <span class="am-modal-btn btn-no">确定</span>
+      <span class="am-modal-btn btn-ok">取消</span>
+    </div>
+  </div>
+</div>
+<!-- alert -->
+<div class="am-modal am-modal-alert" tabindex="-1" id="my-alert">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd"></div>
+    <div class="am-modal-bd"></div>
+    <div class="am-modal-footer">
+      <span class="am-modal-btn okbtn">确定</span>
+    </div>
+  </div>
+</div>
+<!-- alert end -->
+<!-- alert -->
+<div class="am-modal am-modal-alert mheight" tabindex="-1" id="my-alert2">
+  <div class="am-modal-dialog">
+    <div class="am-modal-hd"><table class="table"><thead><tr><th>我的奖品</th></tr></thead></table></div>
+    <div class="am-modal-bd"><table class="table"><tbody><tr class="showMore">
+        <td id="showMore">查看更多...</td>
+    </tr></tbody></table></div>
+    <div class="am-modal-footer">
+      <span class="am-modal-btn okbtn">确定</span>
+    </div>
+  </div>
+</div>
+<!-- alert end -->
+        </div>
+<script type="text/javascript" src="__CDN__/jquery/2.1.1/jquery.min.js"></script>
+<!-- <script type="text/javascript" src="__JS__/xcConfirm.js"></script> -->
+<!-- <script src="../dist/remodal.js"></script> -->
+<script type="text/javascript">
+var click = false;
+var lottery = {
+    index: 0, //当前转动到哪个位置，起点位置
+    count: 8, //总共有多少个位置
+    timer: 0, //setTimeout的ID，用clearTimeout清除
+    speed: 100, //初始转动速度
+    times: 0, //转动次数
+    cycle: 50, //转动基本次数：即至少需要转动多少次再进入抽奖环节
+    prize: 0, //中奖位置
+    init: function(id) {
+        if ($("#" + id).find(".lottery-unit").length > 0) {
+
+            $lottery = $("#" + id);
+            $units = $lottery.find(".lottery-unit");
+            this.obj = $lottery;
+            this.count = $units.length;
+            $lottery.find(".lottery-unit-" + this.index).addClass("active");
+        }
+    },
+    roll: function() {
+        var index = this.index;
+        var count = this.count;
+        var lottery = this.obj;
+        $(lottery).find(".lottery-unit-" + index).removeClass("active");
+        index += 1;
+        if (index > count - 1) {
+            index = 0;
+        }
+        $(lottery).find(".lottery-unit-" + index).addClass("active");
+        this.index = index;
+        return false;
+    },
+    stop: function(index) {
+        this.prize = index;
+        return false;
+    }
+};
+
+function myalert(ele,con,id){
+    if(!ele) ele='my-alert';
+    if(!con) con='此地无银';
+    $('#'+ele).addClass('am-modal-active').find('.am-modal-bd').html(con);
+    if("undefined" == typeof id || id==0) id='grayscale';
+    else id='grayscale2';
+    $("body").addClass(id);
+}
+
+function myconfirm(con,ele,okback,noback){
+    var f = true;
+    if(!ele) ele='my-confirm';
+    if(!con) con='此地无银';
+    $('#'+ele).addClass('am-modal-active').find('.am-modal-bd').html(con);
+    $('#'+ele).find('.btn-no').click(function(){
+       if(!f) {return;}f=!f;
+       if(okback && typeof okback == "function")
+       okback();
+       $('.am-modal').removeClass('am-modal-active');
+    });
+    $('#'+ele).find('.btn-ok').click(function(){
+       if(!f) {return;}f=!f;
+       if(noback && typeof noback == "function")
+       noback();
+       $('#'+ele).removeClass('am-modal-active');
+    });
+}
+function myalert2(ele,con,id){
+    if(!ele) ele='my-alert2';
+    // if(!con) con='此地无银';
+    $('#'+ele).addClass('am-modal-active').find('.showMore').before(con);
+    if("undefined" == typeof id || id==0) id='grayscale';
+    else id='grayscale2';
+    $("body").addClass(id);
+}
+function roll() {
+    lottery.times += 1;
+    lottery.roll();
+    $lottery = $('#lottery');
+    var prize_site = parseInt($lottery.attr("prize_site"));
+    if (lottery.times > lottery.cycle + 10 && lottery.index == prize_site) {
+        var prize_id   = parseInt($lottery.attr("prize_id"));
+        var prize_name = $lottery.attr("prize_name");
+        var prize_num  = parseInt($lottery.attr("prize_num"));
+        var prize_type = parseInt($lottery.attr("prize_type"));
+        $('#score>span').html(score);
+        $('#allC>span').html(allC);
+        $('#freeC>span').html(freeC);
+        var str        = thanks.txt;
+        if(prize_id > 0){
+            switch (prize_type){
+                case 1:
+                    str = "恭喜! 您中了"+prize_name+"!\n"+prize_num+"积分会直接发送到您的账户，\n请注意查收!";
+                break;
+                case 2: str = "恭喜! 您中了"+prize_name+"!\n"+prize_num+"元购物券会直接发送到您的账户，\n请注意查收!";break;
+                // case 3: str = "恭喜! 您中了"+prize_name+"!\n该商品以1分钱添加到您的购物车，\n请注意查收!";break;
+                case 3: str = "恭喜! 您中了"+prize_name+"!\n工作员将在活动结束后主动联系您，\请保持通信通畅!";break;
+                case 4: str = "恭喜! 您中了"+prize_name+"!\n工作员将在活动结束后主动联系您，\n请保持通信通畅";
+            }
+            myalert('my-alert',str,1);
+        }else{
+            myalert('my-alert',str);
+        }
+        // $.MsgBox.Alert('消息',str);
+        // console.log("前端中奖位置："+prize_site+"\n"+"中奖名称："+prize_name+"\n中奖id："+prize_id);
+        clearTimeout(lottery.timer);
+        lottery.prize = -1;
+        lottery.times = 0;
+        click = false;
+    } else {
+        if (lottery.times < lottery.cycle) {
+            lottery.speed -= 10;
+        } else if (lottery.times == lottery.cycle) {
+            var index = Math.random() * (lottery.count) | 0;
+            lottery.prize = index;
+        } else {
+            if (lottery.times > lottery.cycle + 10 && ((lottery.prize == 0 && lottery.index == 7) || lottery.prize == lottery.index + 1)) {
+                lottery.speed += 110;
+            } else {
+                lottery.speed += 20;
+            }
+        }
+        if (lottery.speed < 40) {
+            lottery.speed = 40;
+        }
+        lottery.timer = setTimeout(roll, lottery.speed);
+    }
+    return false;
+}
+
+var click  = false;
+var signin = {$info['signin']?'1':'0'};
+var freeC  = parseInt({$info.remainF|default=0});
+var allC   = parseInt({$info.remainA|default=0});
+var score  = parseInt({$info.score|default=0});
+var uid    = {$uid|default=0};
+var msg    = "{$msg|default=''}";
+var datas;
+var f = true;
+var thanks = {url:"/Public/Webview/imgs/game/thanks.png",txt:"谢谢参与！"};
+var imageObj = new Image();
+var imageObj2 = new Image();
+imageObj2.src="/Public/Webview/imgs/game/lotteryBoxBg.gif";
+imageObj.src=thanks.url;
+$(function() {
+    //中奖信息滚动
+    var $logs  = $('#showLogs');
+    var $logsul = $logs.find('ul');
+    var hei = $logsul.outerHeight();
+    var schei = $logs.innerHeight() - hei;
+    var t;
+    if(schei<0){
+        setInterval(function(){
+            t = $logsul.position().top;
+            // console.log(t);
+            if(t>schei)   $logsul.css('top', t -1);
+            else $logsul.css('top',0);
+        },50);
+    }
+    //
+    if(msg) myalert('my-alert',msg);
+    // if(msg) $.MsgBox.Alert('消息',msg);
+    var $lottery = $("#lottery");
+    var $units = $lottery.find(".lottery-unit");
+    var prizes = new Array();
+
+    $('.okbtn').click(function(){
+        $('body').removeClass('grayscale').removeClass('grayscale2');
+        $('.am-modal').removeClass('am-modal-active');
+    });
+
+    $('#rollIn').click(function(){getLog();});
+    $('#showMore').click(function(){getLog();});
+function getLog(){
+       var length = $('#my-alert2 .am-modal-bd tr:not(".showMore")').length;
+// alert(length);
+ $.getJSON("{:U('/Webview/Game/getLog',array('uid'=>$uid,'psw'=>$psw),false)}",{ start:length },function(data)
+{
+    if(data.status){
+        list = data.info;
+        str = '';
+        var l;
+        if(list){
+            $.each(list,function(l,v){
+                //<td>'+(v.nickname ? v.nickname:'用户'+v.id)+'</td>
+                str =str + '<tr><td>'+v.name+'</td></tr>';
+            });
+        }else{
+            $('#showMore').html('没有更多了');
+        }
+        myalert2('my-alert2',str,1);
+        // $('#my-alert2 .am-model-hd').html();
+        // $.MsgBox.Alert(str);
+    }else{
+        myalert('my-alert','服务器返回错误');
+        // $.MsgBox.Alert('消息','服务器返回错误');
+    }
+});
+}
+    $.getJSON("{:U('/Webview/Game/getPrize',array('uid'=>$uid,'psw'=>$psw),false)}",function(data)
+    {
+        // console.log('data: '+data);
+        // alert(data.status+'');
+        if(data.status)
+        {
+           datas = data.info;
+            // console.log('datas:'+datas);
+            var dlen = datas.length;
+            if(dlen > $units.length)
+            {
+                myalert('my-alert','奖品个数超出');
+                // $.MsgBox.Alert('消息','奖品个数超出');
+                return false;
+            }else{
+                var src,id,len;
+                //preload images
+                for(i=0; i < dlen; i++ )
+                {
+                    src = datas[i]['path'];
+                    prizes[i] = datas[i];
+                    datas[i]['src'] = src;
+                    imageObj.onload = function(){
+                        imageObj.src=src;
+                    }
+                };
+                // console.log('prize: '+prizes);
+                len = $units.length;
+                for(i=0; i<len; i++ )
+                {
+                    if(i<dlen)
+                    {
+                        html = "<img src='"+prizes[i]['path']+"' data-name='"+prizes[i]['prize_name']+"'/>";
+                    }else{
+                        html = "<img src='"+thanks.url+"' data-name='"+thanks.txt+"'/>";
+                    }
+                    $lottery.find(".lottery-unit-"+i).html(html);
+                };
+            }
+        }else{
+            data.info = data.info || '无此抽奖';
+            myalert('my-alert',data.info);
+            // $.MsgBox.Alert('消息',data.info);
+        }
+
+    });
+    lottery.init('lottery');
+    var fa = true;
+    $lottery.find("a").click(function() {
+    if(fa){
+        fa=false; //禁止重复执行
+
+        var flag = false;
+        if (click) {
+            return false;
+        } else {
+            if(!allC){
+                myalert('my-alert','您今天抽奖次数已达上限！');
+                return false;
+            }
+
+            if(!signin){
+            //未签到
+// if(f && !confirm('您还未签到,签到可获得2次免费机会,确定将消耗10积分进行抽奖(仅本次提示)？')){
+//     return false;
+// }
+// f = false;
+                if(f){
+                    myconfirm('您还未签到,签到可获得2次免费机会,确定将消耗10积分进行抽奖(仅本次提示)？','',function(){
+                        alert('ok');
+                    },function(){
+                        alert('no');
+
+                    });
+                    return;
+                }
+            }else{
+            //以签到
+                if(f && !freeC){
+// if(!confirm('免费次数不足,确定消耗10积分进行抽奖(仅本次提示)？')){
+//     return false;
+// }
+// f = false;
+myconfirm('免费次数不足,确定消耗10积分进行抽奖(仅本次提示)？','',function(){
+    alert('ok');
+},function(){
+    alert('no');
+    return false;
+})
+                }
+            }
+            // alert(flag);
+            // if(!flag) return;
+            if(!freeC && score<10){
+                myalert('my-alert','积分不足');
+                // $.MsgBox.Alert('消息','积分不足');
+                return false;
+            }
+            lottery.speed = 100;
+            $lottery.addClass('active');
+            // $.ajaxSetup({timeout: 3000,error:function(x,s,e){alert("request error");return false}});
+            $.getJSON("{:U('Webview/Game/roll',array('uid'=>$uid,'psw'=>$psw),false)}", function(data) {
+                fa = true; //放开点击
+                //获取奖品，也可以在这里判断是否登陆状态
+                // console.log(data);
+                if(!data){
+                    myalert('my-alert','服务器返回错误');
+                    // $.MsgBox.Alert('消息','服务器返回错误');
+                }else{
+                    if(typeof(data.info)!= "object" || !data.status){
+                        myalert('my-alert',''+data.info);
+                        // $.MsgBox.Alert('消息',data.info);
+                    }else{
+                        data = data.info;
+                        id = parseInt(data.prize_id);
+                        if( !id ){
+                            l = datas.length;
+                            data.prize_site = parseInt(Math.random()*(8-l)+l);
+                            data.prize_name = thanks.txt;
+                        }
+                        allC = data.remainA;
+                        freeC = data.remainF;
+                        signin = (data.signin) ? 1:0;
+                        score = data.score;
+                        $lottery.attr("prize_site", data.prize_site)
+                                .attr("prize_id",   id)
+                                .attr("prize_num",   data.prize_num)
+                                .attr("prize_type",  data.prize_type)
+                                .attr("prize_name", data.prize_name);
+                        roll();
+                        click = true;
+                    }
+                }
+                $('#lottery').removeClass('active');
+            });
+        }
+    }
+    });
+})</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+*{
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.wrap{
+    width:100%;
+    text-align: center;
+}
+
+.top-content{
+    border-radius:10px;
+    border: 1px solid rgb(234,85,5);
+    margin:0 auto;
+    margin-top:30px;
+    width: 80%;
+    text-align: center;
+}
+
+.score{
+    width: 100%;
+    border-radius:10px 10px 0 0;
+    margin:0 auto;
+    text-align: center;
+    background:rgb(234,85,5);
+}
+
+.score-content{
+    font-size:3rem;
+    color:white;
+    padding-top:10px;
+    padding-bottom: 10px;
+}
+
+.date{
+    width:100%;
+    text-align: center;
+    margin:0 auto;
+}
+
+.date-content{
+    margin: 0 auto;
+    margin-top:0px;
+    margin-bottom: 0px;
+    text-align: center;
+    color:rgb(234,85,5);
+    height: 240px;
+    overflow: hidden;;
+}
+.content-wrap{
+    height:240px;
+    transition: margin-top 1s ease;
+}
+.content-wrap.slide-up{
+    margin-top: -240px;
+}
+
+.date-content-number{
+    font-size:13rem;
+}
+
+.date-content-unit{
+    font-size:3rem;
+}
+
+.date-user{
+    text-align: center;
+    margin: 0 auto;
+    font-size:2rem;
+    margin-bottom: 10px;
+    color:rgb(80,80,80);
+}
+
+.bottom-content{
+    margin-top:30px;
+}
+
+.bottom-content-title::before{
+    content: " ";
+    display:block;
+    position:absolute;
+    width: 130%;
+    height:0;
+    border-bottom: 2px solid rgb(234,85,5);
+    left:-130%;
+    top: 50%;;
+}
+
+.bottom-content-title::after{
+    content: " ";
+    display:block;
+    position:absolute;
+    width: 130%;
+    height:0;
+    border-bottom: 2px solid rgb(234,85,5);
+    right:-130%;
+    top: 50%;;
+}
+
+.bottom-content-title{
+    border-radius: 10px;
+    text-align: center;
+    display: inline;
+    margin: 0 auto;
+    margin-top:30px;
+    background:rgb(234,85,5);
+    color:white;
+    font-size:2rem;
+    position:relative;
+}
+
+.bottom-content-title-content{
+    display: inline;
+    padding-top:10px;
+    padding-bottom:10px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.bottom-content-content{
+    margin:0 auto;
+    margin-top:30px;
+    text-align: left;
+}
+
+.bottom-content-content p{
+    width:75%;
+    margin-left:15%;
+    font-size:2rem;
+    color:rgb(80,80,80);
+}
+
+a.btn-signIn{
+    display: inline-block;
+    border-radius: 20px;
+    background: rgb(234,85,5);
+    padding: 10px 20px;
+    color:#FFF;
+    margin-bottom: 10px;
+    text-decoration: none;
+}

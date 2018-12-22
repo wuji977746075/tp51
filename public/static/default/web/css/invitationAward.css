@@ -1,0 +1,67 @@
+*{
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.wrap{
+    width:100%;
+    text-align: center;
+    font-size: 1.5rem;
+    color: rgb(49,49,49);
+}
+
+.note{
+    width:90%;
+    margin:0 auto;
+    text-align: center;
+    margin-top:30px;
+    font-size: 2.3rem;
+    color: rgb(233,85,5);
+}
+.note p{
+    font-size:2rem;
+}
+
+.idcode{
+    width: 90%;
+    margin:0 auto;
+    text-align: center;
+}
+
+.idcode-num{
+    width: 100%;
+    margin:0 auto;
+    text-align: center;
+    margin-top: 10px;
+    color: rgb(255,255,255);
+}
+
+.mark{
+    color: rgb(233,85,5);
+    background: transparent;
+}
+
+.title{
+    margin: 0 auto;
+    text-align: center;
+    font-size:1.8rem;
+    color:rgb(255,255,255);
+    font-weight: bold;
+    margin-bottom:10px;
+}
+
+.qrcode_url{
+    margin:0 auto;
+    text-align: center;
+    width:90%;
+    background: rgb(233,85,5);
+    padding-top:25px;
+    padding-bottom: 25px;
+    border-radius: 10px;
+}
+
+#qrcode{
+    margin: 0 auto;
+    text-align: center;
+}

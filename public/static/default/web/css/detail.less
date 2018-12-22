@@ -1,0 +1,45 @@
+@grew2 :rgb(128,128,128);
+@grew1 :rgb(53,53,53);
+@yell1 :rgb(213,92,11);
+@bor1  :#d9d9d9;
+@lightbg:#eee;
+// *{margin: 0;padding: 0;}width: 100%;height: 100%;
+html,body{background-color: white;color:@grew2;font-size: 10px;}
+.body{font-size: 1.6rem;}
+a{color:white;}
+.clearfix{overflow:hidden;_zoom:1;}
+.yel{color:@yell1 !important;}
+.line-clamp(@lines, @line-height: 1.3em) {
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @lines; // number of lines to show
+  overflow: hidden;
+  line-height: @line-height;
+  max-height: @line-height * @lines;
+}
+.am-modal-btn{color:#d55c0b !important;}
+.padded{padding: 5px;}
+.title1{font-family: 'SimSun';}
+.body{
+	>img{}
+	>.th{
+		.line-clamp(2);
+	}
+	>.price{color:@yell1;line-height: 3rem;}
+	>.bd{
+		.title{
+			height: 30px;line-height: 30px;font-size: 1.6rem;font-weight: bold;overflow:hidden;position:relative;background-color: @lightbg;color:@grew2;
+		.line{width:100%;height: 1px;background-color: #cbcbcb;}
+		padding-top: 14px;
+		.title1{position:absolute;top:-1px;width:6em;padding:0 1rem;background-color: @lightbg;left:50%;margin-left: -3em;}
+		}
+		article{
+			img{max-width: 100%;}
+
+		}
+	}
+	>.exchange{
+		background-color: @yell1 !important;width:100%;color:white;position:fixed;bottom: 0;left:0;
+	}
+}

@@ -6,19 +6,15 @@
  * Time: 9:19
  */
 
-namespace app\src\base\enum;
+namespace src\base\enum;
 
 /**
  * 数据状态枚举
  * Class StatusEnum
- * @package app\src\base\enum
+ * @package src\base\enum
  */
-class StatusEnum
-{
-    const NORMAL = "1";
-
-    const DELETE = "-1";
-
-    const DISABLED = "0";
-
+final class StatusEnum {
+  const NORMAL   = 1;
+  const DELETE   = -1;
+  const DISABLED = 0;
 }

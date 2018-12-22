@@ -1,14 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: hebidu
- * Date: 15/11/2
- * Time: 21:38
- */
-
-namespace app\src\extend;
 
 class Check {
+    //身份证验证
+    function isIdCard($id_number=''){
+      return preg_match('/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/', $id_number);
+    }
 
     //身份证验证
     public function is_ID_Card($id_card){
