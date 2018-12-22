@@ -4,13 +4,13 @@
  * Date: api基类
  */
 namespace app\index\controller;
+use \ErrorCode as EC;
+use src\base\traits\Jump;
+use src\base\traits\Post;
 
-use ErrorCode as EC;
-use DesCrypt;
+use \DesCrypt;
 use src\sys\client\SysClientLogic as ClientLogic;
-use src\base\exception\ApiException;
 use think\Controller;
-
 /**
  * 接口基类
  * Class Base
@@ -23,7 +23,8 @@ use think\Controller;
  */
 abstract class Base extends Controller{
   // protected $allow_controller = ['test'];
-
+  use Jump,Post;
+  const ERROR = EC::ERROR_API;
   public function initialize(){
     try{
       // $controller = strtolower(request()->controller());
@@ -43,23 +44,12 @@ abstract class Base extends Controller{
     }
   }
   // die json
-  protected function ret($code,$msg='',$data=[]) {
+  protected function ret($code=-1,$msg='error',$data=[]) {
     err($msg,$code,$data);
-  }
-  // throw
-  protected function suc($data=[],$msg='') {
-    $msg  = $msg ? $msg : 'api success';
-    throw new ApiException($msg,0,$data);
-  }
-  // throw
-  protected function err($msg='',$code=0,$data=[]) {
-    $code = $code ? $code : EC::BUSINESS_ERROR;
-    $msg = $msg ? $msg : 'api error out';
-    throw new ApiException($msg,$code,$data);
   }
   // 外层client_id
   protected function getClientID(){
-    $cl = new ClientLogic;
+    $cl = new ClientLogic();
     $client_id = $this->_param('client_id','');
     empty($client_id) && $this->err(Llack('client_id'),EC::LACK_PARA);
     define('CLIENT_ID_REQ',$client_id);
@@ -95,30 +85,4 @@ abstract class Base extends Controller{
     return $post;
   }
 
-  /**
-   * @param $key
-   * @param string $default
-   * @param string $nullMsg  未定义时的报错
-   * @return mixed
-   */
-  public function _param($key,$default=null,$nullMsg=null){
-    return $this->checkParamNull(input("param.".$key),$key,$default,$nullMsg);
-  }
-  public function _post($key,$default=null,$nullMsg=null){
-    return $this->checkParamNull(input("post.".$key),$key,$default,$nullMsg);
-  }
-  public function _get($key,$default=null,$nullMsg=null){
-    return $this->checkParamNull(input("get.".$key),$key,$default,$nullMsg);
-  }
-  public function checkParamNull($val,$key,$df,$nul){
-    $name  = preg_replace('/\/\w$/', '', $key);
-    if(is_null($val)){
-      if(!is_null($nul)){
-        $this->err($nul===true ? Lack($name) : $null ,EC::LACK_PARA);
-      }else{
-        return $df;
-      }
-    }
-    return $val;
-  }
 }

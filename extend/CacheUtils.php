@@ -6,7 +6,7 @@
  * Time: 19:02
  */
 
-use src\config\ConfigLogic;
+use src\sys\core\SysConfigLogic as ConfigLogic;
 
 /**
  *

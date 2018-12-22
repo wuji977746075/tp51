@@ -4,7 +4,7 @@
 namespace app\index\controller;
 
 use src\base\exception\ApiException;
-use ErrorCode as EC;
+use \ErrorCode as EC;
 use CacheUtils;
 use CryptUtils;
 class Index extends Base {
@@ -65,7 +65,7 @@ class Index extends Base {
       // $r = $reflectionMethod->invokeArgs(new $cls_name($this->decrypt_data), []);
 
       addLog($domainClass,$r,$_POST,"[接口调用结果]");
-      $this->suc($r,'api success');
+      $this->suc($r);
 
       //5. 这一步不会走到
       $this->err("无法处理!");

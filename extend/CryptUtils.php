@@ -2,8 +2,8 @@
 use \ErrorCode as EC;
 use src\base\traits\Jump;
 class CryptUtils {
-    const ERROR = EC::CRYPT_ERROR;
     use Jump;
+    const ERROR = EC::CRYPT_ERROR;
     /**
      * 签证签名
      * @param $sign
@@ -51,10 +51,10 @@ class CryptUtils {
         $type = isset($param['type']) ? $param['type'] : '';
         $data = isset($param['data']) ? $param['data'] : '';
 
-        empty($client_secret) && $this->err("client_secret参数非法!");
-        empty($time) && $this->err("time参数非法!");
-        empty($type) && $this->err("type参数非法!");
-        empty($notify_id) && $this->err("notify_id参数非法!");
+        empty($client_secret) && $this->err("client_secret非法!",EC::INVALID_PARA);
+        empty($time) && $this->err("time非法!",EC::INVALID_PARA);
+        empty($type) && $this->err("type非法!",EC::INVALID_PARA);
+        empty($notify_id) && $this->err("notify_id非法!");
 
         $text = $time.$type.$data.$client_secret.$notify_id;
         return md5($text);

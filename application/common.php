@@ -166,18 +166,17 @@ function retCode($code,$msg='',$data=[]){
   // echo $msg;
   exit;
 }
-// throw BaseException
-function throws($msg='excetion',$code=-1,$data=[]){
+// throw BaseException => return format
+function throws($sMsg='excetion',$iCode=-1,$data=[]){
   if(defined('BIND_MODULE')){
-    $a = BIND_MODULE;
-    if($a == 'index'){
-      $e = '\src\base\exception\ApiException';
+    $sM = BIND_MODULE;
+    if($sM == 'index'){
+      $sE = '\src\base\exception\ApiException';
     }else{
-      $e = '\src\base\exception\BaseException';
+      $sE = '\src\base\exception\BaseException';
     }
   }
-  throw new $e($msg,$code,$data);
-  // throw new \think\Exception($msg,$code);
+  throw new $sE($sMsg,$iCode,$data);
 }
 // 全空需在外面处理
 function getWhereTime($field,$start='',$end=''){
@@ -535,7 +534,7 @@ function getKeyType($ks){
 }
 // todo :
 function addTestLog($get,$post='',$ext=''){
-    $model = \think\Db::table('test_log');
+    $model = \think\Db::table('f_log_test');
     $get  = $get  ? var_export($get,true) :'null';
     $post = $post ? var_export($post,true):'null';
     $ext  = $ext  ? var_export($ext,true) :'null';

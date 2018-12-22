@@ -1,43 +1,63 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 1
- * Date: 2016-10-15
- * Time: 16:38
- */
+namespace app\index\domain;
 
-namespace app\domain;
+use src\user\user\UserLogic as Logic;
 
+// use src\user\member\MemberConfig;
+// use app\src\base\enum\ErrorCode;
+// use app\src\base\helper\ConfigHelper;
+// use app\src\base\helper\ValidateHelper;
+// use app\src\i18n\helper\LangHelper;
+// use app\src\securitycode\logic\SecurityCodeLogic;
+// use app\src\securitycode\model\SecurityCode;
+// use app\src\user\action\DeleteAction;
+// use app\src\user\action\LoginAction;
+// use app\src\user\action\RegisterAction;
+// use app\src\user\action\UpdateAction;
+// use app\src\user\enum\RegFromEnum;
+// use app\src\user\enum\RoleEnum;
+// use app\src\user\facade\DefaultUserFacade;
+// use app\src\user\logic\MemberLogic;
+// use app\src\user\logic\MemberConfigLogic;
+// use app\src\user\logic\UcenterMemberLogic;
+// use app\src\user\model\UcenterMember;
 
-use app\src\base\enum\ErrorCode;
-use app\src\base\helper\ConfigHelper;
-use app\src\base\helper\ValidateHelper;
-use app\src\i18n\helper\LangHelper;
-use app\src\securitycode\logic\SecurityCodeLogic;
-use app\src\securitycode\model\SecurityCode;
-use app\src\user\action\DeleteAction;
-use app\src\user\action\LoginAction;
-use app\src\user\action\RegisterAction;
-use app\src\user\action\UpdateAction;
-use app\src\user\enum\RegFromEnum;
-use app\src\user\enum\RoleEnum;
-use app\src\user\facade\DefaultUserFacade;
-use app\src\user\logic\MemberLogic;
-use app\src\user\logic\MemberConfigLogic;
-use app\src\user\logic\UcenterMemberLogic;
-use app\src\user\model\UcenterMember;
-
-use app\src\repairerApply\logic\RepairerApplyLogicV2;
-use app\src\wallet\logic\ScoreHisLogicV2;
-use think\Db;
+// use app\src\repairerApply\logic\RepairerApplyLogicV2;
+// use app\src\wallet\logic\ScoreHisLogicV2;
+// use think\Db;
 /**
  * 用户个人资料相关
  * Class UserDomain
  * @author hebidu <email:346551990@qq.com>
  * @package app\domain
  */
-class UserDomain extends BaseDomain
-{
+final class UserDomain extends BaseDomain {
+    protected function _init(){
+      $this->logic = new Logic;
+    }
+    // 用户登录 : 返回 sid
+    public function token() {
+      $this->checkVersion();
+      $params = $this->parsePost('username,password');
+      extract($params);
+      $uinfo = $this->logic->checkUser($username,$password);
+      // $sid = $this->logic->login($uinfo['id']); //session
+      $sid = $this->buildToken($uinfo['id']); //cache
+      $this->suc($sid);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 技工 - 注册申请

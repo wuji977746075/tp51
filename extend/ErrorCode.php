@@ -1,28 +1,34 @@
 <?php
 
 class ErrorCode {
-  const ERROR    = 9999; //错误
-  const DB_ERROR = 9000; //数据库错误
-  const MODEL_ERROR = 9001; //模型错误
+  // 0  success
+  // -1 undefined err
+  const ERROR = 1; //错误 1-999
+  const ERROR_CRYPT        = 10;  //加解密错误
+  const LACK_PARA          = 11; //缺少参数
+  const NOT_FOUND_RESOURCE = 12;  //404请求资源不存在
+  const INVALID_PARA       = 13;  //无效\非法参数
 
-  //--------------- 系统错误
-  const LACK_PARA = 1000; //缺少参数
-  const NOT_FOUND_RESOURCE = 1002;  //404请求资源不存在
-  const INVALID_PARA = 1003;  //无效\非法参数
-  const BUSINESS_ERROR = 1004;  //业务错误
+  const ERROR_DB     = 2; //数据库错误
+
+  const ERROR_MODEL  = 3; //模型错误
+
+  const ERROR_MODULE = 4; //模块错误
+  const ERROR_API       = 41; // 接口错误
+  const ERROR_LOCK      = 4100; // 锁错误
   const API_NEED_UPDATE = 1005;  //接口需要同步、升级
-  const API_EXCEPTION = 1006;  //发生异常
-  const API_NO_AUTH = 1007;  //接口无权限
-  const CRYPT_ERROR = 1008;  //加解密错误
+  const API_EXCEPTION   = 1006;  //发生异常
+  const API_NO_AUTH     = 1007;  //接口无权限
+  const API_NEED_LOGIN  = 1111;  //需要登录
 
-  const API_NEED_LOGIN = 1111;  //需要登录
+  const ERROR_LOGIC  = 5;
 
-  //---------------- Logic里的异常 2000+
-  const LOGIC_ERROR  = 2000;
+  const ERROR_DOMAIN = 6;
+
+  const ERROR_ACTION = 7;
 
 
-  //---------------- 未定义的模块error - lock 3000+
-  const MODULE_ERROR = 3000;
-  const LOCK_ERROR   = 3100;
 
+  // 历史遗留
+  const ERROR_BUSINESS  = 14;  //业务错误
 }
