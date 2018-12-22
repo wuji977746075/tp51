@@ -175,12 +175,19 @@ function retCode($code,$msg='',$data=[]){
   // echo $msg;
   exit;
 }
-// throw exception
+// throw BaseException
 function throws($msg='excetion',$code=-1,$data=[]){
-  throw new \Exception($msg,$code);
+  if(defined('BIND_MODULE')){
+    $a = BIND_MODULE;
+    if($a == 'index'){
+      $e = '\src\base\exception\ApiException';
+    }else{
+      $e = '\src\base\exception\BaseException';
+    }
+  }
+  throw new $e($msg,$code,$data);
   // throw new \think\Exception($msg,$code);
 }
-
 // 全空需在外面处理
 function getWhereTime($field,$start='',$end=''){
   empty($field) && throws('invalid:where_time_call_1');
@@ -375,21 +382,6 @@ function isIdCard($id_number=''){
   return preg_match('/^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/', $id_number);
 }
 
-
-function html_head_tip($html='',$pre=true){
-  return '<blockquote class="layui-elem-quote head-tip">'.($pre ? '<strong><i class="fa fa-fw fa-info-circle"></i>提示：</strong>' : '').'<span style="display:inline-flex;">'.$html.'</span></blockquote>';
-}
-
-function html_return($url='',$msg='',$skin=''){
-  if($skin === 'layer'){
-    $msg = $msg ? $msg : L('close');
-    return '<a style="cursor:pointer" class="layui-btn layui-btn-sm layui-btn-primary ml10 js-close-iframe">'.$msg.'</a>';
-  }else{
-    $msg = $msg ? $msg : L('return');
-    $url = $url ? $url : 'javascript:history.go(-1)';
-    return '<a href="'.$url.'" class="layui-btn layui-btn-sm layui-btn-primary ml10">'.$msg.'</a>';
-  }
-}
 /**
  * @desc  im:十进制数转换成三十六机制数
  * @param (int)$num 十进制数
@@ -522,6 +514,52 @@ function think_ucenter_md5($str, $key = 'UCenter'){
 function addLog(){
 
 }
+
+// todo : 转移
+function getKeyStatus($ks){
+  switch ($ks) {
+    case 110401:
+      return '正常使用';
+    case 110402:
+      return '待接受';
+    case 110405:
+      return '已冻结';
+    case 110408:
+      return '已删除';
+    case 110410:
+      return '已重置';
+    default:
+      return '未知';
+  }
+}
+function getKeyType($ks){
+  switch ($ks) {
+    case 0:
+      return '管理员';
+    case 1:
+      return '用户';
+    case 2:
+      return '租户管理员';
+    case 3:
+      return '租户用户';
+    default:
+      return '未知'.$ks;
+  }
+}
+// todo :
+function addTestLog($get,$post='',$ext=''){
+    $model = \think\Db::table('test_log');
+    $get  = $get  ? var_export($get,true) :'null';
+    $post = $post ? var_export($post,true):'null';
+    $ext  = $ext  ? var_export($ext,true) :'null';
+    $entry = [
+        'get'        =>$get,
+        'post'       =>$post,
+        'ext'        =>$ext,
+        'create_time'=>date('Y-m-d H:i:s',time()),
+    ];
+    return $model ->insertGetId($entry);
+}
 /**
  * 自定义语言变量
  * @param $str  字符串
@@ -557,19 +595,19 @@ function L($name, $vars = [], $lang = ''){
  * 缺少参数函数别名
  * @Author
  * @DateTime 2016-12-13T10:20:27+0800
- * @param    [type]                   $name [description]
+ * @param string|exception $lang [description]
  */
 function Llack($name,$throw=false){
   $r = LL('lack '.$name);
   if($throw){
-    throw new \InvalidArgumentException($r);
+    throws($r,\ErrorCode::LACK_PARA);
   }
   return $r;
 }
 function Linvalid($name,$throw=false){
   $r = LL('invalid '.$name);
   if($throw){
-    throw new \InvalidArgumentException($r);
+    throws($r,\ErrorCode::INVALID_PARA);
   }
   return $r;
 }

@@ -2,9 +2,9 @@
 
 {block name="area_body"}
 <div class="layui-card">
-  <div class="layui-card-header">用户管理</div>
+  <div class="layui-card-header">{$cfg.business}{:L('manage')}</div>
   <div class="layui-card-body">
-    {:html_head_tip('用户基础数据,点击 .单元格编辑')}
+    {:html_head_tip($cfg['business'].'基础数据,点击 .单元格编辑')}
     <form class="layui-form layui-form-pane" lay-filter="js-form">
       {:token()}
       <div class="layui-inline">
