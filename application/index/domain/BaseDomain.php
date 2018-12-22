@@ -111,7 +111,7 @@ abstract class BaseDomain {
     if(!is_array($vers)) $vers = [intval($vers)];
     // 是否存在 等值字符串/数字
     if(!in_array($this->api_ver,$vers)) {
-      $msg = lang('tip_update_api_version',['version'=> implode(',', $vers)]);
+      $msg = lang('tip_update_api_version',['version'=>end($vers)]);
       $this->err($msg,EC::API_NEED_UPDATE);
     }
     return  $this->api_ver;

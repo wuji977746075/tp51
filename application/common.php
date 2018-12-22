@@ -546,17 +546,6 @@ function addTestLog($get,$post='',$ext=''){
     ];
     return $model ->insertGetId($entry);
 }
-/**
- * 自定义语言变量
- * @param $str  字符串
- * @param $dif  分割符
- * @param $add  链接符
- * @return string is8n字符串
- * add by zhouhou
- */
-function LL($str='',$dif=' ',$add = ''){
-    return implode($add,array_map('lang',explode($dif, trim($str))));
-}
 
 require '../extend/ChromePhp.php';
 function chlog($data,$type=0){
@@ -606,6 +595,18 @@ function cslog($val){
 function L($name, $vars = [], $lang = ''){
   return Lang::has($name) ? lang($name, $vars, $lang) : '';
 }
+/**
+ * 自定义语言变量
+ * @param $str  字符串
+ * @param $dif  分割符
+ * @param $add  链接符
+ * @return string is8n字符串
+ * add by zhouhou
+ */
+function LL($str='',$dif=' ',$add = ''){
+    return implode($add,array_map('lang',explode($dif, trim($str))));
+}
+
 /**
  * 缺少参数函数别名
  * @Author

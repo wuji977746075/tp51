@@ -22,7 +22,7 @@ trait PostData {
     $key_data = "_data_" . $key ;
     $v = isset($this->data[$key_data]) ? trim($this->data[$key_data]) : '';
     if($key_type == 's'){
-      $v = $v ? $this->escapeEmoji($v) : '';
+      $v = $v ? escapeEmoji($v) : '';
       empty($v) && $emptyErr && $this->err(Llack($key), EC::LACK_PARA);
     }elseif($key_type == 'f'){
       $v = floatval( $v );
@@ -42,29 +42,6 @@ trait PostData {
     $this->_post($key,$default,$emptyErrMsg);
   }
 
-  /**
-   * 放到utils中，作为工具类
-   * @brief 干掉emoji
-   * @autho chenjinya@baidu.com
-   * @param {String} $strText
-   * @return {String} removeEmoji
-   **/
-  protected function escapeEmoji($strText, $bool = false) {
-    $preg = '/\\\ud([8-9a-f][0-9a-z]{2})/i';
-    if ($bool == true) {
-      $boolPregRes = (preg_match($preg, json_encode($strText, true)));
-      return $boolPregRes;
-    } else {
-      $strPregRes = (preg_replace($preg, '', json_encode($strText, true)));
-      $strRet = json_decode($strPregRes, JSON_OBJECT_AS_ARRAY);
-
-      if ( is_string($strRet) && strlen($strRet) == 0) {
-        return "";
-      }
-
-      return $strRet;
-    }
-  }
   /**
    * 合并必选和可选post参数并返回
    * $str: 需要检查的post参数
