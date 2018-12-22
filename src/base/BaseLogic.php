@@ -1,4 +1,10 @@
 <?php
+/**
+ * Author      : rainbow <977746075@qq.com>
+ * DateTime    : 2018-11-28 18:07:21
+ * Description : 模型业务拦截器
+ */
+
 namespace src\base;
 
 use think\Db;
@@ -13,6 +19,12 @@ use src\base\traits\Jump;
 abstract class BaseLogic {
     use Jump;
     const CACHE_TIME = 600;
+
+    //status
+    const NORMAL    = 1;
+    const DELETE    = -1;
+    const DISABLED  = 0;
+
     /**
      * API调用模型实例
      * @access  protected
