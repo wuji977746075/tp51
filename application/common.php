@@ -166,16 +166,27 @@ function retCode($code,$msg='',$data=[]){
   // echo $msg;
   exit;
 }
+
+function getArrVal($arr,$key,$df='',$thr=false) {
+  if(isset($arr[$key])){
+    return $arr[$key];
+  }else{
+    if($thr){
+      throws('UNDEFIEND ARRAY KEY:'.$key);
+    }else{
+      return $df;
+    }
+  }
+}
 // throw BaseException => return format
 function throws($sMsg='excetion',$iCode=-1,$data=[]){
   if(defined('BIND_MODULE')){
-    $sM = BIND_MODULE;
-    if($sM == 'index'){
-      $sE = '\src\base\exception\ApiException';
-    }else{
-      $sE = '\src\base\exception\BaseException';
-    }
+    $sM = ucfirst(BIND_MODULE);
+  }else{ // df
+    $sM = 'Base';
   }
+  $sE = "\\src\\base\\exception\\".$sM."Exception";
+  // throw (new $sE($sMsg,$iCode))->setData($data);
   throw new $sE($sMsg,$iCode,$data);
 }
 // 全空需在外面处理
@@ -205,6 +216,24 @@ function humpToLine($str,$flag='_'){
         return $flag.strtolower($matches[0]);
     },$str);
     return $str;
+}
+
+// 接口返回正常的终结 1/1
+function ret($data,$return=false){
+  if($return){
+    return json_encode($data);
+  }
+  \think\Response::create($data, 'json')->header("X-Powered-By",POWER)->send();
+  exit;
+};
+// 直接返回错误信息
+function err($msg='error',$code = -1,$data=[]){
+  ret(['code' => $code,'msg'=>$msg,'data' => $data]);
+}
+
+// 直接返回成功信息
+function suc($data=[],$msg='success'){
+  ret(['code' => 0,'msg'=>$msg,'data' => $data]);
 }
 /**
 * msubstr($str, $start=0, $length, $charset="utf-8", $suffix=true)
@@ -633,4 +662,9 @@ function returnErr($msg,$trans=false){
 }
 function returnSuc($data){
   return ['status'=>true,'info'=>$data];
+}
+
+function error($message, $level=E_USER_NOTICE) {
+  $caller = next(debug_backtrace());
+  trigger_error($message.' in <strong>'.$caller['function'].'</strong> called from <strong>'.$caller['file'].'</strong> on line <strong>'.$caller['line'].'</strong>'."\n<br />error handler", $level);
 }

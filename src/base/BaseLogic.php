@@ -8,11 +8,9 @@
 namespace src\base;
 
 use think\Db;
-use think\exception\DbException;
 use think\Model;
 use Exception;
 use src\base\traits\Jump;
-
 /**
  * Logic 基类 , 出错请抛出错误
  */
@@ -45,9 +43,7 @@ abstract class BaseLogic {
     /**
      * 抽象方法，用于设置模型实例
      */
-    protected function init(){
-
-    }
+    protected function init() { }
 
     protected function isValidInfo($id,$field='id',$err=true){
         $info = $this->getInfo([$field=>$id]);

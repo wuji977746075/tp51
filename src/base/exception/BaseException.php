@@ -13,12 +13,12 @@ class BaseException extends Exception {
    * 系统异常后发送给客户端的HTTP Status
    * @var integer
    */
-  protected $data = [];
+  private $data = [];
   /**
    * Getter for data
    * @return
    */
-  public function getData() {
+  function getData() {
       return $this->data;
   }
 
@@ -27,7 +27,7 @@ class BaseException extends Exception {
    * @param data value to set
    * @return self
    */
-  public function setData($data) {
+  function setData($data) {
       $this->data = $data;
       return $this;
   }
@@ -35,22 +35,22 @@ class BaseException extends Exception {
    * exception build
    * @param string $sMsg  [exception message]
    * @param int    $iCode [0:suc,1+:err]
-   * @param mixed  $mData [exception detail/suc data]
+   * @param mixed  $data  [exception detail/suc data]
    */
-  public function __construct($sMsg,$iCode,$mData=[]) {
+  function __construct($sMsg,$iCode,$data=[]) {
+    $sMsg  = is_string($sMsg) ? $sMsg : json_encode($sMsg);
+    $iCode = intval($iCode); // 一定要,不然exception
     parent::__construct($sMsg,$iCode);
-    $this->data = $mData;
+    $data && $this->setData($data);
+    $this->_init();
   }
+
+  function _init(){ }
   // code : int,错误码
   // data : arr,code=0时为正确数据,否则为错误堆栈(bebug)/[]
   // msg  : str,错误/正确信息
-  public function __toString() {
-    $iCode = $this->getCode();
-    if($iCode){
-      $aData = $this->getTrace();
-    }else{
-      $aData = $this->getData();
-    }
-    return json(['code'=>$iCode,'data'=>$aData,'msg'=>$this->getMessage()]);
+  function __toString() {
+    return ret(['code'=>$this->getCode(),'data'=>$this->getData(),'msg'=>$this->getMessage()],true);
+    // return json(['code'=>$this->getCode(),'data'=>$this->getData(),'msg'=>$this->getMessage()]);
   }
 }

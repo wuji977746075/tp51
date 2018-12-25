@@ -41,9 +41,14 @@ if(!defined('__ROOT__')) {
 // 加载基础文件
 require __DIR__ . '/../thinkphp/base.php';
 
+try{
 // 支持事先使用静态方法设置Request对象和Config对象
 // 执行应用并响应
 Container::get('app', [defined('APP_PATH') ? APP_PATH : ''])
   ->bind(BIND_MODULE)
   ->run() // frame bug : index模块 无法自动绑定
   ->send();
+
+}catch(\Exception $e){
+  echo $e;
+}

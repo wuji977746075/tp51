@@ -1,10 +1,7 @@
 <?php
 namespace app\index\domain;
-
 use src\user\user\UserLogic as Logic;
 
-// use src\user\member\MemberConfig;
-// use app\src\base\enum\ErrorCode;
 // use app\src\base\helper\ConfigHelper;
 // use app\src\base\helper\ValidateHelper;
 // use app\src\i18n\helper\LangHelper;
@@ -17,14 +14,9 @@ use src\user\user\UserLogic as Logic;
 // use app\src\user\enum\RegFromEnum;
 // use app\src\user\enum\RoleEnum;
 // use app\src\user\facade\DefaultUserFacade;
-// use app\src\user\logic\MemberLogic;
-// use app\src\user\logic\MemberConfigLogic;
-// use app\src\user\logic\UcenterMemberLogic;
-// use app\src\user\model\UcenterMember;
-
-// use app\src\repairerApply\logic\RepairerApplyLogicV2;
 // use app\src\wallet\logic\ScoreHisLogicV2;
 // use think\Db;
+
 /**
  * 用户个人资料相关
  * Class UserDomain
@@ -45,13 +37,6 @@ final class UserDomain extends BaseDomain {
       $sid = $this->buildToken($uinfo['id']); //cache
       $this->suc($sid);
     }
-
-
-
-
-
-
-
 
 
 
@@ -80,6 +65,7 @@ final class UserDomain extends BaseDomain {
         $r = (new RepairerApplyLogicV2())->addApply($mobile,$invite_id);
         $this->exitWhenError($r,true);
     }
+
     /**
      * 自动登录接口 - 目前主要用于刷新
      * @author hebidu <email:346551990@qq.com>

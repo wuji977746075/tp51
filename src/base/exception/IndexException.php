@@ -7,7 +7,7 @@ use CryptUtils;
  * Class ApiException
  * @package src\base\exception
  */
-class ApiException extends BaseException {
+class IndexException extends BaseException {
 
   /**
    * 系统异常后发送给客户端的HTTP Status
@@ -23,9 +23,6 @@ class ApiException extends BaseException {
   public function __toString() {
     $iCode = $this->getCode();
     $aData = $this->getData();
-    if($iCode && config('app_debug')){
-      $aData = $this->getTrace();
-    }
     try{
       if(defined('NOTIFY_ID') && defined('CLIENT_SECRET_REQ')){
         $aData = CryptUtils::encrypt($aData);

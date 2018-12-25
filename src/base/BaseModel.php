@@ -8,7 +8,7 @@
 namespace src\base;
 use think\Model;
 use src\base\traits\Jump;
-class BaseModel extends Model {
+abstract class BaseModel extends Model {
   use Jump;
   // protected $autoWriteTimestamp = false;
 }
