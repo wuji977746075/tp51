@@ -6,9 +6,9 @@
  * Time: 14:46
  */
 
-namespace app\src\bbs\like;
+namespace src\bbs\like;
 
-use think\Model;
+use src\base\BaseModel as Model;
 
 /**
  * 论坛板块模型

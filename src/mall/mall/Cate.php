@@ -6,12 +6,9 @@
  * Time: 14:39
  */
 
-namespace app\src\category\model;
+namespace app\mall\mall;
+use src\base\BaseModel as Model;
 
+class Cate extends Model{
 
-use think\Model;
-
-class Category extends Model
-{
-    
 }

@@ -1,7 +1,8 @@
 <?php
 
 namespace src\file\user;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class UserAudio extends Model
 {

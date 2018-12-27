@@ -1,10 +1,9 @@
 <?php
 
 namespace src\admin\menu;
-use think\Model;
+use src\base\BaseModel as Model;
 
-class Menu extends Model
-{
+class Menu extends Model {
   protected $table = "f_sys_menu";
   protected $autoWriteTimestamp = true;
   // protected $auto = ['name', 'ip'];

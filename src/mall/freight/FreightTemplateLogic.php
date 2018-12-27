@@ -6,18 +6,14 @@
  * Time: 14:22
  */
 
-namespace app\src\freight\logic;
+namespace src\freight\logic;
 
-use app\src\base\logic\BaseLogic;
-use app\src\extend\Page;
-use app\src\freight\model\FreightAddress;
-use app\src\freight\model\FreightTemplate;
+use src\base\logic\BaseLogic;
+use src\extend\Page;
+use src\freight\model\FreightAddress;
+use src\freight\model\FreightTemplate;
 
-class FreightTemplateLogic extends BaseLogic
-{
-    public function _init() {
-        $this->setModel(new FreightTemplate());
-    }
+class FreightTemplateLogic extends BaseLogic {
     /**
      * 根据用户ID查询运费模版
      * 使用left join,外面分组 : 2017-07-28 10:20:01

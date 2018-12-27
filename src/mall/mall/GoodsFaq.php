@@ -10,12 +10,9 @@
  * Time: 16:04
  */
 
-namespace app\src\goods\model;
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class ProductFaq extends Model
-{
+class ProductFaq extends Model {
 
 }

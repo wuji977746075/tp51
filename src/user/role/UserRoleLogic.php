@@ -1,11 +1,10 @@
 <?php
 namespace src\user\role;
-
 use src\base\BaseLogic;
-use src\sys\role\RoleLogic;
-use src\user\user\UserLogic;
+// use src\sys\role\RoleLogic;
+// use src\user\user\UserLogic;
 
-class UserRoleLogic extends BaseLogic{
+class UserRoleLogic extends BaseLogic {
   // return int
   function getRoleId($uid,$client_id){
     !$uid && throws('uid非法:'.$uid);

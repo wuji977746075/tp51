@@ -8,7 +8,7 @@
 
 namespace src\bbs\report;
 
-use think\Model;
+use src\base\BaseModel as Model;
 
 /**
  * 论坛板块模型

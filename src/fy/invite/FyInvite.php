@@ -6,7 +6,8 @@
  */
 
 namespace src\fy\invite;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class FyInvite extends Model
 {

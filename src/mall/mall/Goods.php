@@ -6,13 +6,10 @@
  * Time: 9:26
  */
 
-namespace app\src\goods\model;
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class Product extends Model
-{
+class Product extends Model{
     /*
      * 上架
      */

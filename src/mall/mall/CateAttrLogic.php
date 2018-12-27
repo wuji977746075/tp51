@@ -10,19 +10,10 @@
  * Time: 15:54
  */
 
-namespace app\src\category\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\category\model\CategoryProp;
-
-class CategoryPropLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new CategoryProp());
-    }
-
+class CategoryPropLogic extends BaseLogic {
     /**
      * 查询属性
      * @param $map

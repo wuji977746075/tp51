@@ -9,13 +9,8 @@
  * Date: 2016-12-17
  * Time: 15:21
  */
-
-namespace app\src\goods\model;
-
-
-use think\Model;
-
-class ProductMemberPrice extends Model
-{
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
+class ProductMemberPrice extends Model {
 
 }

@@ -9,7 +9,8 @@
 
 namespace app\src\ewt\model;
 
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class SchoolReport extends Model{
   protected $table = "itboye_ewe_school_report";

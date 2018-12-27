@@ -4,11 +4,10 @@
   * DateTime    : 2017-03-28 10:07:38
   * Description : [文件上传 - action : 图片和音频上传待整理出来]
   */
-
- namespace app\src\file\action;
- use app\src\file\logic\UserPictureLogic;
- use app\src\file\logic\AudioFileLogic;
-
+namespace src\file\action;
+use src\file\logic\UserPictureLogic;
+use src\file\logic\AudioFileLogic;
+use src\base\BaseAction;
  /**
   * [simple_description]
   *
@@ -18,6 +17,6 @@
   * @package app\
   * @example
   */
- class FileUploadAction {
+ class FileAction extends BaseAction {
 
  }

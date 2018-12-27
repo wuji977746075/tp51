@@ -1,6 +1,7 @@
 <?php
 namespace src\cms\post;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class CmsPost extends Model {
   protected $table = "f_cms_post";

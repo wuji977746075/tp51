@@ -10,12 +10,8 @@
  * Time: 16:26
  */
 
-namespace app\src\store\model;
-
-
-use think\Model;
-
-class StorePromotion extends Model
-{
+namespace src\mall\shop;
+use src\base\BaseModel as Model;
+class StorePromotion extends Model {
 
 }

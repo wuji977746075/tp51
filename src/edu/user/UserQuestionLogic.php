@@ -2,12 +2,12 @@
 /**
  * @author rainbow 2016-12-15 15:38:20
  */
-namespace app\src\ewt\logic;
+namespace src\ewt\logic;
 
-use app\src\base\logic\BaseLogicV2;
-use app\src\ewt\model\UserQuestion;
+use src\base\logic\BaseLogic;
+use src\ewt\model\UserQuestion;
 
-class UserQuestionLogicV2 extends BaseLogicV2{
+class UserQuestionLogic extends BaseLogic{
 
   //查询用户的答题题目列表+题目状态
   public function queryWithQuestion(array $map,$order=false,$field=false){

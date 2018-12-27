@@ -6,22 +6,12 @@
  * Time: 15:07
  */
 
-namespace app\src\shoppingCart\logic;
-
-
-use app\src\base\logic\BaseLogic;
-use app\src\shoppingCart\model\ShoppingCart;
+namespace src\mall\shopcart;
+use src\base\logic\BaseLogic;
 use think\Db;
 use think\exception\DbException;
 
-class ShoppingCartLogic extends BaseLogic
-{
-
-    public function _init()
-    {
-        $this->setModel(new ShoppingCart());
-    }
-
+class ShoppingCartLogic extends BaseLogic {
 
     /**
      * 查询所有购物车项

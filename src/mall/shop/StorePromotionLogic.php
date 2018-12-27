@@ -10,16 +10,7 @@
  * Time: 16:26
  */
 
-namespace app\src\store\logic;
-
-
-use app\src\base\logic\BaseLogic;
-use app\src\store\model\StorePromotion;
-
-class StorePromotionLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new StorePromotion());
-    }
+namespace src\mall\shop;
+use src\base\logic\BaseLogic;
+class StorePromotionLogic extends BaseLogic{
 }

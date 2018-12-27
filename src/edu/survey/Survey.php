@@ -7,9 +7,10 @@
  * app 调研
  */
 
-namespace app\src\ewt\model;
+namespace src\ewt\model;
 
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class Survey extends Model{
   protected $table = "itboye_survey";

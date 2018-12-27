@@ -6,21 +6,14 @@
  * Time: 17:12
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
 
 
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\ProductProp;
+use src\base\logic\BaseLogic;
 use think\Db;
 use think\Exception;
 
-class ProductPropLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new ProductProp());
-    }
-
+class ProductPropLogic extends BaseLogic {
     /**
      * 批量修改商品属性
      * @param $pid

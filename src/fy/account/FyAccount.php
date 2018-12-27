@@ -6,7 +6,8 @@
  */
 
 namespace src\fy\account;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class FyAccount extends Model
 {

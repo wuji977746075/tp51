@@ -5,10 +5,10 @@
  * Description : [Description]
  */
 
-namespace app\src\bbs;
+namespace src\bbs;
 
-use app\src\bbs\bbs\BbsLogic;
-// use app\src\base\action\BaseAction;
+use src\base\BaseAction;
+use src\bbs\bbs\BbsLogic;
 // use app\src\banners\logic\BannersLogic;
 // use app\src\bbs\logic\BbsPostLogicV2;
 // use app\src\bbs\logic\BbsReplyLogicV2;

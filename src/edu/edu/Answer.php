@@ -4,9 +4,9 @@
  *2017-03-25 17:03:16
  */
 
-namespace app\src\ewt\ewt;
+namespace src\ewt\ewt;
 
-use think\Model;
+use src\base\BaseModel as Model;
 
 class Answer extends Model{
   protected $table = "f_ewt_answer";

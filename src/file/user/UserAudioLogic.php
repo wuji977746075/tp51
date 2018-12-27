@@ -10,20 +10,10 @@ namespace src\file\user;
 
 use src\base\BaseLogic;
 use upload\Upload;
-use think\Exception;
 use think\Db;
 use \ZipArchive as Zip;
 
-class UserAudioLogic extends BaseLogic
-{
-    private $error;
-
-    /**
-     * @return mixed
-     */
-    protected function _init(){
-      $this->setModel(new UserAudio);
-    }
+class UserAudioLogic extends BaseLogic{
 
     // 确保指定的打包音频文件存在
     public function zipFiles($t='',$ids=[]){

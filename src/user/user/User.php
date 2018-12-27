@@ -1,6 +1,6 @@
 <?php
 namespace src\user\user;
-use think\Model;
+use src\base\BaseModel as Model;
 
 class User extends Model
 {

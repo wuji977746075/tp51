@@ -6,23 +6,15 @@
  * Time: 9:29
  */
 
-namespace app\src\goods\logic;
-
-
-use app\admin\controller\Product;
-use app\src\base\helper\ExceptionHelper;
-use app\src\base\logic\BaseLogic;
-use app\src\extend\Page;
-use app\src\goods\model\ProductGroup;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
+// use admin\controller\Product;
+use src\base\helper\ExceptionHelper;
+use src\extend\Page;
 use think\Db;
-use think\exception\DbException;
+// use think\exception\DbException;
 
-class ProductGroupLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new ProductGroup());
-    }
+class ProductGroupLogic extends BaseLogic{
 
    public function addProduct($params){
         $product_group = $this->_param('product_group', '');

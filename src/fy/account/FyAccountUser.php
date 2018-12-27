@@ -6,8 +6,7 @@
  */
 
 namespace src\fy\account;
-use think\Model;
-
+use src\base\BaseModel as Model;
 class FyAccountUser extends Model
 {
   protected $table = "f_fy_account_user";

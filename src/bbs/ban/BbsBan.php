@@ -6,7 +6,8 @@
  */
 
 namespace src\bbs\ban;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 /**
  * 论坛禁闭模型

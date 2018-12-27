@@ -10,16 +10,8 @@
  * Time: 17:16
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\Skuvalue;
-
-class SkuvalueLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new Skuvalue());
-    }
+class SkuvalueLogic extends BaseLogic{
 }

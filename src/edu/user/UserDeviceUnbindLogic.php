@@ -1,13 +1,13 @@
 <?php
 /*rainbow 2017-08-18 14:44:19*/
-namespace app\src\ewt\logic;
+namespace src\ewt\logic;
 
-use app\src\base\logic\BaseLogicV2;
-use app\src\ewt\model\UserDeviceUnbind;
-use app\src\base\helper\ConfigHelper;
-use app\src\user\logic\MemberConfigLogic;
+use src\base\logic\BaseLogic;
+use src\ewt\model\UserDeviceUnbind;
+use src\base\helper\ConfigHelper;
+use src\user\logic\MemberConfigLogic;
 
-class UserDeviceUnbindLogicV2 extends BaseLogicV2{
+class UserDeviceUnbindLogic extends BaseLogic{
 
   //多长时间后可以再次解绑
   public function lastUnbindTime($uid){

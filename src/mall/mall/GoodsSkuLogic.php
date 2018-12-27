@@ -6,25 +6,17 @@
  * Time: 17:03
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
 
 
-use app\src\base\helper\ExceptionHelper;
-use app\src\base\logic\BaseLogic;
-use app\src\extend\Page;
-use app\src\goods\model\ProductMemberPrice;
-use app\src\goods\model\ProductSku;
+use src\base\helper\ExceptionHelper;
+use src\base\logic\BaseLogic;
+use src\extend\Page;
+// use src\goods\model\ProductMemberPrice;
 use think\Db;
 use think\exception\DbException;
 
-class ProductSkuLogic extends BaseLogic
-{
-
-    public function _init()
-    {
-        $this->setModel(new ProductSku());
-    }
-
+class ProductSkuLogic extends BaseLogic {
     public function queryWithProduct($map = null, $page = array('curpage'=>0,'size'=>10), $order = false, $params = false, $fields = false){
         try{
             $query = $this -> getModel() -> join('itboye_product', 'product_id = itboye_product.id');

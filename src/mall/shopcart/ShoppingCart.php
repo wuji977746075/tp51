@@ -6,13 +6,9 @@
  * Time: 15:07
  */
 
-namespace app\src\shoppingCart\model;
-
-
-use think\Model;
-
-class ShoppingCart extends Model
-{
+namespace src\mall\shopcart;
+use src\base\BaseModel as Model;
+class ShoppingCart extends Model {
     const  CART_STATUS_NORMAL = "1";
     const  CART_STATUS_SHELF_OFF = "2";
     const  CART_STATUS_INVALID = "3";

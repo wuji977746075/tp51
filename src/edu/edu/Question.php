@@ -9,8 +9,8 @@
 
 namespace src\ewt\ewt;
 
-use think\Model;
 
+use src\base\BaseModel as Model;
 class Question extends Model{
   protected $table  = "f_ewt_question";
   protected $insert = ['create_time','update_time'];

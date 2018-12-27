@@ -1,9 +1,8 @@
 <?php
 namespace src\user\role;
-use think\Model;
+use src\base\BaseModel as Model;
 
-class UserRole extends Model
-{
+class UserRole extends Model{
   protected $table = "f_user_role";
   protected $autoWriteTimestamp = true;
 }

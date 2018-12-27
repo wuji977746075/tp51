@@ -10,12 +10,9 @@
  * Time: 15:54
  */
 
-namespace app\src\category\model;
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class CategoryPropvalue extends Model
-{
+class CategoryPropvalue extends Model {
 
 }

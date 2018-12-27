@@ -1,6 +1,7 @@
 <?php
 namespace src\cms\cate;
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class CmsCate extends Model {
   protected $table = "f_cms_cate";

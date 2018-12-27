@@ -6,19 +6,11 @@
  * Time: 14:39
  */
 
-namespace app\src\category\logic;
-
-
-use app\src\base\logic\BaseLogic;
-use app\src\category\model\Category;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 use think\Db;
 
-class CategoryLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new Category());
-    }
+class CategoryLogic extends BaseLogic {
 
     /**
      * @param $lang string 语言
@@ -78,7 +70,7 @@ class CategoryLogic extends BaseLogic
                 }
             }
             $result = [];
-            
+
             foreach ($list as $vo){
                 array_push($result,$vo);
             }

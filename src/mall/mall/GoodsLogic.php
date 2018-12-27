@@ -6,30 +6,24 @@
  * Time: 9:28
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
 
 
-use app\src\base\enum\StatusEnum;
-use app\src\base\helper\ExceptionHelper;
-use app\src\base\logic\BaseLogic;
-use app\src\category\logic\CategoryLogic;
-use app\src\extend\Page;
-use app\src\favorites\model\Favorites;
-use app\src\goods\model\Product;
-use app\src\goods\model\ProductAttr;
-use app\src\goods\model\ProductImage;
+use src\base\enum\StatusEnum;
+use src\base\helper\ExceptionHelper;
+use src\base\logic\BaseLogic;
+use src\category\logic\CategoryLogic;
+use src\extend\Page;
+// use src\favorites\model\Favorites;
+use src\mall\mall\Product;
+use src\mall\mall\ProductAttr;
+use src\mall\mall\ProductImage;
 use think\Db;
 use think\Exception;
 use think\exception\DbException;
 
-class ProductLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new Product());
-    }
-
-        public function edit($params){
+class ProductLogic extends BaseLogic{
+    public function edit($params){
         if(!isset($params['id']) || intval($params['id']) <= 0){
             return $this->error('非法id');
         }

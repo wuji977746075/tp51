@@ -6,8 +6,7 @@
  */
 
 namespace src\msg\msg;
-use think\Model;
-
+use src\base\BaseModel as Model;
 class msg extends Model {
   protected $table = "f_com_message";
   // protected $autoWriteTimestamp = true;

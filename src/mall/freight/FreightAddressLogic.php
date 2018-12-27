@@ -6,16 +6,11 @@
  * Time: 14:22
  */
 
-namespace app\src\freight\logic;
+namespace src\freight\logic;
 
 
-use app\src\base\logic\BaseLogic;
-use app\src\freight\model\FreightAddress;
+use src\base\logic\BaseLogic;
+use src\freight\model\FreightAddress;
 
-class FreightAddressLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new FreightAddress());
-    }
+class FreightAddressLogic extends BaseLogic {
 }

@@ -9,7 +9,7 @@
 
 namespace src\ewt\ewt;
 
-use think\Model;
+use src\base\BaseModel as Model;
 
 class TestpaperQuestion extends Model{
   protected $table = "f_ewt_testpaper_question";

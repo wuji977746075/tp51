@@ -10,16 +10,8 @@
  * Time: 15:05
  */
 
-namespace app\src\store\logic;
+namespace src\mall\shop;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\store\model\Store;
-
-class StoreLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new Store());
-    }
+class StoreLogic extends BaseLogic{
 }

@@ -7,9 +7,9 @@
  * app 调研
  */
 
-namespace app\src\ewt\model;
+namespace src\ewt\model;
 
-use think\Model;
+use src\base\BaseModel as Model;
 
 class UserQuestion extends Model{
   protected $table = "itboye_ewe_user_question";

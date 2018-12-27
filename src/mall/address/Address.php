@@ -6,11 +6,9 @@
  * Time: 18:08
  */
 
-namespace app\src\address\model;
+namespace src\address\model;
+use src\base\BaseModel as Model;
 
-use think\Model;
+class Address extends Model {
 
-class Address extends Model
-{
-    
 }

@@ -6,16 +6,8 @@
  * Time: 9:29
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\ProductImage;
-
-class ProductImageLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new ProductImage());
-    }
+class ProductImageLogic extends BaseLogic {
 }

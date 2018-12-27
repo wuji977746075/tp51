@@ -10,12 +10,8 @@
  * Time: 15:04
  */
 
-namespace app\src\store\model;
-
-
-use think\Model;
-
-class Store extends Model
-{
+namespace src\mall\store;
+use src\base\BaseModel as Model;
+class Store extends Model{
     protected $autoWriteTimestamp = 'true';
 }

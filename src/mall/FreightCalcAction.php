@@ -6,21 +6,20 @@
  * Time: 22:02
  */
 
-namespace app\src\freight\action;
+namespace src\mall;
 
 
-use app\src\address\logic\AddressLogic;
-use app\src\base\action\BaseAction;
-use app\src\base\exception\BusinessException;
-use app\src\freight\facade\FreightFacade;
-use app\src\freight\model\FreightTemplate;
-use app\src\goods\logic\ProductLogic;
-use app\src\goods\model\Product;
-use app\src\shoppingCart\logic\ShoppingCartLogic;
-use think\Exception;
+use src\mail\address\AddressLogic;
+use src\base\action\BaseAction;
+// use src\base\exception\BusinessException;
+use src\freight\facade\FreightFacade;
+use src\freight\model\FreightTemplate;
+use src\goods\logic\ProductLogic;
+use src\goods\model\Product;
+use src\shoppingCart\logic\ShoppingCartLogic;
+// use think\Exception;
 
-class FreightCalcAction extends BaseAction
-{
+class FreightCalcAction extends BaseAction {
 
 
     private $address;//收货地址信息

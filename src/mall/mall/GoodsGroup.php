@@ -6,12 +6,9 @@
  * Time: 9:27
  */
 
-namespace app\src\goods\model;
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
 
+class ProductGroup extends Model{
 
-use think\Model;
-
-class ProductGroup extends Model
-{
-    
 }

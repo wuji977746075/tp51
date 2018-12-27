@@ -1,12 +1,12 @@
 <?php
 /*rainbow 2017-03-20 16:17:31*/
-namespace app\src\ewt\logic;
+namespace src\ewt\logic;
 
-use app\src\base\logic\BaseLogicV2;
-use app\src\ewt\model\SchoolReport;
+use src\base\BaseLogic;
+use src\ewt\model\SchoolReport;
 use think\Db;
 
-class SchoolReportLogicV2 extends BaseLogicV2{
+class SchoolReportLogic extends BaseLogic{
 
   public function getInfoWithUnit(array $map,$order=false,$field=false){
     $model = $this->getModel();

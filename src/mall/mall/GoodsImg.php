@@ -6,13 +6,9 @@
  * Time: 9:26
  */
 
-namespace app\src\goods\model;
-
-
-use think\Model;
-
-class ProductImage extends Model
-{
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
+class ProductImage extends Model {
     /**
      *  轮播图-6016
      * @author hebidu <email:346551990@qq.com>

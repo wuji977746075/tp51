@@ -10,16 +10,7 @@
  * Time: 15:21
  */
 
-namespace app\src\goods\logic;
-
-
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\ProductMemberPrice;
-
-class ProductMemberPriceLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new ProductMemberPrice());
-    }
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
+class ProductMemberPriceLogic extends BaseLogic {
 }

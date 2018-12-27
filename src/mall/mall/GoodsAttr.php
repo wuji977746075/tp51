@@ -6,13 +6,10 @@
  * Time: 9:26
  */
 
-namespace app\src\goods\model;
+namespace src\goods\model;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class ProductAttr extends Model
-{
+class ProductAttr extends Model {
     protected $hasReceipt;//是否有发票
     protected $underGuaranty;//是否售后
     protected $supportReplace;//是否支持退换货

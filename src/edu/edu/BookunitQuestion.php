@@ -9,7 +9,8 @@
 
 namespace src\ewt\ewt;
 
-use think\Model;
+
+use src\base\BaseModel as Model;
 
 class BookunitQuestion extends Model{
   protected $table = "f_ewt_bookunit_question";

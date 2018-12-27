@@ -10,16 +10,9 @@
  * Time: 16:04
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
+class ProductFaqLogic extends BaseLogic{
 
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\ProductFaq;
-
-class ProductFaqLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new ProductFaq());
-    }
 }

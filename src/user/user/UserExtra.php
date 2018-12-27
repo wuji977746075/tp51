@@ -1,8 +1,7 @@
 <?php
 namespace src\user\user;
-use think\Model;
+use src\base\BaseModel as Model;
 
-class UserExtra extends Model
-{
+class UserExtra extends Model{
   protected $table = "f_user_extra";
 }

@@ -6,12 +6,9 @@
  * Time: 9:28
  */
 
-namespace app\src\freight\model;
+namespace src\freight\model;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class FreightAddress extends Model
-{
+class FreightAddress extends Model {
 
 }

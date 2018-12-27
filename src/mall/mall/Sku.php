@@ -6,12 +6,8 @@
  * Time: 17:03
  */
 
-namespace app\src\goods\model;
-
-
-use think\Model;
-
-class ProductSku extends Model
-{
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
+class ProductSku extends Model {
     protected $autoWriteTimestamp = true;
 }

@@ -6,6 +6,7 @@
  */
 
 namespace src\bbs\report;
+
 use src\base\BaseLogic;
 
 /**

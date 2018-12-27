@@ -10,12 +10,9 @@
  * Time: 17:16
  */
 
-namespace app\src\goods\model;
+namespace src\mall\mall;
+use src\base\BaseModel as Model;
 
-
-use think\Model;
-
-class Skuvalue extends Model
-{
+class Skuvalue extends Model {
 
 }

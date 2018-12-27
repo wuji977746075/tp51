@@ -6,27 +6,16 @@
  * Time: 18:09
  */
 
-namespace app\src\address\logic;
-
-
-use app\src\address\model\Address;
-use app\src\base\logic\BaseLogic;
+namespace src\address\logic;
+use src\base\logic\BaseLogic;
 
 
 /**
  * Class AddressLogic
  * @author hebidu <email:346551990@qq.com>
- * @package app\src\system\logic
+ * @package src\system\logic
  */
-class AddressLogic extends BaseLogic
-{
-    /**
-     * @return mixed
-     */
-    protected function _init()
-    {
-        $this->setModel(new Address());
-    }
+class AddressLogic extends BaseLogic{
 
     public function add($entity){
         $logic = new AddressLogic();

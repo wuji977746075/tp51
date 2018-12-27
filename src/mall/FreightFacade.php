@@ -6,15 +6,13 @@
  * Time: 14:23
  */
 
-namespace app\src\freight\facade;
+namespace src\maill;
 
+use src\base\helper\LogHelper;
+use src\base\helper\ValidateHelper;
+use src\freight\logic\FreightAddressLogic;
 
-use app\src\base\helper\LogHelper;
-use app\src\base\helper\ValidateHelper;
-use app\src\freight\logic\FreightAddressLogic;
-
-class FreightFacade
-{
+class FreightFacade {
     /**
      *
      * @param $receive_addr

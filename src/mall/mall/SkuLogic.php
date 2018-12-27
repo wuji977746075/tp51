@@ -10,23 +10,11 @@
  * Time: 17:16
  */
 
-namespace app\src\goods\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\goods\model\Sku;
-
-class SkuLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new Sku());
-    }
-
-
-
+class SkuLogic extends BaseLogic {
     public function querySkuTable($cate_id){
-
         $result = $this->getModel()->where(array('cate_id'=>$cate_id))->select();
 
         $skuvalueApi = new SkuvalueLogic();

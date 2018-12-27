@@ -1,12 +1,12 @@
 <?php
 /*rainbow 2017-03-20 16:17:31*/
-namespace app\src\ewt\logic;
+namespace src\ewt\logic;
 
-use app\src\base\logic\BaseLogicV2;
-use app\src\ewt\model\UserBook;
-use app\src\extend\Page;
+use src\base\logic\BaseLogic;
+use src\edu\user\UserBook;
+use src\extend\Page;
 
-class UserBookLogicV2 extends BaseLogicV2{
+class UserBookLogic extends BaseLogic{
 
   public function getExpireTime($uid=0,$id=0){
     if($uid && $id){

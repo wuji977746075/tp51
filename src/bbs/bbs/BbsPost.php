@@ -6,8 +6,7 @@
  */
 
 namespace src\bbs\bbs;
-use think\Model;
-
+use src\base\BaseModel as Model;
 /**
  * 论坛帖子模型
  */

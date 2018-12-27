@@ -6,8 +6,7 @@ use src\base\BaseLogic;
 use upload\Upload;
 use think\Exception;
 
-class UserPictureLogic extends BaseLogic
-{
+class UserPictureLogic extends BaseLogic{
     private $error;
     public function getError(){
         return $this->error;

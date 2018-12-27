@@ -8,14 +8,8 @@
 namespace src\fy\invite;
 use src\base\BaseLogic;
 
-class FyInviteLogic extends BaseLogic
-{
-  /**
-   * @return mixed
-   */
-  protected function _init(){
-    $this->setModel(new FyInvite);
-  }
+class FyInviteLogic extends BaseLogic {
+
 
   function queryGroup($map,$page=['page'=>1,'size'=>10],$sort,$group='',$field='*') {
     $model = $this->getModel();

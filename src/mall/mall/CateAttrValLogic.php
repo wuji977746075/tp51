@@ -10,16 +10,8 @@
  * Time: 15:54
  */
 
-namespace app\src\category\logic;
+namespace src\mall\mall;
+use src\base\logic\BaseLogic;
 
-
-use app\src\base\logic\BaseLogic;
-use app\src\category\model\CategoryPropvalue;
-
-class CategoryPropvalueLogic extends BaseLogic
-{
-    public function _init()
-    {
-        $this->setModel(new CategoryPropvalue());
-    }
+class CategoryPropvalueLogic extends BaseLogic{
 }
