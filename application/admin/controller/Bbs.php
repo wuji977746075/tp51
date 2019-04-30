@@ -21,7 +21,7 @@ class Bbs extends CheckLogin {
       if($r) $parent = $r['parent'];
     }
     $this->assign('parent',$parent);
-    return $this->show();
+    return parent::index();
   }
 
   function ajax() {

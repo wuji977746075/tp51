@@ -8,8 +8,8 @@
 namespace app\admin\controller;
 use src\base\BaseModel as Model;
 
-class LotteryPrize extends CheckLogin {
-  protected $model_id = 30;
+class LotteryGain extends CheckLogin {
+  protected $model_id = 31;
   public function init(){
     $this->cfg['theme'] = 'layer';
   }

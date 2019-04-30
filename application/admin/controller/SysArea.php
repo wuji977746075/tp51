@@ -27,6 +27,36 @@ class SysArea extends CheckLogin{
     return parent::set();
   }
 
+  // 设置
+  function house() {
+    // session('accode', null);
+    $logic = $this->logic;
+    // $logic = new \src\sys\area\SysAreaLogic;
+    if(IS_POST) {
+      $code = $this->_param('code','');
+      if($code){
+        // is city ?
+        $info = $logic->getInfo(['code'=>$code],false,'code,is_open,city','城市id错误');
+        if(0 == $info['is_open']) $this->err('请先开通'.$code);
+        session('accode', $info['code']);
+        session('acname', $info['city']);
+        $req_uri = session('req_uri');
+        if(empty($req_uri)) $req_uri = url('House/index');
+        // header('Location: '.$req_uri);exit;
+        $this->suc_url = $req_uri;
+        $this->opSuc();
+      }else{
+        $this->err('请选择城市');
+      }
+    }else{
+      //查询已开通城市
+      $map = [['is_open','=',1],['city','<>','']];
+      $r   = $logic->query($map,'id desc','id,code,city');
+      $this->assign('list',$r);
+      return parent::index();
+    }
+  }
+
   public function index(){
     $parent = $this->_param('parent/d',1);
     $up     = $this->_param('up/d',0); //  ? parent的上级

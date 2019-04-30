@@ -6,7 +6,7 @@
       height: 38px !important;
     }
   </style>
-  <script>
+  <script type="text/javascript">
     if(self!=top){ top.location.href="{:url(CONTROLLER_NAME.'/index')}"; }
   </script>
   <style>
@@ -95,8 +95,8 @@
     <button type="submit" class="layui-btn w-full {eq name='auth_type' value='auth_slide'}layui-btn-disabled{/eq}" lay-submit lay-filter="formDemo">登陆</button>
   </div>
 </form>
-<script src="__CDN__particles/particles.js"></script>
-<script>
+<script type="text/javascript" src="__CDN__particles/particles.js"></script>
+<script type="text/javascript">
 $(function(){
   var mw = $(window).width(),num=50,dis=100;
   if(mw < 960){   num=20;dis=60;   }

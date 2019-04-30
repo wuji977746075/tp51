@@ -252,7 +252,7 @@ class CheckLogin extends Base {
   // this->logic 是否定义了
   protected function checkLogic($msg=''){
     if(!is_subclass_of($this->logic,'\src\\base\\BaseLogic')){
-      $msg = $msg ? $msg : L('need-set-logic').':'.$this->logicPath;
+      $msg = $msg ? $msg : L('need-set-logic').':'.$this->logicPath.' not  a instance of BaseLogic';
       $this->opErr($msg);
     }
   }

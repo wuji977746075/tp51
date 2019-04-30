@@ -1,0 +1,139 @@
+{extend name="df/tpl/base_index" /}
+
+{block name="area_body"}
+<div class="layui-card">
+  <div class="layui-card-header">{$cfg.business}{:L('manage')} -- {$Think.CITY}</div>
+  <div class="layui-card-body">
+    {:html_head_tip($cfg['business'].'数据,点击 .单元格编辑')}
+    <form class="layui-form layui-form-pane" lay-filter="js-form"> <!-- autocomplete="off" -->
+      {:token()}
+      <div class="layui-inline">
+        <!-- <label for="jsf-kword" class="layui-form-label">关键词</label> -->
+        <div class="layui-input-inline" style="width: 200px;">
+          <input type="text" id="jsf-kword" name="kword" class="layui-input" required lay-require="true" placeholder="房源名/标题" autofocus>
+        </div>
+      </div>
+        &nbsp;&nbsp;&nbsp;
+      <div class="layui-inline layui-form-item mb0">
+        <input type="number" min="0" id='jsf-house-room' name="house_room" class="layui-input layui-input-inline" placeholder="几室" style="width: 55px;">
+        <input type="number" min="0" id='jsf-house-hall' name="house_hall" class="layui-input layui-input-inline" placeholder="几厅" style="width: 55px;">
+        <input type="number" min="0" id='jsf-toilet' name="toilet" class="layui-input layui-input-inline" placeholder="几卫" style="width: 55px;">
+      </div>
+      <div class="layui-inline layui-form-item mb0">
+        <div class="layui-input-inline" style="width: 120px;">
+          <select name="rent_type" id="jsf-rent-type">
+            <option value="">= 租赁方式 =</option>
+            <option value="1"> 整租 </option>
+            <option value="2"> 合租 </option>
+          </select>
+        </div>
+      </div><br/>
+      <div class="layui-inline layui-form-item mb0 mt10">
+        <label class="layui-form-label">发布时间</label>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-start' name="start" class="layui-input" >
+        </div>
+        <div class="layui-form-mid">-</div>
+        <div class="layui-input-inline" style="width: 130px;">
+          <input type="text" id='jsf-end' name="end" class="layui-input">
+        </div>
+      </div>
+      <div class="layui-inline mt10">
+        <a class="layui-btn layui-btn-sm" id="js-search" title="搜索"> <i class="layui-icon layui-icon-search"></i> </a>
+        <button class="layui-btn layui-btn-sm" title="重置" type="reset">重置</button>
+      </div>
+    </form>
+<table id="demo" lay-filter="fDemo"></table>
+  </div>
+</div>
+<script type="text/html" id="toolbarDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/set')}" class="layui-btn layui-btn-sm ajax-layer" title="添加" ><i class="layui-icon layui-icon-add-1"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/editOne',['field'=>'status','val'=>-1])}" data-table="demo" class="layui-btn confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量上架" ><i class="layui-icon layui-icon-up"></i></a>
+    <a data-href="{:url(CONTROLLER_NAME.'/dels')}" data-table="demo" class="layui-btn layui-btn-danger confirm js-ops layui-btn-sm layer-msg no-refresh fresh-table" title="批量删除" ><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+<script type="text/html" id="barDemo">
+  <div class="layui-btn-group">
+    <a href="{:url(CONTROLLER_NAME.'/lotteryPrizeLink',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="发布">发布</a>
+    <a href="{:url(CONTROLLER_NAME.'/set',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm ajax-layer" title="修改"><i class="layui-icon layui-icon-edit"></i></a>
+    <a href="{:url(CONTROLLER_NAME.'/del',[],'')}?id={{ d.id }}" class="layui-btn layui-btn-sm layui-btn-danger ajax-get confirm no-refresh fresh-table" title="删除"><i class="layui-icon layui-icon-delete"></i></a>
+  </div>
+</script>
+{/block}
+
+{block name="area_foot"}
+<!-- script -->
+<script>
+// page init
+layui.use(['rb','table2','form','datetimepicker','picView','select2'], function() {
+  var layer = layui.layer
+  ,table = layui.table2
+  ,form = layui.form
+  ,rb = layui.rb
+  ,$ = layui.$;
+
+  // form init
+  // table init
+  rb.setWhere = function () {
+    rb.where.kword = $('#jsf-kword').val();
+    rb.where.start = $('#jsf-start').val();
+    rb.where.end   = $('#jsf-end').val();
+  };
+  // table render
+  rb.table = table.render($.extend(rb.table_config, {
+    url: '{:url(CONTROLLER_NAME."/ajax")}'
+    ,where:rb.where
+    ,cols:  [[
+      {type: 'checkbox'} //,LAY_CHECKED: true
+      ,{field: 'id', title: 'ID', minWidth: 80,sort:true,hide:true }
+      ,{field: 'house_no', title: '编号/主图',templet:'#houseNoTpl' }
+      ,{field: 'title', title: '标题',minWidth:200,templet:'#titleTpl' }
+      ,{field: 'house_area', title: '状况',minWidth:150,templet:'#houseAreaTpl' }
+      ,{field: 'address_detail', title: '地址',minWidth:150 }
+      ,{field: 'contact_phone', title: '联系人',templet:'#contactPhoneTpl' }
+      ,{field: 'rent', width:60,title: '租金',templet:'#rentTpl' }
+      ,{field: 'rent_pay',width:100, title: '支付方式',templet:'#rentPayTpl' }
+      ,{align:'left',width:145,title: '操作',toolbar: '#barDemo'}
+    ]]
+  }));
+  rb.initDateTimePicker('#jsf-start,#jsf-end');
+  {include file="df/tpl/index_extra"}
+});
+</script>
+<!-- tpl -->
+<script type="text/html" id="titleTpl">
+  {{ d.title }}
+  <i class="layui-badge">{{ d.house_brand }}</i>
+  <i class="layui-badge">{{ d.came_form }}</i>
+</script>
+<script type="text/html" id="houseNoTpl">
+  {{ d.house_no }}
+  <img src="" alt="">
+</script>
+<script type="text/html" id="rentPayTpl">
+  <!-- 押{{ d.rentPay }}付 -->
+  <a href="" class="table-link">设置支付方式</a>
+</script>
+<script type="text/html" id="rentTpl">
+  {{# if(d.rent>0){ }}
+    {{ layui.rb.toFloat(d.rent/100) }}/月
+  {{# }else{ }}  面议
+  {{# } }}
+</script>
+<script type="text/html" id="contactPhoneTpl">
+  {{ d.contact_phone }}
+  <i class="layui-badge">{{ d.contact_name }}</i>
+</script>
+<script type="text/html" id="houseAreaTpl">
+  <i class="layui-badge">{{ d.house_area }}平</i>
+  <i class="layui-badge">{{ d.house_room }}室{{ d.house_hall }}厅{{ d.toilet }}卫</i>
+  {{# if ( d.rent_type>0 ) { }}
+  <i class="layui-badge">{{ d.rent_type }}租</i>
+  {{# } }}
+  {{# if ( d.floor_at>0 ) { }}
+  <i class="layui-badge">{{ d.floor_at }}/{{ d.floor_all }}</i>
+  {{# } }}
+  <i class="layui-badge">朝{{ d.house_dir }}</i>
+</script>
+{/block}

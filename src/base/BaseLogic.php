@@ -11,11 +11,12 @@ use think\Db;
 use think\Model;
 use Exception;
 use src\base\traits\Jump;
+use src\base\traits\Trans;
 /**
  * Logic 基类 , 出错请抛出错误
  */
 abstract class BaseLogic {
-    use Jump;
+    use Jump,Trans;
     const CACHE_TIME = 600;
 
     //status
@@ -57,15 +58,6 @@ abstract class BaseLogic {
         return $info;
     }
 
-    public function trans(){
-        Db::startTrans();
-    }
-    public function back(){
-        Db::rollback();
-    }
-    public function commit(){
-        Db::commit();
-    }
     /**
      * get model
      * @return Model

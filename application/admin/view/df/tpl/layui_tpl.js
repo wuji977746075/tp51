@@ -1,6 +1,6 @@
 <script type="text/html" id="showTpl">
   <form class="layui-form">
-  <input type="checkbox" data-id="{{ d.id }}"
+  <input type="checkbox" data-id="{{ d.id }}" disabled
   {{# if(d.show>0){ }} checked  {{#  } }}
   lay-skin="switch" value="1" lay-text="show|hide">
   </form>
@@ -18,7 +18,7 @@
 </script>
 
 <script type="text/html" id="timeTpl">
-  {{ layui.rb.gettime2(d.reg_time) }}
+  {{ layui.rb.getTimeFormat(d.reg_time) }}
 </script>
 
 <script type="text/html" id="imgTpl">

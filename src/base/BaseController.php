@@ -28,13 +28,12 @@ abstract class BaseController extends Controller{
   protected $err_url = '';
   protected $page = ['page'=>1,'size'=>10];
   protected $sort = 'id desc';
-  const ALLOW_DOMAIN = [
-    "http://tp51",
-    "http://cdn.my"
-  ];
-
   //初始化
   protected function initialize(){
+    // add verified domain's crof meta
+    if(!defined("ALLOW_DOMAIN")){
+      define("ALLOW_DOMAIN", config('allow_domains'));
+    }
     $this->_setAjax();
     session("?session_id");
     $this->session_id = session_id();
@@ -42,11 +41,11 @@ abstract class BaseController extends Controller{
 
     // 缓存最新 config(app.)
     (new ConfigLogic)->clearCache();
+    !defined('PRE') && define('PRE',config('table_df_pre'));
     // get datatrees
     (new DatatreeLogic)->clearCache();
-
+    // check ip
     $this->_checkIp();
-    !defined('PRE') && define('PRE',config('table_df_pre'));
 
     //设置程序版本 - test
     $this->seo = [
@@ -186,7 +185,6 @@ abstract class BaseController extends Controller{
       define("MODEL_ID", $this->model_id);
       define("MODEL", $this->model);
     }
-
   }
     /**
    * 赋值页面标题值
@@ -198,7 +196,7 @@ abstract class BaseController extends Controller{
   protected function _setAjax(){
     $req = $this->request;
     $sDomain = $req->domain();
-    if (in_array($sDomain,self::ALLOW_DOMAIN)) {
+    if (in_array($sDomain,ALLOW_DOMAIN)) {
       header('Access-Control-Allow-Origin:*');
       header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
       header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, sessionId");

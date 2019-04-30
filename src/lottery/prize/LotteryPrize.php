@@ -1,6 +1,6 @@
 <?php
-namespace src\lottery\lottery;
-use think\Model;
+namespace src\lottery\prize;
+use src\base\BaseModel as Model;
 
 class LotteryPrize extends Model {
   protected $table = "f_lottery_prize";

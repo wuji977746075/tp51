@@ -6,7 +6,7 @@ use src\base\BaseLogic;
 use Common\Api\Api;
 use Admin\Model\GameModel;
 use Common\Api\GamePrizegethisApi;
-use Common\Api\GamePrizeApi;
+use Common\Api\GamePrizeApi as PrizeLogic;
 use Admin\Api\MemberApi;
 use Webview\Api\SigninApi;
 use Shop\Api\RedEnvelopeApi;
@@ -26,7 +26,7 @@ class LotteryLogic extends BaseLogic{
      * @param  int      the game id
      * @return array    results
      */
-    public function  roll($uid,$gid){
+    public function roll($uid,$gid){
         $maxFree      = self::MAX_FREE;
         $maxChange    = self::MAX_CHANGES;
         $free         = fasle;
@@ -236,34 +236,25 @@ class LotteryLogic extends BaseLogic{
         $preTime   = self::PRE_TIME;
         $maxFree   = self::MAX_FREE;
         $maxChange = self::MAX_CHANGES;
-        $r         = array('status'=>false,'info'=>array('signin'=>false,'remainF'=>0,'remainA'=>0),'msg'=>'');
+        $r         = ['signin'=>false,'remainF'=>0,'remainA'=>0];
 
-        $result = apiCall(MemberApi::GET_INFO,array(array('uid'=>$uid)));
-        // dump($result);exit;
-        if(!$result['status'] || !$result['info']){
-            $r['msg'] = '非法用户';
-            return $r;
-            // $r['msg'] = 'MemberApi:find:ERROR';
-        }
+        $r = (new MemberApi)->getInfo(['uid'=>$uid]);
+        !$r && $this->err('非法用户');
 //查询抽奖信息
-        $result = $this->getInfo(array('id' => $gid));
-        if(!$result['info']){
-            $r['msg'] = '无此抽奖';
-            return $r;
-        }
-        if( (NOW_TIME < $result['info']['start_time']) || (NOW_TIME > $result['info']['end_time']) ){
-            $r['msg'] = '抽奖已失效';
-            return $r;
+        $r = $this->getInfo(['id' => $gid]);
+        !$r && $this->err('无此抽奖');
+        if( (NOW_TIME < $r['start_time']) || (NOW_TIME > $r['end_time']) ){
+            $this->err('抽奖已失效');
         }
 
 //查询今天已抽奖次数
         $time0    = strtotime(Date('Y-m-d',NOW_TIME));
         $time1    = $time0 + 3600*24;
-        $bettoday = array('between',array($time0,$time1));
-        $map      = array(
-            'uid'       => $uid
-            ,'get_time' => $bettoday
-        );
+        $bettoday = ['between',[$time0,$time1]];
+        $map      = [
+            'uid'      => $uid,
+            'get_time' => $bettoday
+        ];
         $result = apiCall(GamePrizegethisApi::COUNT,array($map));
         $r['info']['remainA'] = $maxChange - intval($result['info']);
         if($flag && $r['info']['remainA']<0){
@@ -305,9 +296,9 @@ class LotteryLogic extends BaseLogic{
             }
             $r['status']        = true;
 //查询用户积分
-            $map                = array('uid' => $uid);
-            $result             = apiCall(MemberApi::GET_INFO,array($map));
-            $r['info']['score'] = $result['info']['score'] ? $result['info']['score']:0;
+            $map = ['uid' => $uid];
+            $rr = (new MemberApi)->getInfo($map);
+            $r['score'] = $r['score'] ? $rr['score'] : 0;
         }else{
             $r['msg']           = 'SigninApi : ERROR';
         }
@@ -318,49 +309,38 @@ class LotteryLogic extends BaseLogic{
         }
 //策略1,查询缓存凭据
         // if(S('roll'.$uid)){
-        //     $r['msg'] = $preTime.'秒内只允许抽奖一次'.S('roll'.$uid);
-        //     return $r;
+        // $this->err($preTime.'秒内只允许抽奖一次'.S('roll'.$uid));
         // }
         // echo '2323';exit;
 //ok.策略2,查询最近一次抽奖时间是否太近
-        $result = apiCall(GamePrizegethisApi::FIND,array(array('uid'=> $uid),array('get_time desc')));
+        $r = (new GetHisApi)->find(['uid'=> $uid],'get_time desc');
         // dump($result);exit;
-        if($result['status']){
-            $last_time = intval($result['info']['get_time']);
+        if($r){
+            $last_time = intval($r['get_time']);
             if($last_time > NOW_TIME - $preTime){
-                $r['status'] = false;
-                $r['msg']    = $preTime.'秒内只允许抽奖一次';
-                return $r;
+                $this->err($preTime.'秒内只允许抽奖一次');
             }
         }else{
-            $r['status'] = false;
-            $r['msg']    = '查询API: 故障';
-            return $r;
+            $this->err('查询API: 故障');
         }
 //策略3,查询5秒内是否抽过奖
-        // $time5    = NOW_TIME - 5;
-        // $bet5     = array('gt',$time5);
-        // $map      = array(
-        //     'uid'       => $uid
-        //     ,'get_time' => $bet5
-        // );
-        // $result = apiCall(GamePrizegethisApi::COUNT,array($map));
+        // $time5 = NOW_TIME - 5;
+        // $bet5  = ['gt',$time5];
+        // $map   = [
+        //   'uid'       => $uid,
+        //   'get_time' => $bet5
+        // ];
+        // $r = (new GetHisLogic)->count($map);
         // // $r['msg'] = M()->getLastSql();
         // // return $r;
-        // if($result['status']){
-        //         // dump($result['info']);exit;;
-        //     if(intval($result['info'])>0){
-        //         $r['msg'] = '秒内只允许抽奖一次';
-        //         return $r;
-        //     }
+        // if($r){
+        //   // dump($r);exit;;
+        //   intval($r)>0 && $this->err('秒内只允许抽奖一次');
         // }else{
-        //     $r['msg'] = '查询API: 故障';
-        //     return $r;
+        //   $this->err('查询API: 故障');
         // }
-        $result = apiCall(GameApi::FIND,array(array('id'=>$gid)));
-        if($result['status']) $r['info']['game_name'] = $result['info']['name'];
-        unset($result);
-        // dump($r);exit;
+        $r = (new GameLogic)->getInfo(['id'=>$gid]);
+        if($r) $r['game_name'] = $r['name'];
         return $r;
     }
     /**
@@ -369,18 +349,18 @@ class LotteryLogic extends BaseLogic{
      * @return [arr]    [本次抽奖结果]
      */
     protected function doRoll($gid){
-        $data = array();
-        $arr = array();
-        $result = apiCall(GamePrizeApi::GET_PRIZE,array(array('game_id'=>$gid),'probability asc'));
-        if(!$result['status'])
-            return array('status'=>false,'info'=>null,'msg'=>'GamePrizeApi : ERROR');
-        $prizes = $result['info'];
+        $data = [];
+        $arr  = [];
+        $r = (new PrizeLogic)->getPrize(['game_id'=>$gid],'probability asc');
+        !$r && $this->err('GamePrizeApi : ERROR');
+
+        $prizes = $r;
         $n      = 1;
         foreach($prizes as $k=>$v) {
             // $val = intval($v['cnt'])*intval($v['value']);
             if($v['probability']>0){
                 $tmp = [$v['id'],intval($v['probability'] * 1000)];
-                $tmp[2] = array($n,$n+$tmp[1]-1);
+                $tmp[2] = [$n,$n+$tmp[1]-1];
                 $arr[] = $tmp;
                 $n += $tmp[1];
             }
@@ -397,7 +377,7 @@ class LotteryLogic extends BaseLogic{
         // $data['prize_type'] = $prizes[$prize_site]['prize_type'];
         // $data['prize_site'] = $prize_site;
         // $data['prize_id'] = $prize_id;
-        return array('status'=>true,'info'=>$prize_id,'msg'=>($prize_id?'中奖'.$prize_id:'未中奖'));
+        return $prize_id;
     }
     /**
      * 获取roll点结果
@@ -425,7 +405,7 @@ class LotteryLogic extends BaseLogic{
      * @return [type] [description]
      */
     public function getPrizeCats(){
-        return $this->apiReturnSuc(array(1=>'积分',2=>'购物券',3=>'商品',4=>'其他'));
+        return [1=>'积分',2=>'购物券',3=>'商品',4=>'其他'];
         // $cat = D('Datatree')->where(array('code'=>'PrizeCat'))->find();
         // return D('Datatree')->where(array('parentid'=>$cat['id']))->select();
     }
