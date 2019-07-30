@@ -1,6 +1,6 @@
 <?php
 namespace app\admin\controller;
-use src\sys\session\SessionLogic;
+use src\sys\session\SysSessionLogic as SessionLogic;
 use src\admin\menu\MenuLogic;
 use src\user\user\UserLogic;
 
