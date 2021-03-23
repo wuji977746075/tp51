@@ -58,16 +58,16 @@ class WxpayService {
     //组装已签名的支付数据返回给客户端
     public function reSign($prepayId){
       $data = [];
-      $data["appid"]        = $this->config["appid"];
-      $data["noncestr"]     = $this->getRandChar(32);;
-      $data["package"]      = "Sign=WXPay";
-      $data["partnerid"]    = $this->config['mch_id'];
-      $data["prepayid"]     = $prepayId;
-      $data["timestamp"]    = time();
-      $s                    = $this->getSign($data);
-      $data["sign"]         = $s;
-      $data["packageValue"] = "Sign=WXPay";//安卓key-fix
-      unset($s);
+        $data["appid"]        = $this->config["appid"];
+        $data["noncestr"]     = $this->getRandChar(32);;
+        $data["package"]      = "Sign=WXPay";
+        $data["partnerid"]    = $this->config['mch_id'];
+        $data["prepayid"]     = $prepayId;
+        $data["timestamp"]    = time();
+        $s                    = $this->getSign($data);
+        $data["sign"]         = $s;
+        $data["packageValue"] = "Sign=WXPay";//安卓key-fix
+        unset($s);
       return $data;
     }
     /*

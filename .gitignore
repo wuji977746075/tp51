@@ -1,7 +1,6 @@
 .idea
 *.log
 thinkphp/
-.env
 .phpintel/
 runtime/
 node_modules/

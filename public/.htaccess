@@ -1,18 +1,8 @@
-<FilesMatch "\.(ttf|otf|eot|woff)$">
-  <IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-  </IfModule>
-</FilesMatch>
-<IfModule mod_rewrite.c>
-  Options +FollowSymlinks -Multiviews
-  RewriteEngine On
-
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_URI} !^.*(/.css|/.js|/.gif|/.png|/.jpg|/.jpeg)$
-
-  # 设置index模块隐藏入口文件
-  # bug : RewriteRule ^admin/?$ admin.php/login/index [R=301,L]
-  RewriteRule ^(\w*)/(.*)$ $1.php?s=/$2 [QSA,PT,L]
-  #RewriteRule ^(.*)$ index.php?s=/$1 [QSA,PT,L]
-</IfModule>
+RewriteEngine On
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^index.php(.*)$ index.php?s=$1 [L]
+RewriteRule ^admin.php(.*)$ admin.php?s=$1 [L]
+RewriteRule ^test.php(.*)$ test.php?s=$1 [L]
+RewriteRule ^web.php(.*)$ web.php?s=$1 [L]
